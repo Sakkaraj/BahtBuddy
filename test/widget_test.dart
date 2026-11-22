@@ -38,7 +38,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Future<void> _disposeTree(WidgetTester tester) async {
+  Future<void> disposeTree(WidgetTester tester) async {
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump(const Duration(seconds: 1));
   }
@@ -59,7 +59,7 @@ void main() {
     final categories = await database.allCategories();
     final other = categories.firstWhere((c) => c.key == 'other');
     expect(rows.single.categoryId, other.id);
-    await _disposeTree(tester);
+    await disposeTree(tester);
   });
 
   testWidgets('slip confirmation keeps parsed fields', (tester) async {
@@ -94,6 +94,6 @@ void main() {
       (c) => c.key == 'food',
     );
     expect(rows.single.categoryId, food.id);
-    await _disposeTree(tester);
+    await disposeTree(tester);
   });
 }
