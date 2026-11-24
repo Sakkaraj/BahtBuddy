@@ -5,13 +5,26 @@ These materials document the current BahtBuddy Flutter application for
 
 ## Submission files
 
-- [BahtBuddy_Project_Report.pdf](./BahtBuddy_Project_Report.pdf) — 15-page report.
-  The required sections are Introduction and Background, Related Works,
-  Methodology, Results, Conclusion, Responsibilities of Each Team Member,
-  and References. Screenshots of every screen are in Appendix A.
+The course asks for three items. Two are in this folder. The presentation video is recorded separately.
+
+- [BahtBuddy_Project_Report.pdf](./BahtBuddy_Project_Report.pdf) — final report.
+  Sections follow the submission instructions: Introduction and Background,
+  Related Works, Methodology, Results, Conclusion, Responsibilities of Each
+  Team Member, and References. Section 1.4 maps the app to the course
+  proposal: a Flutter expense tracker with a local SQLite database.
+  Screenshots of every screen are in Appendix A.
 - [BahtBuddy_Presentation_Slides.pdf](./BahtBuddy_Presentation_Slides.pdf) —
-  12-slide 16:9 deck in the app’s Ocean theme (cobalt banner, teal
-  actions, Plus Jakarta Sans) for the 26 November 2026 presentation.
+  12-slide 16:9 deck in the app’s Ocean theme for the 26 November 2026
+  presentation. The order is introduction, the problem, related work,
+  features, a demonstration, architecture and the technology stack,
+  results, and the conclusion.
+- Presentation video, 2–5 minutes. It is not in this folder. Record from the
+  deck, then put the unlisted YouTube, Drive, or GitHub link in the
+  MyCourse submission.
+
+The source project is the repository root. Installation is in the root
+README. The schema lives in `lib/data/db/app_database.dart` (Drift). There
+is no separate SQL script and no slip-image dataset.
 
 ## Demonstration order
 

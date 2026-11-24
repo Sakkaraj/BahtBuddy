@@ -11,11 +11,11 @@ The final report and slide deck are in [`docs/ITCS259/`](docs/ITCS259/):
 
 - [`BahtBuddy_Project_Report.pdf`](docs/ITCS259/BahtBuddy_Project_Report.pdf)
 - [`BahtBuddy_Presentation_Slides.pdf`](docs/ITCS259/BahtBuddy_Presentation_Slides.pdf)
-- [`build_final_deliverables.py`](docs/ITCS259/build_final_deliverables.py) regenerates the report and slides.
 
-The report and slides include real Android emulator UI, implementation
-architecture, data model, test evidence, limitations, team responsibilities,
-and references.
+The report and slides include the emulator screens, the architecture, the
+Drift schema, the test evidence, the limits, the team responsibilities, and
+the references. Section 1.4 of the report maps the app to the course
+proposal: a Flutter expense tracker stored in SQLite on the phone.
 
 ## Requirements
 
