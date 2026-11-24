@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -37,10 +38,30 @@ class BahtBuddyApp extends ConsumerWidget {
       darkTheme: bahtTheme(followSystem ? BuddyLook.night : chosen),
       themeMode: followSystem ? ThemeMode.system : ThemeMode.light,
       locale: locale,
+      scrollBehavior: const BahtScrollBehavior(),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       routerConfig: router,
-      builder: (context, child) => LockGate(child: child ?? const SizedBox()),
+      builder: (context, child) {
+        final brightness = Theme.of(context).brightness;
+        final dark = brightness == Brightness.dark;
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: dark ? Brightness.light : Brightness.dark,
+            statusBarBrightness: dark ? Brightness.dark : Brightness.light,
+            systemNavigationBarColor: Colors.transparent,
+            systemNavigationBarIconBrightness: dark
+                ? Brightness.light
+                : Brightness.dark,
+          ),
+          child: GestureDetector(
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            behavior: HitTestBehavior.translucent,
+            child: LockGate(child: child ?? const SizedBox()),
+          ),
+        );
+      },
     );
   }
 }

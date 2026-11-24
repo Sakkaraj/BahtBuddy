@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -368,12 +367,20 @@ class SettingsScreen extends ConsumerWidget {
     required bool csv,
   }) async {
     final l10n = AppLocalizations.of(context);
+    final box = context.findRenderObject() as RenderBox?;
+    final origin = box != null && box.hasSize
+        ? box.localToGlobal(Offset.zero) & box.size
+        : null;
     ref.read(suppressLockProvider.notifier).setValue(true);
     try {
       final repo = ref.read(backupRepositoryProvider);
       final file = csv ? await repo.exportCsv() : await repo.exportBackup();
       await SharePlus.instance.share(
-        ShareParams(files: [XFile(file.path)], title: l10n.appTitle),
+        ShareParams(
+          files: [XFile(file.path)],
+          title: l10n.appTitle,
+          sharePositionOrigin: origin,
+        ),
       );
       if (context.mounted) {
         ScaffoldMessenger.of(
@@ -394,9 +401,7 @@ class SettingsScreen extends ConsumerWidget {
         allowedExtensions: ['json'],
       );
       if (picked == null) return;
-      final text = picked.path != null
-          ? await File(picked.path!).readAsString()
-          : utf8.decode(await picked.readAsBytes());
+      final text = utf8.decode(await picked.readAsBytes());
       await ref.read(backupRepositoryProvider).restore(text);
       ref.invalidate(settingsProvider);
       if (context.mounted) {
@@ -645,7 +650,7 @@ class _SwitchRow extends StatelessWidget {
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
-          Switch.adaptive(
+          Switch(
             value: value,
             activeTrackColor: color,
             onChanged: onChanged,

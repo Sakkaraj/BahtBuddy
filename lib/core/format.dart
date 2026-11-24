@@ -32,6 +32,19 @@ ThemeData bahtTheme(BuddyLook look) {
   );
   return ThemeData(
     useMaterial3: true,
+    platform: TargetPlatform.android,
+    visualDensity: VisualDensity.standard,
+    materialTapTargetSize: MaterialTapTargetSize.padded,
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: ZoomPageTransitionsBuilder(),
+        TargetPlatform.iOS: ZoomPageTransitionsBuilder(),
+        TargetPlatform.macOS: ZoomPageTransitionsBuilder(),
+        TargetPlatform.linux: ZoomPageTransitionsBuilder(),
+        TargetPlatform.windows: ZoomPageTransitionsBuilder(),
+        TargetPlatform.fuchsia: ZoomPageTransitionsBuilder(),
+      },
+    ),
     fontFamily: bahtFont,
     colorScheme: scheme,
     textTheme: _bahtType(ink, muted),
@@ -127,6 +140,27 @@ ThemeData bahtTheme(BuddyLook look) {
     ),
     extensions: [look],
   );
+}
+
+class BahtScrollBehavior extends MaterialScrollBehavior {
+  const BahtScrollBehavior();
+
+  @override
+  ScrollPhysics getScrollPhysics(BuildContext context) {
+    return const ClampingScrollPhysics();
+  }
+
+  @override
+  Widget buildOverscrollIndicator(
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) {
+    return StretchingOverscrollIndicator(
+      axisDirection: details.direction,
+      child: child,
+    );
+  }
 }
 
 TextTheme _bahtType(Color ink, Color muted) {
