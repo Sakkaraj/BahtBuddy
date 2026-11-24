@@ -18,6 +18,7 @@ import '../../widgets/budget_progress.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/motion.dart';
 import '../../widgets/transaction_row.dart';
+import '../../widgets/glass_photo_card.dart';
 import '../../widgets/promo_banner.dart';
 import '../../widgets/spend_trend_card.dart';
 import '../../widgets/exchange_rate_card.dart';
@@ -73,11 +74,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             final now = zoneNow();
             final today = summarize(rows, ReportRange.day(now));
             final month = summarize(rows, ReportRange.month(now));
-            final monthEnd = DateTime(now.year, now.month + 1);
-            final daysRemaining = monthEnd
-                .difference(DateTime(now.year, now.month, now.day))
-                .inDays;
-            final pace = _paceLabel(l10n, locale, month.balance, daysRemaining);
+            final pace = safePace(balance: month.balance, now: now);
+            final paceLabel = _paceLabel(l10n, locale, pace);
             final names = {
               for (final category in categories.asData?.value ?? <Category>[])
                 category.id: category,
@@ -101,7 +99,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     incomeValue: formatBaht(locale, month.income),
                     expenseLabel: l10n.expense,
                     expenseValue: formatBaht(locale, month.expense),
-                    pace: pace,
+                    pace: paceLabel,
+                    paceDetail: pace,
+                    monthBalance: month.balance,
                   ),
                 ),
               'rates': Appear(
@@ -425,16 +425,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 }
 
-String _paceLabel(
-  AppLocalizations l10n,
-  Locale locale,
-  double balance,
-  int daysRemaining,
-) {
-  if (balance < 0) return l10n.overIncome(formatBaht(locale, balance.abs()));
-  if (balance == 0) return l10n.nothingLeft;
-  final perDay = balance / (daysRemaining <= 0 ? 1 : daysRemaining);
-  return l10n.safePerDay(formatBaht(locale, perDay));
+String _paceLabel(AppLocalizations l10n, Locale locale, SafePace pace) {
+  if (pace.over) return l10n.overIncome(formatBaht(locale, pace.perDay));
+  if (pace.empty) return l10n.nothingLeft;
+  return l10n.safePerDay(formatBaht(locale, pace.perDay));
 }
 
 class _BalanceHero extends StatelessWidget {
@@ -448,6 +442,8 @@ class _BalanceHero extends StatelessWidget {
     required this.expenseLabel,
     required this.expenseValue,
     required this.pace,
+    required this.paceDetail,
+    required this.monthBalance,
   });
 
   final String monthLabel;
@@ -459,31 +455,44 @@ class _BalanceHero extends StatelessWidget {
   final String expenseLabel;
   final String expenseValue;
   final String pace;
+  final SafePace paceDetail;
+  final double monthBalance;
+
+  void _showPace(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context);
+    final balance = formatBaht(locale, monthBalance);
+    final perDay = formatBaht(locale, paceDetail.perDay);
+    showModalBottomSheet<void>(
+      context: context,
+      useRootNavigator: true,
+      showDragHandle: true,
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.safePerDay(perDay), style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 8),
+              Text(l10n.safePaceExplain(balance, '${paceDetail.daysLeft}')),
+              const SizedBox(height: 12),
+              Text('${l10n.balance}  $balance'),
+              Text(l10n.daysLeft('${paceDetail.daysLeft}')),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final look = BuddyLook.of(context);
-    final ink = look.bannerInk;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: look.banner,
-          borderRadius: BorderRadius.circular(28),
-          border: look.bannerFilled
-              ? null
-              : Border.all(color: ink.withValues(alpha: 0.14)),
-          boxShadow: [
-            BoxShadow(
-              color: look.orbA.withValues(alpha: 0.28),
-              blurRadius: 24,
-              offset: const Offset(0, 12),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-          child: Column(
+    final ink = BuddyLook.of(context).bannerInk;
+    return GlassPhotoCard(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+      child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
@@ -511,46 +520,56 @@ class _BalanceHero extends StatelessWidget {
               const SizedBox(height: 16),
               Row(
                 children: [
-                  _GlassStat(label: todayLabel, value: todayValue),
+                  _GlassStat(label: todayLabel, value: todayValue, ink: ink),
                   const SizedBox(width: 8),
-                  _GlassStat(label: incomeLabel, value: incomeValue),
+                  _GlassStat(label: incomeLabel, value: incomeValue, ink: ink),
                   const SizedBox(width: 8),
-                  _GlassStat(label: expenseLabel, value: expenseValue),
+                  _GlassStat(label: expenseLabel, value: expenseValue, ink: ink),
                 ],
               ),
               const SizedBox(height: 12),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: ink.withValues(alpha: 0.12),
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
                   borderRadius: BorderRadius.circular(14),
-                ),
-                child: Text(
-                  pace,
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: ink,
-                    fontWeight: FontWeight.w700,
+                  onTap: () => _showPace(context),
+                  child: Ink(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: ink.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: ink.withValues(alpha: 0.28)),
+                    ),
+                    child: Text(
+                      pace,
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: ink,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ),
                 ),
               ),
             ],
-          ),
-        ),
       ),
     );
   }
 }
 
 class _GlassStat extends StatelessWidget {
-  const _GlassStat({required this.label, required this.value});
+  const _GlassStat({
+    required this.label,
+    required this.value,
+    required this.ink,
+  });
 
   final String label;
   final String value;
+  final Color ink;
 
   @override
   Widget build(BuildContext context) {
-    final ink = BuddyLook.of(context).bannerInk;
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),

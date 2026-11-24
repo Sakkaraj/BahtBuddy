@@ -10,6 +10,9 @@ import '../../l10n/app_localizations.dart';
 import '../../providers.dart';
 import '../../widgets/bb_grouped_section.dart';
 import '../../widgets/bb_scaffold.dart';
+import '../../widgets/glass_photo_card.dart';
+import '../../widgets/motion.dart';
+import '../../widgets/offer_banner.dart';
 import 'summary.dart';
 import 'tips.dart';
 
@@ -25,6 +28,7 @@ class ReportsScreen extends ConsumerStatefulWidget {
 class _ReportsScreenState extends ConsumerState<ReportsScreen> {
   _Period _period = _Period.month;
   var _income = false;
+  var _pieTouch = -1;
 
   @override
   Widget build(BuildContext context) {
@@ -115,6 +119,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
             ),
           ),
         ),
+        const SliverToBoxAdapter(child: OfferBanner()),
         SliverList(
             delegate: SliverChildListDelegate([
               _ReportHero(
@@ -133,7 +138,8 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                       child: Center(child: Text(l10n.reportsEmpty)),
                     )
                   else ...[
-                    Padding(
+                    PopCard(
+                      child: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
                       child: SizedBox(
                         height: 188,
@@ -142,6 +148,17 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                           children: [
                             PieChart(
                               PieChartData(
+                                pieTouchData: PieTouchData(
+                                  touchCallback: (event, response) {
+                                    final index = response
+                                            ?.touchedSection
+                                            ?.touchedSectionIndex ??
+                                        -1;
+                                    if (index != _pieTouch) {
+                                      setState(() => _pieTouch = index);
+                                    }
+                                  },
+                                ),
                                 sectionsSpace: 3,
                                 centerSpaceRadius: 58,
                                 sections: [
@@ -154,8 +171,15 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                                             .map((c) => c.key)
                                             .firstOrNull,
                                       ).color,
-                                      title: '',
-                                      radius: 28,
+                                      title: i == _pieTouch
+                                          ? formatBaht(locale, entries[i].value)
+                                          : '',
+                                      titleStyle: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                      radius: i == _pieTouch ? 42 : 28,
                                     ),
                                 ],
                               ),
@@ -185,6 +209,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                           ],
                         ),
                       ),
+                    ),
                     ),
                     for (var i = 0; i < entries.length; i++)
                       Padding(
@@ -550,6 +575,21 @@ class _OverTimeLine extends StatelessWidget {
       LineChartData(
         minY: 0,
         maxY: peak * 1.25,
+        lineTouchData: LineTouchData(
+          touchTooltipData: LineTouchTooltipData(
+            getTooltipColor: (_) => const Color(0xFF0E1C2F),
+            getTooltipItems: (spots) => [
+              for (final spot in spots)
+                LineTooltipItem(
+                  spot.y.toStringAsFixed(0),
+                  const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+            ],
+          ),
+        ),
         borderData: FlBorderData(show: false),
         titlesData: const FlTitlesData(
           topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
@@ -630,6 +670,18 @@ class _OverTimeChart extends StatelessWidget {
     return BarChart(
       BarChartData(
         maxY: peak * 1.2,
+        barTouchData: BarTouchData(
+          touchTooltipData: BarTouchTooltipData(
+            getTooltipColor: (_) => const Color(0xFF0E1C2F),
+            getTooltipItem: (group, groupIndex, rod, rodIndex) {
+              final day = points[group.x.toInt()].day.day;
+              return BarTooltipItem(
+                '$day\n${formatBaht(locale, rod.toY)}',
+                const TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
+              );
+            },
+          ),
+        ),
         barGroups: [
           for (var i = 0; i < points.length; i++)
             BarChartGroupData(
@@ -700,30 +752,12 @@ class _ReportHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final look = BuddyLook.of(context);
-    final ink = look.bannerInk;
+    final ink = BuddyLook.of(context).bannerInk;
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context);
     final total = income + expense;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(20, 18, 20, 16),
-        decoration: BoxDecoration(
-          gradient: look.banner,
-          borderRadius: BorderRadius.circular(28),
-          border: look.bannerFilled
-              ? null
-              : Border.all(color: ink.withValues(alpha: 0.14)),
-          boxShadow: [
-            BoxShadow(
-              color: look.orbA.withValues(alpha: 0.22),
-              blurRadius: 22,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        ),
-        child: Column(
+    return GlassPhotoCard(
+      child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
@@ -788,7 +822,6 @@ class _ReportHero extends StatelessWidget {
             ),
           ],
         ),
-      ),
     );
   }
 }

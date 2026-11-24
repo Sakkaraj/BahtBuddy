@@ -20,5 +20,8 @@ void main() {
       closeTo(280 / (37.242 / 1.0939), 0.001),
     );
     expect(foreignFromBaht(board, 'USD', 0), 0);
+    final bundled = parseFrankfurter(ExchangeRates.bundledBody);
+    expect(bundled.date, DateTime(2026, 11, 23));
+    expect(bundled.bahtPerUnit['USD'], isNotNull);
   });
 }

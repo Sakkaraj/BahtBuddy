@@ -97,13 +97,15 @@ The normal transaction path is:
 ### Slip scanning and OCR
 
 Camera and gallery actions are provided by `image_picker`. The selected image
-is copied into the app's documents storage. `SlipOcr` uses Google ML Kit's
-on-device Latin recognizer and returns text; it does not upload the image to a
-BahtBuddy server. `SlipParser` applies prioritized regular expressions to
+is copied into the app's documents storage. `SlipOcr` reads the picture on the
+phone with Tesseract's Thai and English models, then with ML Kit's Latin
+recognizer. It does not upload the image to a BahtBuddy server. `SlipParser` applies prioritized regular expressions to
 extract an amount, date/time, recipient, and transaction reference. It
-recognizes common English and Thai labels and Buddhist-year dates, but the
-configured ML Kit model does not read Thai script. Consequently, OCR output
-opens as an editable draft and is never saved without user confirmation.
+recognizes common English and Thai labels and Buddhist-year dates. A rendered
+set of 20 confirmation screens was read on the emulator: amount and date
+matched on every screen, recipient and reference on 19 of 20, and 18 screens
+matched all four fields. OCR output opens as an editable draft and is never
+saved without user confirmation.
 
 Category suggestions use recipient keywords first and may be overridden by a
 learned recipient rule. A duplicate slip reference is rejected by the
@@ -140,12 +142,18 @@ in Settings.
 
 ### Network, security, and backups
 
-The optional Frankfurter exchange-rate service is the only application
-network-data feature. Rates are converted into baht and cached locally; the
-ledger remains usable offline. The app can be protected with a PIN and
-device-supported biometrics. CSV export provides a transaction-oriented file;
-versioned JSON backup/restore covers the app's categories, transactions,
-budgets, recipient rules, and preferences.
+Frankfurter exchange rates and the BBC News business RSS feed are the two
+network reads. Neither writes the ledger. Rates are converted into baht and
+cached locally. When the phone has no saved board, the chips use a board
+shipped with the app, dated 23 November 2026. A successful refresh replaces
+that file. The home banner also shows four general notes that ship with the
+app, then up to four cached BBC headlines. A failed request shows the last
+saved headlines and does not invent one. The ledger remains usable offline. The app can be protected with a PIN and device-supported
+biometrics. A new PIN is stored as a salted hash; a PIN saved with the older
+single hash still unlocks. CSV export provides a spreadsheet the user can open.
+JSON backup is sealed with AES-GCM under the PIN and covers categories,
+transactions, budgets, recipient rules, and preferences. An older plaintext
+backup still restores.
 
 ### Internationalization and presentation
 
@@ -157,10 +165,11 @@ configuration; an iOS binary requires macOS and Xcode.
 
 ## Test Status
 
-The complete Flutter suite passed **23 tests** on 24 November 2026. Coverage
-includes slip parsing, duplicate references, Bangkok time zones, history
-filters, PIN behavior, exchange-rate conversion, report tips, and manual-entry
-and slip-confirmation widget workflows.
+The complete Flutter suite passed **31 tests** on 25 November 2026. Coverage
+includes slip parsing, the 20 labeled slip texts, duplicate references, Bangkok
+time zones, history filters, PIN behavior, the salted PIN hash, a sealed
+backup, exchange-rate conversion, the BBC headline parser, report tips, and
+manual-entry and slip-confirmation widget workflows.
 
 To regenerate the academic PDFs, install the Python ReportLab dependency if
 needed, then run from the repository root:

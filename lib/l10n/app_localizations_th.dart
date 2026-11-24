@@ -321,6 +321,19 @@ class AppLocalizationsTh extends AppLocalizations {
   String get restoreFailed => 'อ่านไฟล์สำรองไม่สำเร็จ';
 
   @override
+  String get backupNeedsPin =>
+      'ตั้งรหัส PIN ก่อน ไฟล์สำรองจะถูกล็อกด้วยรหัสนี้';
+
+  @override
+  String get backupUnlock => 'ใส่รหัส PIN เพื่อล็อกไฟล์สำรอง';
+
+  @override
+  String get restoreUnlock => 'ใส่รหัส PIN ที่ใช้ล็อกไฟล์สำรองนี้';
+
+  @override
+  String get wrongBackupPin => 'รหัสนี้เปิดไฟล์สำรองไม่ได้';
+
+  @override
   String budgetWarning(String category) {
     return '$category ใช้ไป 80% ของงบเดือนนี้';
   }
@@ -433,6 +446,81 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get bannerTrackBody => 'รู้รายเดือน เก็บเงินได้ง่ายขึ้น';
+
+  @override
+  String get mustKnow => 'ควรรู้';
+
+  @override
+  String get mustKnowDisclaimer => 'บันทึกทั่วไป ไม่ใช่คำแนะนำสำหรับเงินของคุณ';
+
+  @override
+  String get knowMonthTitle => 'เงินเดือนนี้ไว้ใช้จ่าย';
+
+  @override
+  String get knowMonthBody =>
+      'เงินที่ตั้งใจใช้เดือนนี้อยู่ในสมุด ยอดใช้ได้ต่อวันคือจังหวะใช้จ่าย ไม่ใช่เงินไปลงทุน';
+
+  @override
+  String get knowBufferTitle => 'มีเงินสำรองก่อน';
+
+  @override
+  String get knowBufferBody =>
+      'เก็บค่าใช้จ่ายไว้หลายเดือนก่อนค่อยซื้อกองทุนหรือหุ้น เป็นขั้นที่คนมักเริ่ม';
+
+  @override
+  String get knowFeesTitle => 'ค่าธรรมเนียมกับเงินเฟ้อยังอยู่';
+
+  @override
+  String get knowFeesBody =>
+      'ตัวเลขที่เหลือคือผลตอบแทนหลังหักค่าธรรมเนียม และหลังราคาสินค้าขึ้น';
+
+  @override
+  String get knowSpreadTitle => 'ราคาที่ผ่านมาไม่ได้รับปาก';
+
+  @override
+  String get knowSpreadBody =>
+      'ของที่ขึ้นปีก่อนอาจลงได้ การกระจายเงินช่วยไม่ให้ขาดทุนจากชิ้นเดียว';
+
+  @override
+  String get moneyNews => 'ข่าวการเงิน';
+
+  @override
+  String get moneyNewsDisclaimer =>
+      'หัวข้อจาก BBC News ไม่ใช่คำแนะนำให้ซื้อหรือขาย';
+
+  @override
+  String get readStory => 'เปิดข่าว';
+
+  @override
+  String get offerTag => 'โปรโมชัน';
+
+  @override
+  String get offerSavingsTitle => 'บัญชีเงินฝาก';
+
+  @override
+  String get offerSavingsBody =>
+      'เงินที่อาจต้องใช้เร็ว ๆ นี้ไว้ในบัญชีเงินฝากของธนาคารในไทยได้';
+
+  @override
+  String get offerFundTitle => 'กองทุนสำหรับภายหลัง';
+
+  @override
+  String get offerFundBody => 'กองทุนเหมาะกับเงินที่ยังไม่ใช้ในเดือนนี้';
+
+  @override
+  String get offerSpreadTitle => 'มากกว่าหนึ่งช่องทาง';
+
+  @override
+  String get offerSpreadBody =>
+      'กระจายเงินเล็กน้อยช่วยไม่ให้ขาดทุนจากช่องทางเดียว';
+
+  @override
+  String get offerDisclaimer => 'โปรโมชันตัวอย่าง ไม่ได้เปิดบัญชีให้';
+
+  @override
+  String safePaceExplain(String balance, String days) {
+    return 'ยอดเดือนนี้ $balance หารด้วยวันที่เหลือ $days วัน รวมวันนี้';
+  }
 
   @override
   String safePerDay(String amount) {

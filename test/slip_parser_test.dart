@@ -4,6 +4,27 @@ import 'package:project/features/slips/category_suggester.dart';
 import 'package:project/features/slips/slip_parser.dart';
 
 void main() {
+  test('accepts a decomposed sara am and a dropped tone mark', () {
+    final draft = SlipParser.parse(
+      'จ\u0E4D\u0E32นวนเงิน 65.00 บาท\nเลขทีรายการ 20261117000123\nB 220.00',
+    );
+    expect(draft.amount, 65);
+    expect(draft.reference, '20261117000123');
+    final bahtSign = SlipParser.parse('B 220.00');
+    expect(bahtSign.amount, 220);
+    expect(SlipParser.parse('ผู้รับงิน GrabFood').recipient, 'GrabFood');
+    final footer = SlipParser.parse('''
+โอนเงินสำเร็จ
+20 ก.ย. 2565 - 17:38
+จำนวนเงิน 0.45
+ผู้รับเงินสามารถสแกนคิวอาร์โค้ดนี้เพื่อ
+ตรวจสอบสถานะการโอนเงิน
+''');
+    expect(footer.amount, 0.45);
+    expect(footer.date, DateTime(2022, 9, 20, 17, 38));
+    expect(footer.recipient, isNull);
+  });
+
   test('parses a labeled Thai slip', () {
     final draft = SlipParser.parse('''
 โอนเงินสำเร็จ

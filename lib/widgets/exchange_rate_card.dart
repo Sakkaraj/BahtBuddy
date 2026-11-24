@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../core/format.dart';
 import '../l10n/app_localizations.dart';
 import '../providers.dart';
+import 'motion.dart';
 import '../services/exchange_rates.dart';
 
 class ExchangeRateCard extends ConsumerWidget {
@@ -18,7 +19,8 @@ class ExchangeRateCard extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context);
     final rates = ref.watch(exchangeRatesProvider);
-    return Padding(
+    return PopCard(
+      child: Padding(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
       child: DecoratedBox(
         decoration: BoxDecoration(
@@ -48,14 +50,6 @@ class ExchangeRateCard extends ConsumerWidget {
               onRetry: () => ref.read(exchangeRatesProvider.notifier).refresh(),
             ),
             data: (board) {
-              if (board == null) {
-                return _Offline(
-                  message: l10n.exchangeOffline,
-                  action: l10n.exchangeRetry,
-                  onRetry: () =>
-                      ref.read(exchangeRatesProvider.notifier).refresh(),
-                );
-              }
               final date = DateFormat.MMMd(locale.languageCode).format(board.date);
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -109,6 +103,7 @@ class ExchangeRateCard extends ConsumerWidget {
           ),
         ),
         ),
+      ),
       ),
     );
   }

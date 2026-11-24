@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../core/backup_crypto.dart';
 import '../../core/clock.dart';
 import '../../core/format.dart';
 import '../../core/pin_hash.dart';
@@ -203,30 +205,35 @@ class SettingsScreen extends ConsumerWidget {
     final selected = current == 'light' ? 'white' : current;
     final choices = <_ThemeChoice>[
       _ThemeChoice('system', l10n.system, const [
-        Color(0xFFE4E9EF),
-        Color(0xFFF7F8FA),
-        Color(0xFF1C2B3A),
-        Color(0xFF0B1220),
+        Color(0xFFD6E4F0),
+        Color(0xFFF8FAFC),
+        Color(0xFF1D4ED8),
+        Color(0xFF070E1C),
       ], stops: const [0, 0.5, 0.5, 1]),
       _ThemeChoice('white', l10n.white, const [
         Color(0xFFFFFFFF),
-        Color(0xFFF3F4F6),
+        Color(0xFF5EEAD4),
+        Color(0xFFF5C542),
       ]),
       _ThemeChoice('color', l10n.colorTheme, const [
-        Color(0xFF34D399),
-        Color(0xFF065F46),
+        Color(0xFF6EE7B7),
+        Color(0xFF059669),
+        Color(0xFF047857),
       ]),
       _ThemeChoice('ocean', l10n.ocean, const [
-        Color(0xFF38BDF8),
-        Color(0xFF0B3A82),
+        Color(0xFF22D3EE),
+        Color(0xFF0284C7),
+        Color(0xFF0369A1),
       ]),
       _ThemeChoice('dark', l10n.dark, const [
+        Color(0xFF38BDF8),
         Color(0xFF2563EB),
-        Color(0xFF0B1220),
+        Color(0xFF070E1C),
       ]),
       _ThemeChoice('black', l10n.black, const [
-        Color(0xFF11100C),
-        Color(0xFFC4A35A),
+        Color(0xFF0A0906),
+        Color(0xFFE8B84A),
+        Color(0xFFF5C542),
       ]),
     ];
     final mode = await showModalBottomSheet<String>(
@@ -409,7 +416,28 @@ class SettingsScreen extends ConsumerWidget {
     ref.read(suppressLockProvider.notifier).setValue(true);
     try {
       final repo = ref.read(backupRepositoryProvider);
-      final file = csv ? await repo.exportCsv() : await repo.exportBackup();
+      late final File file;
+      if (csv) {
+        file = await repo.exportCsv();
+      } else {
+        final hash = ref.read(settingsProvider).asData?.value.pinHash;
+        if (hash == null) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(l10n.backupNeedsPin)),
+            );
+          }
+          return;
+        }
+        final pin = await PinFlow.push(
+          context,
+          kind: PinFlowKind.verify,
+          currentHash: hash,
+          prompt: l10n.backupUnlock,
+        );
+        if (pin == null) return;
+        file = await repo.exportBackup(pin);
+      }
       await SharePlus.instance.share(
         ShareParams(
           files: [XFile(file.path)],
@@ -437,7 +465,28 @@ class SettingsScreen extends ConsumerWidget {
       );
       if (picked == null) return;
       final text = utf8.decode(await picked.readAsBytes());
-      await ref.read(backupRepositoryProvider).restore(text);
+      String? pin;
+      if (backupIsSealed(text)) {
+        if (!context.mounted) return;
+        pin = await PinFlow.push(
+          context,
+          kind: PinFlowKind.collect,
+          prompt: l10n.restoreUnlock,
+        );
+        if (pin == null) return;
+      }
+      try {
+        await ref.read(backupRepositoryProvider).restore(text, pin: pin);
+      } on FormatException {
+        if (context.mounted && pin != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.wrongBackupPin)),
+          );
+        } else {
+          rethrow;
+        }
+        return;
+      }
       ref.invalidate(settingsProvider);
       if (context.mounted) {
         ScaffoldMessenger.of(
@@ -740,38 +789,54 @@ class _ThemeTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final radius = BorderRadius.circular(18);
+    final outline = selected ? 2.5 : 1.5;
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: radius,
         onTap: onTap,
         child: Ink(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: choice.colors,
-              stops: choice.stops,
-            ),
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: radius,
             border: Border.all(
-              color: selected ? bahtAccent : Colors.transparent,
-              width: 2.5,
+              color: selected
+                  ? BuddyLook.of(context).accent
+                  : bahtInk.withValues(alpha: 0.42),
+              width: outline,
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Align(
-              alignment: Alignment.bottomLeft,
-              child: choice.stops == null
-                  ? _ThemeLabel(choice: choice)
-                  : FractionallySizedBox(
-                      widthFactor: 0.46,
-                      alignment: Alignment.centerLeft,
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.centerLeft,
-                        child: _ThemeLabel(choice: choice),
-                      ),
-                    ),
+            padding: EdgeInsets.all(outline),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: choice.colors,
+                  stops: choice.stops,
+                ),
+                borderRadius: BorderRadius.circular(18 - outline),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: selected ? 0 : 0.95),
+                  width: selected ? 0 : 1.25,
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Align(
+                  alignment: Alignment.bottomLeft,
+                  child: choice.stops == null
+                      ? _ThemeLabel(choice: choice)
+                      : FractionallySizedBox(
+                          widthFactor: 0.46,
+                          alignment: Alignment.centerLeft,
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: _ThemeLabel(choice: choice),
+                          ),
+                        ),
+                ),
+              ),
             ),
           ),
         ),

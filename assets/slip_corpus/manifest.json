@@ -1,0 +1,162 @@
+[
+  {
+    "file": "slip_01.png",
+    "text": "โอนเงินสำเร็จ\nจำนวนเงิน 65.00 บาท\nวันที่ 17/11/2026 12:30\nไปยัง 7-Eleven\nเลขที่รายการ 20261117000123",
+    "amount": 65.0,
+    "date": "2026-11-17T12:30:00",
+    "recipient": "7-Eleven",
+    "reference": "20261117000123"
+  },
+  {
+    "file": "slip_02.png",
+    "text": "PromptPay\nAmount: THB 1,250.50\nDate: 01 Nov 2026\nTo: BTS\nRef: ABC123456789",
+    "amount": 1250.5,
+    "date": "2026-11-01T00:00:00",
+    "recipient": "BTS",
+    "reference": "ABC123456789"
+  },
+  {
+    "file": "slip_03.png",
+    "text": "โอนเงิน\n120.00 บาท\n17 พ.ย. 2569\nผู้รับเงิน GrabFood\nเลขอ้างอิง TX99887766",
+    "amount": 120.0,
+    "date": "2026-11-17T00:00:00",
+    "recipient": "GrabFood",
+    "reference": "TX99887766"
+  },
+  {
+    "file": "slip_04.png",
+    "text": "รายการสำเร็จ\nยอดเงิน 89.50 บาท\nวันที่ 24/11/2026\nไปยัง Cafe Amazon\nเลขที่รายการ REF890012",
+    "amount": 89.5,
+    "date": "2026-11-24T00:00:00",
+    "recipient": "Cafe Amazon",
+    "reference": "REF890012"
+  },
+  {
+    "file": "slip_05.png",
+    "text": "Transfer\nAmount THB 45.00\n02/11/2026 18:05\nTo Lotus\nReference REF450001",
+    "amount": 45.0,
+    "date": "2026-11-02T18:05:00",
+    "recipient": "Lotus",
+    "reference": "REF450001"
+  },
+  {
+    "file": "slip_06.png",
+    "text": "โอนเงินสำเร็จ\nจำนวนเงิน 2,480.00 บาท\n03/11/2026 09:15\nไปยัง Big C\nเลขที่รายการ REF248000",
+    "amount": 2480.0,
+    "date": "2026-11-03T09:15:00",
+    "recipient": "Big C",
+    "reference": "REF248000"
+  },
+  {
+    "file": "slip_07.png",
+    "text": "จ่ายเงิน\nจำนวนเงิน 35.00 บาท\n04/11/2026\nผู้รับเงิน Tops\nหมายเลขอ้างอิง REF350001",
+    "amount": 35.0,
+    "date": "2026-11-04T00:00:00",
+    "recipient": "Tops",
+    "reference": "REF350001"
+  },
+  {
+    "file": "slip_08.png",
+    "text": "PromptPay\n฿ 220.00\n05/11/2026 21:40\nRecipient MK\nTransaction ID TX220045",
+    "amount": 220.0,
+    "date": "2026-11-05T21:40:00",
+    "recipient": "MK",
+    "reference": "TX220045"
+  },
+  {
+    "file": "slip_09.png",
+    "text": "โอนเงินสำเร็จ\nจำนวนเงิน 15.00 บาท\n06 พ.ย. 2569 07:10\nไปยัง Win\nเลขที่รายการ WIN150006",
+    "amount": 15.0,
+    "date": "2026-11-06T07:10:00",
+    "recipient": "Win",
+    "reference": "WIN150006"
+  },
+  {
+    "file": "slip_10.png",
+    "text": "Payment\nAmount: 99.00 THB\n07/11/2026\nTo: Shopee\nRef: SH990007",
+    "amount": 99.0,
+    "date": "2026-11-07T00:00:00",
+    "recipient": "Shopee",
+    "reference": "SH990007"
+  },
+  {
+    "file": "slip_11.png",
+    "text": "โอนเงินสำเร็จ\nยอดเงิน 500.00 บาท\n08/11/2026 13:13\nผู้รับเงิน Mama\nเลขที่รายการ MAMA50008",
+    "amount": 500.0,
+    "date": "2026-11-08T13:13:00",
+    "recipient": "Mama",
+    "reference": "MAMA50008"
+  },
+  {
+    "file": "slip_12.png",
+    "text": "Transfer complete\nAmount: THB 76.25\n09 Nov 2026 16:45\nTo: FamilyMart\nReference FM762512",
+    "amount": 76.25,
+    "date": "2026-11-09T16:45:00",
+    "recipient": "FamilyMart",
+    "reference": "FM762512"
+  },
+  {
+    "file": "slip_13.png",
+    "text": "โอนเงิน\nจำนวนเงิน 8.50 บาท\n10/11/2026\nไปยัง 7-Eleven\nเลขอ้างอิง SEV850013",
+    "amount": 8.5,
+    "date": "2026-11-10T00:00:00",
+    "recipient": "7-Eleven",
+    "reference": "SEV850013"
+  },
+  {
+    "file": "slip_14.png",
+    "text": "PromptPay\nAmount 3,000.00 THB\n11/11/2026 11:11\nTo: Tuition\nRef: EDU300014",
+    "amount": 3000.0,
+    "date": "2026-11-11T11:11:00",
+    "recipient": "Tuition",
+    "reference": "EDU300014"
+  },
+  {
+    "file": "slip_15.png",
+    "text": "โอนเงินสำเร็จ\nจำนวนเงิน 640.00 บาท\n12 พฤศจิกายน 2569\nไปยัง BTS\nเลขที่รายการ BTS640015",
+    "amount": 640.0,
+    "date": "2026-11-12T00:00:00",
+    "recipient": "BTS",
+    "reference": "BTS640015"
+  },
+  {
+    "file": "slip_16.png",
+    "text": "Paid\nTHB 18.00\n13/11/2026 08:20\nTo: Bus\nTransaction ID BUS180016",
+    "amount": 18.0,
+    "date": "2026-11-13T08:20:00",
+    "recipient": "Bus",
+    "reference": "BUS180016"
+  },
+  {
+    "file": "slip_17.png",
+    "text": "โอนเงินสำเร็จ\nจำนวนเงิน 1,100.75 บาท\n14/11/2026 19:02\nผู้รับเงิน Rent\nเลขที่รายการ RENT11017",
+    "amount": 1100.75,
+    "date": "2026-11-14T19:02:00",
+    "recipient": "Rent",
+    "reference": "RENT11017"
+  },
+  {
+    "file": "slip_18.png",
+    "text": "PromptPay\nAmount: 250.00 บาท\n15/11/2026\nTo: Pharmacy\nRef: MED250018",
+    "amount": 250.0,
+    "date": "2026-11-15T00:00:00",
+    "recipient": "Pharmacy",
+    "reference": "MED250018"
+  },
+  {
+    "file": "slip_19.png",
+    "text": "โอนเงินสำเร็จ\nยอดเงิน 42.00 บาท\n16/11/2026 22:05\nไปยัง KFC\nหมายเลขอ้างอิง KFC420019",
+    "amount": 42.0,
+    "date": "2026-11-16T22:05:00",
+    "recipient": "KFC",
+    "reference": "KFC420019"
+  },
+  {
+    "file": "slip_20.png",
+    "text": "Transfer\nจำนวนเงิน 999.99 บาท\n20 Nov 2026 10:00\nTo: Cinema\nเลขที่รายการ MOV999020",
+    "amount": 999.99,
+    "date": "2026-11-20T10:00:00",
+    "recipient": "Cinema",
+    "reference": "MOV999020"
+  }
+]

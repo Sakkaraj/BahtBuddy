@@ -4,18 +4,60 @@ import 'package:go_router/go_router.dart';
 
 import '../core/format.dart';
 import '../l10n/app_localizations.dart';
+import '../providers.dart';
 import 'add/add_screen.dart';
 
-class AppShell extends ConsumerWidget {
+class AppShell extends ConsumerStatefulWidget {
   const AppShell({super.key, required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends ConsumerState<AppShell>
+    with WidgetsBindingObserver {
+  var _homeWasOpen = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _refreshNews();
+  }
+
+  void _refreshNews() {
+    final posts = ref.read(moneyPostsProvider);
+    if (posts.isLoading) return;
+    ref.read(moneyPostsProvider.notifier).refresh();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final onHome = widget.navigationShell.currentIndex == 0;
+    if (onHome && !_homeWasOpen) {
+      _homeWasOpen = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _refreshNews();
+      });
+    } else if (!onHome) {
+      _homeWasOpen = false;
+    }
     final l10n = AppLocalizations.of(context);
+    final look = BuddyLook.of(context);
     final items = [
-      _NavSpec(Icons.home_rounded, l10n.navHome, bahtAccent),
+      _NavSpec(Icons.home_rounded, l10n.navHome, look.accent),
       _NavSpec(Icons.receipt_long_rounded, l10n.navHistory, Color(0xFF1E4B7A)),
       _NavSpec(Icons.pie_chart_rounded, l10n.navReports, Color(0xFFC4A35A)),
       _NavSpec(Icons.settings_rounded, l10n.navSettings, bahtSky),
@@ -23,7 +65,7 @@ class AppShell extends ConsumerWidget {
     return BuddyBackdrop(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: navigationShell,
+        body: widget.navigationShell,
         bottomNavigationBar: SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
@@ -39,7 +81,7 @@ class AppShell extends ConsumerWidget {
                       groupedSurface(context),
                     ),
                     Color.alphaBlend(
-                      bahtAccent.withValues(alpha: 0.14),
+                      look.accent.withValues(alpha: 0.16),
                       groupedSurface(context),
                     ),
                   ],
@@ -72,10 +114,11 @@ class AppShell extends ConsumerWidget {
                       Expanded(
                         child: _NavButton(
                           spec: items[i],
-                          selected: navigationShell.currentIndex == i,
-                          onTap: () => navigationShell.goBranch(
+                          selected: widget.navigationShell.currentIndex == i,
+                          onTap: () => widget.navigationShell.goBranch(
                             i,
-                            initialLocation: i == navigationShell.currentIndex,
+                            initialLocation:
+                                i == widget.navigationShell.currentIndex,
                           ),
                         ),
                       ),
@@ -175,12 +218,12 @@ class _AddOrb extends StatelessWidget {
           child: Ink(
             width: 52,
             height: 52,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Color(0xFF12324F), Color(0xFF0E7C72)],
+                colors: [bahtInk, BuddyLook.of(context).accent],
               ),
             ),
             child: const Icon(Icons.add_rounded, color: Colors.white, size: 30),

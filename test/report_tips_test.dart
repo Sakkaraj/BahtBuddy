@@ -27,6 +27,19 @@ void main() {
   const names = {1: 'Food', 2: 'Salary', 3: 'Transport'};
   String name(int id) => names[id] ?? 'Other';
 
+  test('safe to spend splits this month balance across the days left', () {
+    final pace = safePace(balance: 580, now: DateTime(2026, 11, 25));
+    expect(pace.daysLeft, 6);
+    expect(pace.perDay, closeTo(580 / 6, 0.001));
+    expect(pace.over, isFalse);
+    expect(pace.empty, isFalse);
+    final lastDay = safePace(balance: 30, now: DateTime(2026, 11, 30));
+    expect(lastDay.daysLeft, 1);
+    expect(lastDay.perDay, 30);
+    expect(safePace(balance: -20, now: DateTime(2026, 11, 25)).over, isTrue);
+    expect(safePace(balance: 0, now: DateTime(2026, 11, 25)).empty, isTrue);
+  });
+
   test('an empty log asks for records before giving a tip', () {
     final now = DateTime(2026, 11, 24);
     final facts = reportFacts(

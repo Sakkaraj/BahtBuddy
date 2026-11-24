@@ -324,6 +324,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get restoreFailed => 'That backup file could not be read';
 
   @override
+  String get backupNeedsPin =>
+      'Set a PIN first. The backup file is locked with it.';
+
+  @override
+  String get backupUnlock => 'Enter your PIN to lock this backup';
+
+  @override
+  String get restoreUnlock => 'Enter the PIN that locked this backup';
+
+  @override
+  String get wrongBackupPin => 'That PIN does not open this backup';
+
+  @override
   String budgetWarning(String category) {
     return '$category is at 80% of its monthly budget';
   }
@@ -436,6 +449,84 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bannerTrackBody => 'A clear month makes saving easier.';
+
+  @override
+  String get mustKnow => 'Must know';
+
+  @override
+  String get mustKnowDisclaimer =>
+      'A general note. It is not advice for your own money.';
+
+  @override
+  String get knowMonthTitle => 'Keep this month\'s money ready';
+
+  @override
+  String get knowMonthBody =>
+      'Money you plan to spend this month stays in the ledger. Safe to spend is a pace, not a sum to invest.';
+
+  @override
+  String get knowBufferTitle => 'A buffer comes first';
+
+  @override
+  String get knowBufferBody =>
+      'A few months of expenses, set aside, is a common step before buying a fund or a share.';
+
+  @override
+  String get knowFeesTitle => 'Fees and inflation stay';
+
+  @override
+  String get knowFeesBody =>
+      'The amount you keep is the return after fees, and after prices have risen.';
+
+  @override
+  String get knowSpreadTitle => 'One price is not a promise';
+
+  @override
+  String get knowSpreadBody =>
+      'A holding that rose last year can fall. Spreading money limits the damage from one fall.';
+
+  @override
+  String get moneyNews => 'Money';
+
+  @override
+  String get moneyNewsDisclaimer =>
+      'A headline from BBC News. It is not a recommendation.';
+
+  @override
+  String get readStory => 'Read the story';
+
+  @override
+  String get offerTag => 'Promotion';
+
+  @override
+  String get offerSavingsTitle => 'A savings account';
+
+  @override
+  String get offerSavingsBody =>
+      'Money you may need soon can sit in a savings account at a Thai bank.';
+
+  @override
+  String get offerFundTitle => 'A fund for later';
+
+  @override
+  String get offerFundBody =>
+      'A fund is for money you will not spend this month.';
+
+  @override
+  String get offerSpreadTitle => 'More than one holding';
+
+  @override
+  String get offerSpreadBody =>
+      'Spreading a little across holdings limits the damage from one fall.';
+
+  @override
+  String get offerDisclaimer =>
+      'A sample promotion. It does not open an account.';
+
+  @override
+  String safePaceExplain(String balance, String days) {
+    return 'This month\'s balance of $balance is divided by $days days left, including today.';
+  }
 
   @override
   String safePerDay(String amount) {

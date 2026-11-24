@@ -6,6 +6,7 @@ import '../core/format.dart';
 import '../data/db/app_database.dart';
 import '../features/reports/summary.dart';
 import '../l10n/app_localizations.dart';
+import 'motion.dart';
 
 class SpendTrendCard extends StatefulWidget {
   const SpendTrendCard({
@@ -61,7 +62,8 @@ class _SpendTrendCardState extends State<SpendTrendCard> {
       }
     }
     final accent = _income ? bahtIncome : bahtExpense;
-    return Padding(
+    return PopCard(
+      child: Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: DecoratedBox(
         decoration: BoxDecoration(
@@ -167,6 +169,7 @@ class _SpendTrendCardState extends State<SpendTrendCard> {
             ),
           ),
         ),
+      ),
       ),
     );
   }
@@ -274,7 +277,7 @@ class _MoneyChartsState extends State<_MoneyCharts> {
   }
 }
 
-class _PieChart extends StatelessWidget {
+class _PieChart extends StatefulWidget {
   const _PieChart({
     required this.ranked,
     required this.categories,
@@ -288,8 +291,18 @@ class _PieChart extends StatelessWidget {
   final double total;
 
   @override
+  State<_PieChart> createState() => _PieChartState();
+}
+
+class _PieChartState extends State<_PieChart> {
+  var _touched = -1;
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final ranked = widget.ranked;
+    final total = widget.total;
+    final locale = widget.locale;
     if (ranked.isEmpty || total <= 0) {
       return Center(
         child: Text(
@@ -307,15 +320,29 @@ class _PieChart extends StatelessWidget {
           flex: 5,
           child: PieChart(
             PieChartData(
+              pieTouchData: PieTouchData(
+                touchCallback: (event, response) {
+                  final index =
+                      response?.touchedSection?.touchedSectionIndex ?? -1;
+                  if (index != _touched) setState(() => _touched = index);
+                },
+              ),
               sectionsSpace: 3,
               centerSpaceRadius: 28,
               sections: [
-                for (final entry in ranked)
+                for (var i = 0; i < ranked.length; i++)
                   PieChartSectionData(
-                    value: entry.value,
-                    color: categoryStyle(_key(entry.key)).color,
-                    radius: 22,
-                    title: '',
+                    value: ranked[i].value,
+                    color: categoryStyle(_key(ranked[i].key)).color,
+                    radius: i == _touched ? 36 : 22,
+                    title: i == _touched
+                        ? formatBaht(locale, ranked[i].value)
+                        : '',
+                    titleStyle: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
               ],
             ),
@@ -370,15 +397,15 @@ class _PieChart extends StatelessWidget {
   }
 
   String? _key(int id) {
-    for (final category in categories) {
+    for (final category in widget.categories) {
       if (category.id == id) return category.key;
     }
     return null;
   }
 
   String _name(int id) {
-    for (final category in categories) {
-      if (category.id == id) return categoryLabel(category, locale);
+    for (final category in widget.categories) {
+      if (category.id == id) return categoryLabel(category, widget.locale);
     }
     return '';
   }
@@ -402,6 +429,18 @@ class _FlowBars extends StatelessWidget {
     return BarChart(
       BarChartData(
         maxY: peak * 1.2,
+        barTouchData: BarTouchData(
+          touchTooltipData: BarTouchTooltipData(
+            getTooltipColor: (_) => const Color(0xFF0E1C2F),
+            getTooltipItem: (group, groupIndex, rod, rodIndex) {
+              final day = points[group.x.toInt()].day.day;
+              return BarTooltipItem(
+                '$day\n${rod.toY.toStringAsFixed(0)}',
+                const TextStyle(color: Colors.white, fontWeight: FontWeight.w800),
+              );
+            },
+          ),
+        ),
         gridData: const FlGridData(show: false),
         borderData: FlBorderData(show: false),
         barGroups: [

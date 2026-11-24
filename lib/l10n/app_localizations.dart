@@ -722,6 +722,30 @@ abstract class AppLocalizations {
   /// **'That backup file could not be read'**
   String get restoreFailed;
 
+  /// No description provided for @backupNeedsPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a PIN first. The backup file is locked with it.'**
+  String get backupNeedsPin;
+
+  /// No description provided for @backupUnlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your PIN to lock this backup'**
+  String get backupUnlock;
+
+  /// No description provided for @restoreUnlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the PIN that locked this backup'**
+  String get restoreUnlock;
+
+  /// No description provided for @wrongBackupPin.
+  ///
+  /// In en, this message translates to:
+  /// **'That PIN does not open this backup'**
+  String get wrongBackupPin;
+
   /// No description provided for @budgetWarning.
   ///
   /// In en, this message translates to:
@@ -919,6 +943,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A clear month makes saving easier.'**
   String get bannerTrackBody;
+
+  /// No description provided for @mustKnow.
+  ///
+  /// In en, this message translates to:
+  /// **'Must know'**
+  String get mustKnow;
+
+  /// No description provided for @mustKnowDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'A general note. It is not advice for your own money.'**
+  String get mustKnowDisclaimer;
+
+  /// No description provided for @knowMonthTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep this month\'s money ready'**
+  String get knowMonthTitle;
+
+  /// No description provided for @knowMonthBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Money you plan to spend this month stays in the ledger. Safe to spend is a pace, not a sum to invest.'**
+  String get knowMonthBody;
+
+  /// No description provided for @knowBufferTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A buffer comes first'**
+  String get knowBufferTitle;
+
+  /// No description provided for @knowBufferBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A few months of expenses, set aside, is a common step before buying a fund or a share.'**
+  String get knowBufferBody;
+
+  /// No description provided for @knowFeesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fees and inflation stay'**
+  String get knowFeesTitle;
+
+  /// No description provided for @knowFeesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The amount you keep is the return after fees, and after prices have risen.'**
+  String get knowFeesBody;
+
+  /// No description provided for @knowSpreadTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'One price is not a promise'**
+  String get knowSpreadTitle;
+
+  /// No description provided for @knowSpreadBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A holding that rose last year can fall. Spreading money limits the damage from one fall.'**
+  String get knowSpreadBody;
+
+  /// No description provided for @moneyNews.
+  ///
+  /// In en, this message translates to:
+  /// **'Money'**
+  String get moneyNews;
+
+  /// No description provided for @moneyNewsDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'A headline from BBC News. It is not a recommendation.'**
+  String get moneyNewsDisclaimer;
+
+  /// No description provided for @readStory.
+  ///
+  /// In en, this message translates to:
+  /// **'Read the story'**
+  String get readStory;
+
+  /// No description provided for @offerTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Promotion'**
+  String get offerTag;
+
+  /// No description provided for @offerSavingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A savings account'**
+  String get offerSavingsTitle;
+
+  /// No description provided for @offerSavingsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Money you may need soon can sit in a savings account at a Thai bank.'**
+  String get offerSavingsBody;
+
+  /// No description provided for @offerFundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A fund for later'**
+  String get offerFundTitle;
+
+  /// No description provided for @offerFundBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A fund is for money you will not spend this month.'**
+  String get offerFundBody;
+
+  /// No description provided for @offerSpreadTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'More than one holding'**
+  String get offerSpreadTitle;
+
+  /// No description provided for @offerSpreadBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Spreading a little across holdings limits the damage from one fall.'**
+  String get offerSpreadBody;
+
+  /// No description provided for @offerDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'A sample promotion. It does not open an account.'**
+  String get offerDisclaimer;
+
+  /// No description provided for @safePaceExplain.
+  ///
+  /// In en, this message translates to:
+  /// **'This month\'s balance of {balance} is divided by {days} days left, including today.'**
+  String safePaceExplain(String balance, String days);
 
   /// No description provided for @safePerDay.
   ///

@@ -104,6 +104,10 @@
   "exportDone": "File ready to share",
   "restoreDone": "Backup restored",
   "restoreFailed": "That backup file could not be read",
+  "backupNeedsPin": "Set a PIN first. The backup file is locked with it.",
+  "backupUnlock": "Enter your PIN to lock this backup",
+  "restoreUnlock": "Enter the PIN that locked this backup",
+  "wrongBackupPin": "That PIN does not open this backup",
   "budgetWarning": "{category} is at 80% of its monthly budget",
   "@budgetWarning": {
     "placeholders": {
@@ -173,6 +177,34 @@
   "bannerSaveBody": "Small habits keep your baht for later.",
   "bannerTrackTitle": "See where your money goes",
   "bannerTrackBody": "A clear month makes saving easier.",
+  "mustKnow": "Must know",
+  "mustKnowDisclaimer": "A general note. It is not advice for your own money.",
+  "knowMonthTitle": "Keep this month's money ready",
+  "knowMonthBody": "Money you plan to spend this month stays in the ledger. Safe to spend is a pace, not a sum to invest.",
+  "knowBufferTitle": "A buffer comes first",
+  "knowBufferBody": "A few months of expenses, set aside, is a common step before buying a fund or a share.",
+  "knowFeesTitle": "Fees and inflation stay",
+  "knowFeesBody": "The amount you keep is the return after fees, and after prices have risen.",
+  "knowSpreadTitle": "One price is not a promise",
+  "knowSpreadBody": "A holding that rose last year can fall. Spreading money limits the damage from one fall.",
+  "moneyNews": "Money",
+  "moneyNewsDisclaimer": "A headline from BBC News. It is not a recommendation.",
+  "readStory": "Read the story",
+  "offerTag": "Promotion",
+  "offerSavingsTitle": "A savings account",
+  "offerSavingsBody": "Money you may need soon can sit in a savings account at a Thai bank.",
+  "offerFundTitle": "A fund for later",
+  "offerFundBody": "A fund is for money you will not spend this month.",
+  "offerSpreadTitle": "More than one holding",
+  "offerSpreadBody": "Spreading a little across holdings limits the damage from one fall.",
+  "offerDisclaimer": "A sample promotion. It does not open an account.",
+  "safePaceExplain": "This month's balance of {balance} is divided by {days} days left, including today.",
+  "@safePaceExplain": {
+    "placeholders": {
+      "balance": {"type": "String"},
+      "days": {"type": "String"}
+    }
+  },
   "safePerDay": "Safe to spend {amount} a day",
   "@safePerDay": {
     "placeholders": {

@@ -47,6 +47,40 @@ class PeriodSummary {
   double get balance => income - expense;
 }
 
+/// What is left to spend each day for the rest of this month, including today.
+class SafePace {
+  const SafePace({
+    required this.daysLeft,
+    required this.perDay,
+    required this.over,
+    required this.empty,
+  });
+
+  final int daysLeft;
+  final double perDay;
+  final bool over;
+  final bool empty;
+}
+
+SafePace safePace({required double balance, required DateTime now}) {
+  final today = DateTime(now.year, now.month, now.day);
+  final monthEnd = DateTime(now.year, now.month + 1);
+  final left = monthEnd.difference(today).inDays;
+  final days = left < 1 ? 1 : left;
+  if (balance < 0) {
+    return SafePace(daysLeft: days, perDay: balance.abs(), over: true, empty: false);
+  }
+  if (balance == 0) {
+    return SafePace(daysLeft: days, perDay: 0, over: false, empty: true);
+  }
+  return SafePace(
+    daysLeft: days,
+    perDay: balance / days,
+    over: false,
+    empty: false,
+  );
+}
+
 class DayPoint {
   const DayPoint(this.day, this.income, this.expense);
 

@@ -16,16 +16,54 @@ const bahtExpense = Color(0xFFFF5A6A);
 const bahtSun = Color(0xFFFFB020);
 const bahtSky = Color(0xFF3B82F6);
 
+/// The same calendar the Android build shows, including on iPhone.
+Future<DateTime?> showBuddyDate(
+  BuildContext context, {
+  required DateTime initialDate,
+  required DateTime firstDate,
+  required DateTime lastDate,
+}) {
+  return showDatePicker(
+    context: context,
+    initialDate: initialDate,
+    firstDate: firstDate,
+    lastDate: lastDate,
+    initialEntryMode: DatePickerEntryMode.calendar,
+    builder: _androidChrome,
+  );
+}
+
+/// The same clock the Android build shows, including on iPhone.
+Future<TimeOfDay?> showBuddyTime(
+  BuildContext context, {
+  required TimeOfDay initialTime,
+}) {
+  return showTimePicker(
+    context: context,
+    initialTime: initialTime,
+    initialEntryMode: TimePickerEntryMode.dial,
+    builder: _androidChrome,
+  );
+}
+
+Widget _androidChrome(BuildContext context, Widget? child) {
+  final theme = Theme.of(context);
+  return Theme(
+    data: theme.copyWith(platform: TargetPlatform.android),
+    child: child ?? const SizedBox.shrink(),
+  );
+}
+
 ThemeData bahtTheme(BuddyLook look) {
   final brightness = look.brightness;
   final dark = brightness == Brightness.dark;
   final ink = dark ? bahtInkDark : bahtInk;
   final muted = dark ? bahtMutedDark : bahtMuted;
   final scheme = ColorScheme.fromSeed(
-    seedColor: bahtAccent,
+    seedColor: look.accent,
     brightness: brightness,
   ).copyWith(
-    primary: bahtAccent,
+    primary: look.accent,
     surface: look.surface,
     surfaceContainerLowest: look.grouped,
     onSurface: ink,
@@ -71,13 +109,13 @@ ThemeData bahtTheme(BuddyLook look) {
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
     ),
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: bahtAccent,
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: look.accent,
       foregroundColor: Colors.white,
       elevation: 4,
     ),
     navigationBarTheme: NavigationBarThemeData(
-      indicatorColor: bahtAccent.withValues(alpha: 0.16),
+      indicatorColor: look.accent.withValues(alpha: 0.18),
       labelTextStyle: WidgetStatePropertyAll(
         TextStyle(
           fontFamily: bahtFont,
@@ -101,15 +139,15 @@ ThemeData bahtTheme(BuddyLook look) {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: bahtAccent, width: 1.5),
+        borderSide: BorderSide(color: look.accent, width: 1.5),
       ),
     ),
     cupertinoOverrideTheme: CupertinoThemeData(
       brightness: brightness,
-      primaryColor: bahtAccent,
+      primaryColor: look.accent,
       scaffoldBackgroundColor: look.grouped,
       textTheme: CupertinoTextThemeData(
-        primaryColor: bahtAccent,
+        primaryColor: look.accent,
         textStyle: TextStyle(
           fontFamily: bahtFont,
           fontSize: 16,
@@ -131,11 +169,11 @@ ThemeData bahtTheme(BuddyLook look) {
           letterSpacing: -1.1,
           color: ink,
         ),
-        actionTextStyle: const TextStyle(
+        actionTextStyle: TextStyle(
           fontFamily: bahtFont,
           fontSize: 17,
           fontWeight: FontWeight.w600,
-          color: bahtAccent,
+          color: look.accent,
         ),
       ),
     ),
@@ -248,9 +286,12 @@ class BuddyLook extends ThemeExtension<BuddyLook> {
     required this.canvas,
     required this.orbA,
     required this.orbB,
+    required this.accent,
     required this.banner,
     required this.bannerInk,
     required this.bannerFilled,
+    required this.cardImage,
+    required this.glass,
   });
 
   final Brightness brightness;
@@ -259,108 +300,128 @@ class BuddyLook extends ThemeExtension<BuddyLook> {
   final LinearGradient canvas;
   final Color orbA;
   final Color orbB;
+  final Color accent;
   final LinearGradient banner;
   final Color bannerInk;
   final bool bannerFilled;
+  final String cardImage;
+
+  /// Frosted tint over [cardImage]. Light enough that the photograph stays visible.
+  final List<Color> glass;
 
   static const color = BuddyLook(
     brightness: Brightness.light,
-    grouped: Color(0xFFE7F6EF),
+    grouped: Color(0xFFD1FAE5),
     surface: Colors.white,
     canvas: LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-      colors: [Color(0xFFB7F0D8), Color(0xFFE5FFF3), Color(0xFFCFF6E4)],
+      colors: [Color(0xFF6EE7B7), Color(0xFFD1FAE5), Color(0xFFA7F3D0)],
     ),
     orbA: Color(0xFF10B981),
-    orbB: Color(0xFF047857),
+    orbB: Color(0xFF34D399),
+    accent: Color(0xFF059669),
     banner: LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-      colors: [Color(0xFF065F46), Color(0xFF0E9F8A), Color(0xFF34D399)],
+      colors: [Color(0xFF047857), Color(0xFF10B981), Color(0xFF6EE7B7)],
     ),
     bannerInk: Colors.white,
     bannerFilled: true,
+    cardImage: 'assets/theme_color.jpg',
+    glass: [Color(0x4D047857), Color(0x73065F46)],
   );
 
   static const white = BuddyLook(
     brightness: Brightness.light,
-    grouped: Color(0xFFF7F7F7),
+    grouped: Color(0xFFF4FFFB),
     surface: Colors.white,
     canvas: LinearGradient(
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
-      colors: [Color(0xFFFFFFFF), Color(0xFFFFFFFF), Color(0xFFF3F4F6)],
+      colors: [Color(0xFFFFFFFF), Color(0xFFF0FDFA), Color(0xFFE0F7F4)],
     ),
-    orbA: Color(0xFFE5E7EB),
-    orbB: Color(0xFFF3F4F6),
+    orbA: Color(0xFF5EEAD4),
+    orbB: Color(0xFFF5C542),
+    accent: Color(0xFF0E9F8A),
     banner: LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-      colors: [Color(0xFFFFFFFF), Color(0xFFF8F8F8)],
+      colors: [Color(0xFFF8FFFD), Color(0xFFE7F8F4), Color(0xFFD6F3EC)],
     ),
-    bannerInk: Color(0xFF111827),
+    bannerInk: Color(0xFF0E1C2F),
     bannerFilled: false,
+    cardImage: 'assets/theme_white.jpg',
+    glass: [Color(0xC7FFFFFF), Color(0xB8E7F6F2)],
   );
 
   static const ocean = BuddyLook(
     brightness: Brightness.light,
-    grouped: Color(0xFFE8F1FB),
+    grouped: Color(0xFFD7F3FF),
     surface: Colors.white,
     canvas: LinearGradient(
       begin: Alignment.topRight,
       end: Alignment.bottomLeft,
-      colors: [Color(0xFFBFDBFE), Color(0xFFE8F2FF), Color(0xFFD6E6FA)],
+      colors: [Color(0xFF7DD3FC), Color(0xFFE0F7FF), Color(0xFFBAE6FD)],
     ),
-    orbA: Color(0xFF2563EB),
-    orbB: Color(0xFF38BDF8),
+    orbA: Color(0xFF0284C7),
+    orbB: Color(0xFF22D3EE),
+    accent: Color(0xFF0284C7),
     banner: LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-      colors: [Color(0xFF0B3A82), Color(0xFF1D4ED8), Color(0xFF38BDF8)],
+      colors: [Color(0xFF0369A1), Color(0xFF0284C7), Color(0xFF22D3EE)],
     ),
     bannerInk: Colors.white,
     bannerFilled: true,
+    cardImage: 'assets/theme_ocean.jpg',
+    glass: [Color(0x4D0369A1), Color(0x730B3A82)],
   );
 
   static const night = BuddyLook(
     brightness: Brightness.dark,
-    grouped: Color(0xFF0B1220),
-    surface: Color(0xFF172554),
+    grouped: Color(0xFF070E1C),
+    surface: Color(0xFF13284A),
     canvas: LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-      colors: [Color(0xFF1E3A8A), Color(0xFF172554), Color(0xFF0B1220)],
+      colors: [Color(0xFF1D4ED8), Color(0xFF0F2744), Color(0xFF070E1C)],
     ),
-    orbA: Color(0xFF3B82F6),
-    orbB: Color(0xFF60A5FA),
+    orbA: Color(0xFF38BDF8),
+    orbB: Color(0xFF22D3EE),
+    accent: Color(0xFF38BDF8),
     banner: LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-      colors: [Color(0xFF1E3A8A), Color(0xFF2563EB), Color(0xFF1D4ED8)],
+      colors: [Color(0xFF1D4ED8), Color(0xFF2563EB), Color(0xFF38BDF8)],
     ),
     bannerInk: Colors.white,
     bannerFilled: true,
+    cardImage: 'assets/theme_dark.jpg',
+    glass: [Color(0x661E3A8A), Color(0x99070E1C)],
   );
 
   static const black = BuddyLook(
     brightness: Brightness.dark,
     grouped: Color(0xFF000000),
-    surface: Color(0xFF14120E),
+    surface: Color(0xFF1A140C),
     canvas: LinearGradient(
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
-      colors: [Color(0xFF000000), Color(0xFF050504), Color(0xFF120E08)],
+      colors: [Color(0xFF000000), Color(0xFF120E08), Color(0xFF3A2A10)],
     ),
-    orbA: Color(0xFFC4A35A),
-    orbB: Color(0xFF6B5424),
+    orbA: Color(0xFFF5C542),
+    orbB: Color(0xFFE8B84A),
+    accent: Color(0xFFE8B84A),
     banner: LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-      colors: [Color(0xFF1A1408), Color(0xFF3D3218), Color(0xFFC4A35A)],
+      colors: [Color(0xFF1A1408), Color(0xFF6B4E16), Color(0xFFF5C542)],
     ),
     bannerInk: Color(0xFFFFF8E8),
     bannerFilled: true,
+    cardImage: 'assets/theme_black.jpg',
+    glass: [Color(0x660A0906), Color(0x996B4E16)],
   );
 
   static BuddyLook of(BuildContext context) {
@@ -369,22 +430,25 @@ class BuddyLook extends ThemeExtension<BuddyLook> {
 
   static const day = BuddyLook(
     brightness: Brightness.light,
-    grouped: Color(0xFFEEF1F4),
+    grouped: Color(0xFFE7EEF6),
     surface: Colors.white,
     canvas: LinearGradient(
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
-      colors: [Color(0xFFE4E9EF), Color(0xFFF7F8FA), Color(0xFFE7EBEF)],
+      colors: [Color(0xFFCBD5E1), Color(0xFFF8FAFC), Color(0xFFD6E4F0)],
     ),
-    orbA: Color(0xFF8AA0B8),
-    orbB: Color(0xFFC5D0DC),
+    orbA: Color(0xFF1E4B7A),
+    orbB: Color(0xFF38BDF8),
+    accent: Color(0xFF0E9F8A),
     banner: LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-      colors: [Color(0xFF1C2B3A), Color(0xFF2C4158)],
+      colors: [Color(0xFF0F2744), Color(0xFF1E4B7A), Color(0xFF38BDF8)],
     ),
     bannerInk: Colors.white,
     bannerFilled: true,
+    cardImage: 'assets/theme_day.jpg',
+    glass: [Color(0x591C2B3A), Color(0x800F2744)],
   );
 
   static BuddyLook forId(String id) {
@@ -407,9 +471,12 @@ class BuddyLook extends ThemeExtension<BuddyLook> {
     LinearGradient? canvas,
     Color? orbA,
     Color? orbB,
+    Color? accent,
     LinearGradient? banner,
     Color? bannerInk,
     bool? bannerFilled,
+    String? cardImage,
+    List<Color>? glass,
   }) {
     return BuddyLook(
       brightness: brightness ?? this.brightness,
@@ -418,9 +485,12 @@ class BuddyLook extends ThemeExtension<BuddyLook> {
       canvas: canvas ?? this.canvas,
       orbA: orbA ?? this.orbA,
       orbB: orbB ?? this.orbB,
+      accent: accent ?? this.accent,
       banner: banner ?? this.banner,
       bannerInk: bannerInk ?? this.bannerInk,
       bannerFilled: bannerFilled ?? this.bannerFilled,
+      cardImage: cardImage ?? this.cardImage,
+      glass: glass ?? this.glass,
     );
   }
 

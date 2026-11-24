@@ -6,13 +6,14 @@ import '../../core/pin_hash.dart';
 import '../../l10n/app_localizations.dart';
 import '../../widgets/pin_pad.dart';
 
-enum PinFlowKind { set, change, remove }
+enum PinFlowKind { set, change, remove, verify, collect }
 
 class PinFlow {
   static Future<String?> push(
     BuildContext context, {
     required PinFlowKind kind,
     String? currentHash,
+    String? prompt,
   }) {
     return Navigator.of(context).push<String>(
       CupertinoPageRoute(
@@ -20,6 +21,7 @@ class PinFlow {
         builder: (context) => PinFlowPage(
           kind: kind,
           currentHash: currentHash,
+          prompt: prompt,
         ),
       ),
     );
@@ -29,10 +31,16 @@ class PinFlow {
 enum _Step { current, create, confirm }
 
 class PinFlowPage extends StatefulWidget {
-  const PinFlowPage({super.key, required this.kind, this.currentHash});
+  const PinFlowPage({
+    super.key,
+    required this.kind,
+    this.currentHash,
+    this.prompt,
+  });
 
   final PinFlowKind kind;
   final String? currentHash;
+  final String? prompt;
 
   @override
   State<PinFlowPage> createState() => _PinFlowPageState();
@@ -46,10 +54,17 @@ class _PinFlowPageState extends State<PinFlowPage> {
   @override
   void initState() {
     super.initState();
-    _step = widget.kind == PinFlowKind.set ? _Step.create : _Step.current;
+    _step = widget.kind == PinFlowKind.set || widget.kind == PinFlowKind.collect
+        ? _Step.create
+        : _Step.current;
   }
 
   String _title(AppLocalizations l10n) {
+    if (widget.prompt != null &&
+        (widget.kind == PinFlowKind.collect ||
+            widget.kind == PinFlowKind.verify)) {
+      return widget.prompt!;
+    }
     return switch (_step) {
       _Step.current => l10n.enterCurrentPin,
       _Step.create => l10n.createPin,
@@ -62,11 +77,12 @@ class _PinFlowPageState extends State<PinFlowPage> {
     switch (_step) {
       case _Step.current:
         if (widget.currentHash == null ||
-            hashPin(pin) != widget.currentHash) {
+            !pinMatches(pin, widget.currentHash!)) {
           setState(() => _error = l10n.wrongPin);
           return false;
         }
-        if (widget.kind == PinFlowKind.remove) {
+        if (widget.kind == PinFlowKind.remove ||
+            widget.kind == PinFlowKind.verify) {
           Navigator.of(context).pop(pin);
           return true;
         }
@@ -76,6 +92,10 @@ class _PinFlowPageState extends State<PinFlowPage> {
         });
         return true;
       case _Step.create:
+        if (widget.kind == PinFlowKind.collect) {
+          Navigator.of(context).pop(pin);
+          return true;
+        }
         setState(() {
           _created = pin;
           _error = null;

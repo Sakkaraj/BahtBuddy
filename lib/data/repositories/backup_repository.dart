@@ -5,7 +5,9 @@ import 'package:csv/csv.dart' as csvlib;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import '../../core/backup_crypto.dart';
 import '../../core/clock.dart';
+import '../../core/pin_hash.dart';
 import '../db/app_database.dart';
 
 class BackupRepository {
@@ -40,7 +42,7 @@ class BackupRepository {
     return _writeTemp('bahtbuddy.csv', csvlib.csv.encode(rows));
   }
 
-  Future<File> exportBackup() async {
+  Future<String> backupText(String pin) async {
     final settings = await _db.settings();
     final payload = {
       'version': 1,
@@ -78,23 +80,33 @@ class BackupRepository {
       'preferences': {
         'themeMode': settings.themeMode,
         'localeCode': settings.localeCode,
-        'pinHash': settings.pinHash,
-        'biometricsEnabled': settings.biometricsEnabled,
+        'pinHash': hashPin(pin),
+        'biometricsEnabled': false,
         'dailyReminder': settings.dailyReminder,
         'reminderHour': settings.reminderHour,
         'reminderMinute': settings.reminderMinute,
         'timeZoneId': settings.timeZoneId,
       },
     };
-    return _writeTemp(
-      'bahtbuddy-backup.json',
-      const JsonEncoder.withIndent('  ').convert(payload),
-    );
+    return sealBackup(jsonEncode(payload), pin);
   }
 
-  Future<void> restore(String jsonText) async {
+  Future<File> exportBackup(String pin) async {
+    return _writeTemp('bahtbuddy-backup.json', await backupText(pin));
+  }
+
+  Future<void> restore(String jsonText, {String? pin}) async {
     final decoded = jsonDecode(jsonText);
-    if (decoded is! Map || decoded['version'] != 1) {
+    if (decoded is! Map) {
+      throw const FormatException('Unsupported backup');
+    }
+    if (decoded['version'] == 2) {
+      if (pin == null) throw const FormatException('PIN required');
+      final opened = openBackup(jsonText, pin);
+      if (opened == null) throw const FormatException('Wrong PIN');
+      return restore(opened);
+    }
+    if (decoded['version'] != 1) {
       throw const FormatException('Unsupported backup');
     }
     final categories = <Category>[

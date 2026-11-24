@@ -74,6 +74,11 @@ class ExchangeRates {
   static const latestUrl =
       'https://api.frankfurter.app/latest?from=EUR&to=$_currencies';
 
+  /// European Central Bank board for 23 November 2026. Used when the phone
+  /// has no saved board and the network request fails.
+  static const bundledBody =
+      '{"amount":1.0,"base":"EUR","date":"2026-11-23","rates":{"CNY":7.2905,"GBP":0.83673,"JPY":174.01,"SGD":1.4124,"THB":37.242,"USD":1.0939}}';
+
   /// Asks for the rate on the active time zone's calendar day. The bank
   /// publishes on European business days, so a weekend or a day before the
   /// fix returns the previous published date.
@@ -82,13 +87,13 @@ class ExchangeRates {
         '?from=EUR&to=$_currencies';
   }
 
-  static Future<ExchangeBoard?> load() async {
+  static Future<ExchangeBoard> load() async {
     try {
       final fresh = await fetch();
       await _write(fresh);
       return fresh;
     } catch (_) {
-      return _read();
+      return await _read() ?? parseFrankfurter(bundledBody);
     }
   }
 

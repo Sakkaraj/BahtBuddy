@@ -58,7 +58,12 @@ class LocalBudgetAlerts implements BudgetAlerts {
           'Budgets',
           channelDescription: 'Budget alerts and reminders',
         ),
-        iOS: DarwinNotificationDetails(),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBanner: true,
+          presentList: true,
+          presentSound: true,
+        ),
       ),
     );
   }
@@ -97,7 +102,12 @@ class LocalBudgetAlerts implements BudgetAlerts {
           'Budgets',
           channelDescription: 'Budget alerts and reminders',
         ),
-        iOS: DarwinNotificationDetails(),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBanner: true,
+          presentList: true,
+          presentSound: true,
+        ),
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,

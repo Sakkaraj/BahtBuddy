@@ -16,6 +16,7 @@ import '../../l10n/app_localizations.dart';
 import '../../providers.dart';
 import '../../services/slip_image_store.dart';
 import '../../widgets/bb_grouped_section.dart';
+import '../../widgets/offer_banner.dart';
 import '../../widgets/motion.dart';
 
 class EntryArgs {
@@ -157,6 +158,7 @@ class _EntryScreenState extends ConsumerState<EntryScreen> {
                   child: ListView(
                     padding: const EdgeInsets.only(bottom: 12),
                     children: [
+                      const OfferBanner(),
                       Appear(
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
@@ -558,15 +560,15 @@ class _EntryScreenState extends ConsumerState<EntryScreen> {
 
   Future<void> _pickDateTime() async {
     final shown = zoneWall(_when);
-    final date = await showDatePicker(
-      context: context,
+    final date = await showBuddyDate(
+      context,
       initialDate: DateTime(shown.year, shown.month, shown.day),
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
     if (date == null || !mounted) return;
-    final time = await showTimePicker(
-      context: context,
+    final time = await showBuddyTime(
+      context,
       initialTime: TimeOfDay(hour: shown.hour, minute: shown.minute),
     );
     if (!mounted) return;

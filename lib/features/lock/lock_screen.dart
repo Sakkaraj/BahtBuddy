@@ -94,7 +94,10 @@ class _LockScreenState extends ConsumerState<LockScreen> {
         },
         onCompleted: (pin) async {
           final hash = ref.read(settingsProvider).asData?.value.pinHash;
-          if (hash != null && hashPin(pin) == hash) {
+          if (hash != null && pinMatches(pin, hash)) {
+            if (!pinHashIsCurrent(hash)) {
+              await ref.read(settingsProvider.notifier).setPin(hashPin(pin));
+            }
             ref.read(sessionUnlockedProvider.notifier).unlock();
             return true;
           }

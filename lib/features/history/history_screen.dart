@@ -308,8 +308,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                       from == null ? '—' : formatDay(locale, from!),
                     ),
                     onTap: () async {
-                      final picked = await showDatePicker(
-                        context: context,
+                      final picked = await showBuddyDate(
+                        context,
                         initialDate: from ?? _zoneDay(),
                         firstDate: DateTime(2000),
                         lastDate: DateTime(2100),
@@ -321,8 +321,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     title: Text(l10n.to),
                     subtitle: Text(to == null ? '—' : formatDay(locale, to!)),
                     onTap: () async {
-                      final picked = await showDatePicker(
-                        context: context,
+                      final picked = await showBuddyDate(
+                        context,
                         initialDate: to ?? _zoneDay(),
                         firstDate: DateTime(2000),
                         lastDate: DateTime(2100),

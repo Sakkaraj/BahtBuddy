@@ -37,7 +37,7 @@ class SlipParser {
     caseSensitive: false,
   );
   static final _currencyFirst = RegExp(
-    r'(?:thb|฿)\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)',
+    r'(?:thb|฿|(?<![A-Za-z])[bB])\s+([0-9][0-9,]*(?:\.[0-9]{1,2})?)',
     caseSensitive: false,
   );
   static final _currencyAfter = RegExp(
@@ -56,7 +56,7 @@ class SlipParser {
   );
   static final _time = RegExp(r'(?<!\d)(\d{1,2}):(\d{2})(?!\d)');
   static final _reference = RegExp(
-    r'(?:เลขที่รายการ|หมายเลขอ้างอิง|เลขอ้างอิง|transaction\s*id|reference|ref\.?)\s*[:：#]?\s*([A-Za-z0-9]{6,})',
+    r'(?:เลขที่รายการ|เลขทีรายการ|หมายเลขอ้างอิง|เลขอ้างอิง|transaction\s*id|reference|ref\.?)\s*[:：#]?\s*([A-Za-z0-9]{6,})',
     caseSensitive: false,
   );
   static final _recipient = RegExp(
@@ -116,14 +116,32 @@ class SlipParser {
   };
 
   static SlipDraft parse(String raw) {
-    final text = raw.replaceAll('\r\n', '\n').trim();
+    final text = _normalize(raw);
     return SlipDraft(
       amount: _amount(text),
       date: _date(text),
-      recipient: _clean(_recipient.firstMatch(text)?.group(1)),
+      recipient: _recipientName(text),
       reference: _reference.firstMatch(text)?.group(1),
       rawText: text,
     );
+  }
+
+  static String _normalize(String raw) {
+    return raw
+        .replaceAll('\r\n', '\n')
+        .replaceAll('\u0E4D\u0E32', '\u0E33')
+        .replaceAll('\u0E32\u0E4D', '\u0E33')
+        .trim();
+  }
+
+  static String? _recipientName(String text) {
+    for (final match in _recipient.allMatches(text)) {
+      final value = _clean(match.group(1));
+      if (value == null) continue;
+      if (value.contains('สแกน') || value.contains('คิวอาร์')) continue;
+      return value;
+    }
+    return null;
   }
 
   static double? _amount(String text) {
@@ -183,6 +201,8 @@ class SlipParser {
   static String? _clean(String? value) {
     final trimmed = value?.trim();
     if (trimmed == null || trimmed.isEmpty) return null;
-    return trimmed;
+    // Tesseract sometimes keeps the tail of ผู้รับเงิน on the name.
+    final withoutLabelTail = trimmed.replaceFirst(RegExp(r'^งิน\s+'), '');
+    return withoutLabelTail.isEmpty ? trimmed : withoutLabelTail;
   }
 }

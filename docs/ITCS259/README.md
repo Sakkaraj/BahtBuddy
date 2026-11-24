@@ -33,15 +33,17 @@ is no separate SQL script and no slip-image dataset.
 3. History, then Reports: the month, the tips, and spending over time.
 4. Settings: theme, language, time zone, lock, and budgets.
 
-The report states the limit directly: the on-device recognizer reads Latin
-text, the user confirms every draft, and a measured slip study was not run.
-The screenshots use the ledger already on the emulator (฿600 income and ฿20
-expense on 24 November 2026). They show the interface. They are not a
-usability score.
+The report records the slip check directly: 20 rendered confirmation screens
+were read on the emulator, 18 matched every field, and the user still confirms
+every draft. A JSON backup is sealed with the PIN, and the exchange chips use a
+board shipped with the app when the phone has no saved rates. The screenshots were taken on 25 November 2026 from the ledger already on
+the emulator (฿600 income and ฿20 expense, month balance ฿580). They show
+the Ocean look, the glass balance card, and the safe-to-spend line of ฿96.67.
 
 ## Verification
 
-- Final report: 15 pages. Figures A1–A11 are in Appendix A, two screens per page.
+- Final report: 20 pages. Figures A1–A11 are in Appendix A, two screens per page.
 - Presentation deck: 12 slides, Ocean theme, every screen included
-- Automated Flutter tests: 23 passed, 0 failed, on 24 November 2026
+- Automated Flutter tests: 31 passed, 0 failed, on 25 November 2026
+- On-device slip corpus: 20 rendered screens, 18 complete, amount 20/20, date 20/20, recipient 19/20, reference 19/20
 - Visual check: report gallery pages and every slide were rendered and inspected

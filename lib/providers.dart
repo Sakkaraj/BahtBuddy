@@ -8,6 +8,7 @@ import 'data/repositories/transaction_repository.dart';
 import 'services/budget_alerts.dart';
 import 'services/exchange_rates.dart';
 import 'services/home_layout.dart';
+import 'services/money_posts.dart';
 import 'services/slip_ocr.dart';
 
 final databaseProvider = Provider<AppDatabase>((ref) {
@@ -29,16 +30,52 @@ final budgetAlertsProvider = Provider<BudgetAlerts>((ref) => BudgetAlerts());
 final slipOcrProvider = Provider<SlipOcr>((ref) => SlipOcr());
 
 final exchangeRatesProvider =
-    AsyncNotifierProvider<ExchangeRatesController, ExchangeBoard?>(
+    AsyncNotifierProvider<ExchangeRatesController, ExchangeBoard>(
       ExchangeRatesController.new,
     );
 
-class ExchangeRatesController extends AsyncNotifier<ExchangeBoard?> {
+class ExchangeRatesController extends AsyncNotifier<ExchangeBoard> {
   @override
-  Future<ExchangeBoard?> build() => ExchangeRates.load();
+  Future<ExchangeBoard> build() => ExchangeRates.load();
 
   Future<void> refresh() async {
     state = AsyncData(await ExchangeRates.load());
+  }
+}
+
+final moneyPostsProvider =
+    AsyncNotifierProvider<MoneyPostsController, List<MoneyPost>>(
+      MoneyPostsController.new,
+    );
+
+/// Changes on every visit so the banner shuffles even when the headlines match.
+final bannerMixProvider = NotifierProvider<BannerMix, int>(BannerMix.new);
+
+class BannerMix extends Notifier<int> {
+  @override
+  int build() => 0;
+
+  void next() => state++;
+}
+
+class MoneyPostsController extends AsyncNotifier<List<MoneyPost>> {
+  @override
+  Future<List<MoneyPost>> build() async {
+    final posts = await MoneyPosts.load();
+    _mixAgain();
+    return posts;
+  }
+
+  Future<void> refresh() async {
+    state = AsyncData(await MoneyPosts.load());
+    _mixAgain();
+  }
+
+  void _mixAgain() {
+    Future.microtask(() {
+      if (!ref.mounted) return;
+      ref.read(bannerMixProvider.notifier).next();
+    });
   }
 }
 
