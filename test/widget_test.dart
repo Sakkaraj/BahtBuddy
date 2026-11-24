@@ -57,8 +57,8 @@ void main() {
     expect(rows.single.amount, 65);
     expect(rows.single.type, 'expense');
     final categories = await database.allCategories();
-    final other = categories.firstWhere((c) => c.key == 'other');
-    expect(rows.single.categoryId, other.id);
+    final food = categories.firstWhere((c) => c.key == 'food');
+    expect(rows.single.categoryId, food.id);
     await disposeTree(tester);
   });
 
