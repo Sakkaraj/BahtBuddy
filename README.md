@@ -269,11 +269,13 @@ configuration; an iOS binary requires macOS and Xcode.
 
 ## Test Status
 
-The complete Flutter suite passed **31 tests** on 25 November 2026. Coverage
+The complete Flutter suite passed **33 tests** on 25 November 2026. Coverage
 includes slip parsing, the 20 labeled slip texts, duplicate references, Bangkok
 time zones, history filters, PIN behavior, the salted PIN hash, a sealed
-backup, exchange-rate conversion, the BBC headline parser, report tips, and
-manual-entry and slip-confirmation widget workflows.
+backup, exchange-rate conversion, the BBC headline parser, report tips,
+manual-entry and slip-confirmation widget workflows, a debug open that starts
+on the system theme, and a release open that keeps the theme chosen in
+Settings.
 
 To regenerate the academic PDFs, install the Python ReportLab dependency if
 needed, then run from the repository root:

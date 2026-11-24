@@ -95,6 +95,20 @@ final settingsProvider = AsyncNotifierProvider<SettingsController, Preference>(
   SettingsController.new,
 );
 
+/// A debug open starts on the phone's light or dark theme.
+/// A release build keeps the theme last chosen in Settings.
+Future<void> startOnSystemTheme(
+  AppDatabase db, {
+  required bool rememberTheme,
+}) async {
+  if (rememberTheme) return;
+  final saved = await db.settings();
+  if (saved.themeMode == 'system') return;
+  await db.saveSettings(
+    const PreferencesCompanion(themeMode: Value('system')),
+  );
+}
+
 class SettingsController extends AsyncNotifier<Preference> {
   @override
   Future<Preference> build() => ref.watch(databaseProvider).settings();

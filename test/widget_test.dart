@@ -6,6 +6,7 @@ import 'package:project/features/entry/entry_screen.dart';
 import 'package:project/features/slips/slip_parser.dart';
 import 'package:project/l10n/app_localizations.dart';
 import 'package:project/providers.dart';
+import 'package:drift/drift.dart' hide isNotNull, isNull;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -42,6 +43,22 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump(const Duration(seconds: 1));
   }
+
+  test('a release open keeps the theme chosen in Settings', () async {
+    await database.saveSettings(
+      const PreferencesCompanion(themeMode: Value('ocean')),
+    );
+    await startOnSystemTheme(database, rememberTheme: true);
+    expect((await database.settings()).themeMode, 'ocean');
+  });
+
+  test('a debug open starts on the system theme', () async {
+    await database.saveSettings(
+      const PreferencesCompanion(themeMode: Value('ocean')),
+    );
+    await startOnSystemTheme(database, rememberTheme: false);
+    expect((await database.settings()).themeMode, 'system');
+  });
 
   testWidgets('manual entry saves an expense', (tester) async {
     await pumpEntry(tester);

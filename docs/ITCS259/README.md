@@ -44,6 +44,6 @@ the Ocean look, the glass balance card, and the safe-to-spend line of ฿96.67.
 
 - Final report: 20 pages. Figures A1–A11 are in Appendix A, two screens per page.
 - Presentation deck: 12 slides, Ocean theme, every screen included
-- Automated Flutter tests: 31 passed, 0 failed, on 25 November 2026
+- Automated Flutter tests: 33 passed, 0 failed, on 25 November 2026
 - On-device slip corpus: 20 rendered screens, 18 complete, amount 20/20, date 20/20, recipient 19/20, reference 19/20
 - Visual check: report gallery pages and every slide were rendered and inspected
