@@ -1,9 +1,39 @@
 # BahtBuddy
 
-BahtBuddy is an offline-first expense tracker for Android and iOS. It combines
-manual income and expense entry with on-device slip text recognition, a local
-Drift/SQLite ledger, category budgets, reports, notifications, PIN/biometric
-security, English and Thai localization, and JSON/CSV backup.
+BahtBuddy is a money app for a student in Thailand. It keeps income and
+spending in a SQLite ledger on the phone, in English or Thai. A bank slip can
+start the record. The student still presses Save before anything is stored.
+
+## The problem
+
+A week of small payments is easy to lose. A coffee, a bus fare, or a transfer
+disappears once the confirmation screen closes, and the month becomes a guess.
+
+A notebook stays private and needs no network. The student still copies every
+amount by hand. A notebook cannot read a slip, hold a category budget, or show
+how the month is going.
+
+A bank app confirms the transfer. Cash, a personal category such as food or
+transport, and a plain reading of this month sit outside that screen. Copying
+the same transfer into another tracker is the step people skip.
+
+The slip already carries the amount, the date, the recipient, and a reference.
+BahtBuddy starts from that slip, or from a typed amount, and leaves the ledger
+on the phone.
+
+## How a record is saved
+
+1. Open Add and choose the camera, a photo already on the phone, or a typed amount.
+2. A photo is read on the phone. Tesseract reads Thai and English, then ML Kit reads the Latin text. The picture stays on the phone.
+3. The parser fills the amount, date, recipient, and reference. The form stays a draft.
+4. Save writes one row to SQLite. Home, History, Budgets, and Reports then read that same ledger.
+
+After that, Home divides this month's balance by the days left, including
+today, and shows that as safe to spend. Reports show the category split, the
+comparison with the previous period, and up to three tips from fixed rules.
+Settings can lock the app with a PIN and seal a JSON backup with that PIN.
+Exchange rates and BBC business headlines are read from the network and cached
+on the phone. Those two reads leave the ledger unchanged.
 
 ## App pages
 
