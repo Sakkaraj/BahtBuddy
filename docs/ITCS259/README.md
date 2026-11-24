@@ -5,16 +5,20 @@ These materials document the current BahtBuddy Flutter application for
 
 ## Submission files
 
-- [BahtBuddy_Project_Report.pdf](./BahtBuddy_Project_Report.pdf) - academic
-  report covering the problem, related works, methodology, architecture, data
-  model, implementation, results, limitations, responsibilities, and
-  references.
-- [BahtBuddy_Presentation_Slides.pdf](./BahtBuddy_Presentation_Slides.pdf) -
-  11-slide 16:9 presentation for a 2-5 minute demonstration.
-- [build_final_deliverables.py](./build_final_deliverables.py) - redesigned
-  academic report and slide-deck generator.
-- `screen_*.png` - authentic Android emulator screenshots included in the
-  report and slides.
+- [BahtBuddy_Project_Report.pdf](./BahtBuddy_Project_Report.pdf) — 15-page report.
+  The required sections are Introduction and Background, Related Works,
+  Methodology, Results, Conclusion, Responsibilities of Each Team Member,
+  and References. Screenshots of every screen are in Appendix A.
+- [BahtBuddy_Presentation_Slides.pdf](./BahtBuddy_Presentation_Slides.pdf) —
+  12-slide 16:9 deck in the app’s Ocean theme (cobalt banner, teal
+  actions, Plus Jakarta Sans) for the 26 November 2026 presentation.
+- [build_final_deliverables.py](./build_final_deliverables.py) — regenerates
+  both PDFs. Phone screenshots keep their real 1344×2992 proportions.
+- Screenshots used in both PDFs:
+  `screen_home.png`, `screen_history.png`, `screen_reports.png`,
+  `screen_reports_charts.png`, `screen_settings.png`, `screen_timezone.png`,
+  `screen_expense.png`, `screen_income.png`, `screen_budgets.png`,
+  `screen_exchange.png`, `screen_add.png`.
 
 ## Regenerating the PDFs
 
@@ -24,34 +28,24 @@ From the repository root:
 python docs\ITCS259\build_final_deliverables.py
 ```
 
-The generator writes the report and slide PDFs into this folder. It requires
-Python and ReportLab. The implementation facts are based on the current
-Flutter/Riverpod, Drift SQLite, ML Kit Latin OCR, parser, notifications, charts,
-backup/restore, and cached Frankfurter exchange-rate code.
+The generator needs Python, ReportLab, and Pillow.
 
 ## Demonstration order
 
-1. Home: balance, safe-to-spend value, and cached exchange rates.
-2. Add: manual expense or income, then explain the slip camera/gallery path.
-3. Reports: period summary, previous-period comparison, charts, and rule-based
-   tips.
-4. Architecture: explain that financial records remain local and that the
-   exchange-rate service is the only optional network dependency.
+1. Home: balance, safe-to-spend value, and the balance in each currency.
+2. Add: camera, photo library, or a manual expense or income.
+3. History, then Reports: the month, the tips, and spending over time.
+4. Settings: theme, language, time zone, lock, and budgets.
 
-The report states the important limitation accurately: the configured ML Kit
-recognizer uses the Latin model, so the review form remains mandatory and Thai
-script recognition is a future improvement. The Android screenshots are
-demonstration evidence, not a usability or OCR-accuracy study.
-
-The screenshots show the seeded emulator demonstration data (฿600 income and
-฿20 expense). They are included as implementation evidence; they are not
-performance claims or a substitute for the automated tests listed in the
-report.
+The report states the limit directly: the on-device recognizer reads Latin
+text, the user confirms every draft, and a measured slip study was not run.
+The screenshots use the ledger already on the emulator (฿600 income and ฿20
+expense on 24 November 2026). They show the interface. They are not a
+usability score.
 
 ## Verification
 
-- Final report: 9 pages
-- Presentation deck: 11 slides
-- Automated Flutter tests: 23 passed, 0 failed
-- Visual verification: report and slide representative pages rendered and
-  inspected
+- Final report: 15 pages. Figures A1–A11 are in Appendix A, two screens per page.
+- Presentation deck: 12 slides, Ocean theme, every screen included
+- Automated Flutter tests: 23 passed, 0 failed, on 24 November 2026
+- Visual check: report gallery pages and every slide were rendered and inspected

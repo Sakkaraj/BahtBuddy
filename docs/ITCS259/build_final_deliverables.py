@@ -14,6 +14,7 @@ from reportlab.platypus import (
     PageBreak, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle,
     Image as RLImage, KeepTogether, HRFlowable, Preformatted,
 )
+from PIL import Image as PILImage
 
 
 OUT = Path(__file__).resolve().parent
@@ -22,6 +23,12 @@ ROOT = OUT.parent.parent
 pdfmetrics.registerFont(TTFont("Segoe", r"C:\Windows\Fonts\segoeui.ttf"))
 pdfmetrics.registerFont(TTFont("SegoeBold", r"C:\Windows\Fonts\segoeuib.ttf"))
 pdfmetrics.registerFont(TTFont("SegoeSemi", r"C:\Windows\Fonts\seguisb.ttf"))
+_FONT = ROOT / "assets" / "fonts"
+pdfmetrics.registerFont(TTFont("Jakarta", str(_FONT / "PlusJakartaSans-Regular.ttf")))
+pdfmetrics.registerFont(TTFont("JakartaMed", str(_FONT / "PlusJakartaSans-Medium.ttf")))
+pdfmetrics.registerFont(TTFont("JakartaSemi", str(_FONT / "PlusJakartaSans-SemiBold.ttf")))
+pdfmetrics.registerFont(TTFont("JakartaBold", str(_FONT / "PlusJakartaSans-Bold.ttf")))
+pdfmetrics.registerFont(TTFont("JakartaExtra", str(_FONT / "PlusJakartaSans-ExtraBold.ttf")))
 
 NAVY = HexColor("#12324F")
 TEAL = HexColor("#0E9F8A")
@@ -116,9 +123,53 @@ def cover_footer(c, doc):
     c.restoreState()
 
 
-def screen(name, height=82 * mm):
+def fitted_image(name, height):
     path = OUT / name
-    return RLImage(str(path), height=height, width=38 * mm)
+    with PILImage.open(path) as im:
+        aspect = im.width / float(im.height)
+    image = RLImage(str(path), width=height * aspect, height=height)
+    image.hAlign = "CENTER"
+    return image
+
+
+PAGES = [
+    ("screen_home.png", "Home: month balance, safe-to-spend, rates, and shortcuts."),
+    ("screen_history.png", "History: search, income or expense filter, and the ledger."),
+    ("screen_reports.png", "Reports: period balance, glance facts, and spending tips."),
+    ("screen_reports_charts.png", "Reports: category share and spending over the month."),
+    ("screen_settings.png", "Settings: theme, language, time zone, lock, and reminders."),
+    ("screen_timezone.png", "Time zone: follow the phone, or choose another zone."),
+    ("screen_expense.png", "Expense entry: amount, category, date, note, and receipt."),
+    ("screen_income.png", "Income entry: salary plus bonus, freelance, gift, and other types."),
+    ("screen_budgets.png", "Budgets: a monthly limit for each expense category."),
+    ("screen_exchange.png", "Exchange: this month’s balance converted into each currency."),
+    ("screen_add.png", "Add: camera, photo library, or manual entry."),
+]
+
+
+def add_screen_gallery(story):
+    height = 180 * mm
+    col = 87 * mm
+    for start in range(0, len(PAGES), 2):
+        chunk = PAGES[start:start + 2]
+        images, captions = [], []
+        for offset, (name, caption) in enumerate(chunk):
+            number = start + offset + 1
+            images.append(fitted_image(name, height))
+            captions.append(para(f"<b>Figure A{number}.</b> {caption}", S["caption"]))
+        while len(images) < 2:
+            images.append("")
+            captions.append("")
+        table = Table([images, captions], colWidths=[col, col])
+        table.setStyle(TableStyle([
+            ("VALIGN", (0, 0), (-1, -1), "TOP"),
+            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+            ("LEFTPADDING", (0, 0), (-1, -1), 4),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 4),
+            ("TOPPADDING", (0, 0), (-1, 0), 6),
+            ("BOTTOMPADDING", (0, -1), (-1, -1), 8),
+        ]))
+        story.append(table)
 
 
 def section_heading(number, title):
@@ -181,15 +232,13 @@ def build_report():
             [
                 ["1", "Introduction and Background"],
                 ["2", "Related Works"],
-                ["3", "Methodology and System Architecture"],
-                ["4", "Technology Stack"],
-                ["5", "Implementation"],
-                ["6", "Results and User Interface"],
-                ["7", "Testing and Evaluation"],
-                ["8", "Limitations and Future Work"],
-                ["9", "Conclusion"],
-                ["10", "Team Responsibilities"],
-                ["11", "References"],
+                ["3", "Methodology"],
+                ["4", "Results"],
+                ["5", "Conclusion"],
+                ["6", "Responsibilities of Each Team Member"],
+                ["7", "References"],
+                ["A", "Interface screenshots"],
+                ["B", "Principal source files"],
             ],
             [18 * mm, 154 * mm],
         ),
@@ -258,7 +307,7 @@ def build_report():
     ]
 
     story += [
-        section_heading("3", "Methodology and System Architecture"),
+        section_heading("3", "Methodology"),
         para("3.1 Development Approach", S["h2"]),
         para(
             "The project follows a layered, feature-oriented implementation. Screens present UI and user actions; Riverpod providers expose state; repositories coordinate database operations and validation; Drift provides typed SQLite access; and dedicated services handle OCR, notifications, exchange rates, and home layout persistence.",
@@ -290,7 +339,7 @@ def build_report():
     ]
 
     story += [
-        section_heading("4", "Technology Stack"),
+        para("3.5 Technology stack", S["h2"]),
         academic_table(
             ["Area", "Selected technology", "Rationale"],
             [
@@ -312,8 +361,8 @@ def build_report():
     ]
 
     story += [
-        section_heading("5", "Implementation"),
-        para("5.1 Data Model", S["h2"]),
+        para("3.6 Implementation", S["h2"]),
+        para("3.6.1 Data model", S["h2"]),
         academic_table(
             ["Drift table", "Core fields", "Purpose"],
             [
@@ -327,24 +376,29 @@ def build_report():
             ],
             [34 * mm, 78 * mm, 60 * mm],
         ),
-        para("5.2 Transaction Persistence and Duplicate Protection", S["h2"]),
+        para("3.6.2 Transaction persistence and duplicate protection", S["h2"]),
         Preformatted(
-            "Future<SaveStatus> save(TransactionDraft draft) async {\n"
-            "  final existing = await db.transactionByReference(reference);\n"
+            "if (reference != null) {\n"
+            "  final existing =\n"
+            "      await _db.transactionByReference(reference);\n"
             "  if (existing != null && existing.id != draft.id) {\n"
             "    return SaveStatus.duplicate;\n"
             "  }\n"
-            "  // Build the Drift companion and insert or update the row.\n"
-            "  // Learn the normalized recipient/category relationship.\n"
-            "  return SaveStatus.saved;\n"
-            "}",
+            "}\n"
+            "if (draft.id == null) {\n"
+            "  await _db.insertTransaction(companion);\n"
+            "} else {\n"
+            "  await _db.updateTransaction(draft.id!, companion);\n"
+            "}\n"
+            "await _db.learnRecipient(\n"
+            "  CategorySuggester.normalize(recipient), draft.categoryId);",
             S["code"],
         ),
         para(
             "A duplicate is prevented when a slip reference already exists, unless the user is editing the same transaction. Blank references are not enforced as unique values.",
             S["body"],
         ),
-        para("5.3 Rule-Based Slip Parsing", S["h2"]),
+        para("3.6.3 Rule-based slip parsing", S["h2"]),
         Preformatted(
             "Amount priority:\n"
             "1. Labeled amount: Amount:, จำนวนเงิน, or ยอดเงิน\n"
@@ -357,7 +411,7 @@ def build_report():
             "The parser extracts numeric and named dates, Buddhist year dates, recipient labels, and transaction references. It does not claim to understand every layout. The user may edit every proposed field on EntryScreen.",
             S["body"],
         ),
-        para("5.4 Reporting Logic", S["h2"]),
+        para("3.6.4 Reporting logic", S["h2"]),
         para(
             "The reports page calculates period balances, average daily spending, comparison with the previous period, category proportions, and ranked textual tips. A tip engine warns for spending above income, high category concentration, a 15 percent or larger period change, thin or strong remaining balances, forecast daily pace, and unusually large individual records.",
             S["body"],
@@ -365,24 +419,14 @@ def build_report():
     ]
 
     story += [
-        section_heading("6", "Results and User Interface"),
+        section_heading("4", "Results"),
         para(
-            "The application implements the main proposed workflows. The following figures were captured from the current Android debug build running on an emulator. They demonstrate the actual interface rather than a wireframe.",
+            "The finished application includes Home, History, Reports, Settings, expense entry, income entry, budgets, the add sheet, the exchange converter, and the time-zone picker. Appendix A presents the corresponding screens. Android and iOS share one Flutter widget tree. The Material theme sets the platform to Android and uses the same page transition and scroll physics on both, so the two builds present the same interface.",
             S["body"],
         ),
-        Table([
-            [screen("screen_home.png", 103 * mm), screen("screen_reports.png", 103 * mm)],
-            [para("<b>Figure 1.</b> Home page: balance, entry actions, exchange rates.", S["caption"]),
-             para("<b>Figure 2.</b> Reports: period controls, balance, tips, category share.", S["caption"])],
-        ], colWidths=[86 * mm, 86 * mm]),
-        Spacer(1, 5 * mm),
-        Table([
-            [screen("screen_settings.png", 103 * mm), Spacer(1, 1)],
-            [para("<b>Figure 3.</b> Settings: appearance, security, reminders, budgets.", S["caption"]),
-             para("", S["caption"])],
-        ], colWidths=[86 * mm, 86 * mm]),
-        PageBreak(),
-        para("Implemented Feature Matrix", S["h2"]),
+    ]
+    story += [
+        para("4.1 Implemented features", S["h2"]),
         academic_table(
             ["Feature", "Status", "Implementation evidence"],
             [
@@ -395,14 +439,16 @@ def build_report():
                 ["Reports and charts", "Completed", "Period summaries and category/financial charts"],
                 ["PIN and biometrics", "Completed", "Hashed PIN and local_auth integration"],
                 ["Backup/restore", "Completed", "Versioned JSON restore and CSV export"],
-                ["Localization/themes", "Completed", "English/Thai and six visual themes"],
+                ["Localization and themes", "Completed", "English/Thai and six visual themes"],
+                ["Time zone", "Completed", "Automatic phone zone or a chosen IANA zone, on Android and iOS"],
+                ["Exchange rates", "Completed", "Month balance converted with a cached Frankfurter rate"],
             ],
             [46 * mm, 25 * mm, 101 * mm],
         ),
     ]
 
     story += [
-        section_heading("7", "Testing and Evaluation"),
+        para("4.2 Testing and evaluation", S["h2"]),
         para(
             "Testing is divided by responsibility. Pure tests validate parser output and ranking mathematics; repository tests validate SQLite behavior and duplicate prevention; widget tests validate the entry workflow.",
             S["body"],
@@ -424,15 +470,17 @@ def build_report():
                  "Unit tests"],
                 ["pin_pad_test.dart", "PIN input behavior",
                  "Widget logic test"],
+                ["bangkok_time_test.dart", "Wall-clock conversion and a selected time zone",
+                 "Unit tests"],
             ],
             [42 * mm, 92 * mm, 38 * mm],
         ),
-        para("7.1 Android Emulator Verification", S["h2"]),
+        para("4.2.1 Emulator verification", S["h2"]),
         para(
-            "The emulator build was verified by opening the Home, History, Reports, Add/Slip, and Settings workflows and by capturing the corresponding interface states. The demonstration data used in the screenshots is test data and is not a claim of real-user performance.",
+            "Every route and sheet in Appendix A was opened on the Android emulator: Home, History, Reports, Settings, expense entry, income entry, budgets, the add sheet, the currency converter, and the time-zone list. No new record was saved during that check. The figures use the ledger already on the device and are presented as interface evidence.",
             S["body"],
         ),
-        para("7.2 Evaluation Status", S["h2"]),
+        para("4.2.2 Evaluation status", S["h2"]),
         para(
             "<b>Verified status:</b> the complete Flutter test suite passed on 24 November 2026 with 23 tests successful and no failures. Coverage includes Bangkok time-zone behavior, duplicate references, history filtering, PIN-pad behavior, manual entry, slip confirmation, exchange-rate parsing, report tips, and repository learning. OCR accuracy was not measured on a recorded 50-slip data set, so that item remains future work rather than a claimed achievement.",
             S["body"],
@@ -440,7 +488,7 @@ def build_report():
     ]
 
     story += [
-        section_heading("8", "Limitations and Future Work"),
+        para("4.3 Limitations and future work", S["h2"]),
         academic_table(
             ["Limitation", "Reason", "Future improvement"],
             [
@@ -462,9 +510,9 @@ def build_report():
     ]
 
     story += [
-        section_heading("9", "Conclusion"),
+        section_heading("5", "Conclusion"),
         para(
-            "BahtBuddy demonstrates a complete local-first mobile application for personal financial tracking. The project satisfies the proposed course scope through manual entry, slip-assisted OCR review, SQLite persistence, category budgets, history, reports, alerts, localization, authentication, and backup/restore. The central engineering lesson is that mobile AI or OCR features should remain transparent and reversible: recognized text is a draft until the user verifies it. The project also demonstrates that useful financial feedback can be implemented with deterministic rules, avoiding the need for a cloud language model.",
+            "BahtBuddy is a complete local-first mobile application for personal financial tracking. The implementation covers manual entry, slip-assisted text recognition with user confirmation, SQLite persistence, category budgets, history, reports, alerts, localization, authentication, and backup and restore. Recognized slip text remains a draft until the user verifies it. Period tips are produced by deterministic rules applied to the stored ledger.",
             S["body"],
         ),
         para(
@@ -474,7 +522,7 @@ def build_report():
     ]
 
     story += [
-        section_heading("10", "Responsibilities of Each Team Member"),
+        section_heading("6", "Responsibilities of Each Team Member"),
         academic_table(
             ["Team member", "Frontend/UI", "Data/services", "Testing/docs"],
             [
@@ -492,7 +540,8 @@ def build_report():
     ]
 
     story += [
-        section_heading("11", "References"),
+        PageBreak(),
+        section_heading("7", "References"),
         para("[1] Google, “Flutter Documentation,” 2026. [Online]. Available: https://docs.flutter.dev.", S["small"]),
         para("[2] S. Binder, “Drift: SQLite Persistence for Dart and Flutter,” 2026. [Online]. Available: https://drift.simonbinder.eu.", S["small"]),
         para("[3] Google, “ML Kit Text Recognition,” 2026. [Online]. Available: https://developers.google.com/ml-kit/vision/text-recognition.", S["small"]),
@@ -503,14 +552,21 @@ def build_report():
         para("[8] Sakkaraj/BahtBuddy, “BahtBuddy Source Repository,” 2026. [Online]. Available: https://github.com/Sakkaraj/BahtBuddy.", S["small"]),
         para("[9] ITCS259 Course Staff, “Final Project Submission Instructions,” 2026.", S["small"]),
         PageBreak(),
-        para("Appendix A: Repository Verification", S["h1"]),
+        para("Appendix A. Interface Screenshots", S["h1"]),
         para(
-            "The submission source should include the complete Flutter project folder, assets, Android and iOS configuration, test folder, README installation instructions, backup implementation, and this documentation folder.",
+            "Figures A1–A11 were captured from the Android debug build on 24 November 2026. The sample ledger contains ฿600 of income and ฿20 of food expense, giving a month balance of ฿580. Image proportions follow the 1344×2992 capture. The same screens are produced on iOS by the shared Flutter code and the Android visual theme described in Section 4.",
             S["body"],
         ),
-        para("Appendix B: Key Source Files", S["h2"]),
+    ]
+    add_screen_gallery(story)
+    story += [
+        para("Appendix B. Principal Source Files", S["h1"]),
+        para(
+            "The repository contains the Flutter project, Android and iOS project configuration, the automated test folder, and this report. Table B1 maps the principal implementation files to the architecture in Section 3.",
+            S["body"],
+        ),
         academic_table(
-            ["Concern", "Source"],
+            ["Component", "Source file"],
             [
                 ["Application and routes", "lib/app.dart"],
                 ["State and dependency providers", "lib/providers.dart"],
@@ -531,44 +587,142 @@ def build_report():
 
 W, H = 960, 540
 
+DEEP = HexColor("#0B3A82")
+OCEAN = HexColor("#1D4ED8")
+SKY = HexColor("#38BDF8")
+SLIDE_INK = HexColor("#0E1C2F")
+SLIDE_TEAL = HexColor("#0E9F8A")
+SLIDE_GREEN = HexColor("#12B981")
+SLIDE_RED = HexColor("#FF5A6A")
+SLIDE_MUTED = HexColor("#5C6E82")
+MIST = HexColor("#E7F2FB")
+CARD_SHADOW = HexColor("#C5D7EE")
 
-def slide_base(c, number, title, kicker):
-    c.setFillColor(HexColor("#F7F9FB"))
-    c.rect(0, 0, W, H, fill=1, stroke=0)
-    c.setFillColor(NAVY)
-    c.rect(0, H - 8, W, 8, fill=1, stroke=0)
-    c.setFillColor(TEAL)
-    c.rect(0, 0, W, 28, fill=1, stroke=0)
+
+def _mix(a, b, t):
+    return colors.Color(
+        a.red + (b.red - a.red) * t,
+        a.green + (b.green - a.green) * t,
+        a.blue + (b.blue - a.blue) * t,
+    )
+
+
+def hgrad(c, x, y, w, h, left, right, steps=48):
+    c.saveState()
+    path = c.beginPath()
+    path.rect(x, y, w, h)
+    c.clipPath(path, stroke=0, fill=0)
+    for i in range(steps):
+        c.setFillColor(_mix(left, right, i / (steps - 1)))
+        c.rect(x + w * i / steps, y, w / steps + 1, h, stroke=0, fill=1)
+    c.restoreState()
+
+
+def vgrad(c, x, y, w, h, top, bottom, steps=36):
+    c.saveState()
+    path = c.beginPath()
+    path.rect(x, y, w, h)
+    c.clipPath(path, stroke=0, fill=0)
+    for i in range(steps):
+        c.setFillColor(_mix(bottom, top, i / (steps - 1)))
+        c.rect(x, y + h * i / steps, w, h / steps + 1, stroke=0, fill=1)
+    c.restoreState()
+
+
+def slide_paragraph(c, text, x, y, width, size=16, leading=21, color=SLIDE_INK, font="Jakarta", align="left"):
+    style = ParagraphStyle(
+        "slide", fontName=font, fontSize=size, leading=leading, textColor=color,
+        alignment=TA_CENTER if align == "center" else TA_LEFT,
+    )
+    block = Paragraph(text, style)
+    _, height = block.wrap(width, H)
+    block.drawOn(c, x, y - height)
+    return height
+
+
+def soft_card(c, x, y, w, h, radius=18):
+    c.setFillColor(CARD_SHADOW)
+    c.roundRect(x + 2, y - 3, w, h, radius, fill=1, stroke=0)
     c.setFillColor(WHITE)
-    c.setFont("Segoe", 9)
-    c.drawString(34, 9, "ITCS259 · BahtBuddy")
-    c.drawRightString(W - 34, 9, f"{number:02d}")
-    c.setFillColor(TEAL)
-    c.setFont("SegoeSemi", 10)
-    c.drawString(42, H - 42, kicker.upper())
-    c.setFillColor(NAVY)
-    c.setFont("SegoeBold", 27)
-    c.drawString(42, H - 78, title)
-    c.setFillColor(LINE)
-    c.rect(42, H - 91, W - 84, 1, fill=1, stroke=0)
+    c.roundRect(x, y, w, h, radius, fill=1, stroke=0)
 
 
-def slide_paragraph(c, text, x, y, width, size=16, leading=21, color=INK):
-    style = ParagraphStyle("slide", fontName="Segoe", fontSize=size,
-                           leading=leading, textColor=color)
-    p = Paragraph(text, style)
-    _, h = p.wrap(width, H)
-    p.drawOn(c, x, y - h)
-    return h
+def pill(c, x, y, text, fill=SLIDE_TEAL, size=9):
+    c.setFont("JakartaSemi", size)
+    width = c.stringWidth(text, "JakartaSemi", size) + 16
+    c.setFillColor(fill)
+    c.roundRect(x, y - 4, width, size + 10, (size + 10) / 2, fill=1, stroke=0)
+    c.setFillColor(WHITE)
+    c.drawString(x + 8, y, text)
+    return width
 
 
-def slide_bullets(c, items, x, y, width, size=15):
-    for item in items:
-        c.setFillColor(TEAL)
-        c.circle(x + 5, y - 5, 4, fill=1, stroke=0)
-        h = slide_paragraph(c, item, x + 18, y + 7, width - 18, size, size + 6)
-        y -= max(h + 10, 35)
-    return y
+def slide_chrome(c, number, title, kicker):
+    vgrad(c, 0, 0, W, H, HexColor("#D7E8FB"), HexColor("#F8FBFF"))
+    c.setFillColor(HexColor("#D3E6FA"))
+    c.circle(910, 500, 70, fill=1, stroke=0)
+    hgrad(c, 0, H - 86, W, 86, DEEP, SKY)
+    c.setFillColor(SLIDE_TEAL)
+    c.rect(0, H - 90, W, 4, fill=1, stroke=0)
+    c.setFillColor(HexColor("#D7F6F0"))
+    c.setFont("JakartaSemi", 10)
+    c.drawString(36, H - 32, kicker.upper())
+    c.setFillColor(WHITE)
+    c.setFont("JakartaBold", 24)
+    c.drawString(36, H - 62, title)
+    c.setFillColor(SLIDE_INK)
+    c.rect(0, 0, W, 28, fill=1, stroke=0)
+    c.setFillColor(SLIDE_TEAL)
+    c.circle(22, 14, 4, fill=1, stroke=0)
+    c.setFillColor(WHITE)
+    c.setFont("Jakarta", 10)
+    c.drawString(34, 10, "BahtBuddy  ·  Ocean theme  ·  ITCS259")
+    c.setFillColor(HexColor("#9FB0C4"))
+    c.drawRightString(W - 58, 10, "26 November 2026")
+    c.setFillColor(SLIDE_TEAL)
+    c.roundRect(W - 46, 6, 30, 16, 8, fill=1, stroke=0)
+    c.setFillColor(WHITE)
+    c.setFont("JakartaSemi", 9)
+    c.drawCentredString(W - 31, 10, f"{number:02d}")
+
+
+def phone_box(path, height):
+    with PILImage.open(path) as im:
+        return height * im.width / float(im.height), height
+
+
+def draw_phone(c, path, x, y, height):
+    width, box_h = phone_box(path, height)
+    c.setFillColor(HexColor("#B9D0EA"))
+    c.roundRect(x + 3, y - 4, width, box_h, 16, fill=1, stroke=0)
+    c.setFillColor(WHITE)
+    c.setStrokeColor(HexColor("#D5E6F6"))
+    c.setLineWidth(1)
+    c.roundRect(x - 4, y - 4, width + 8, box_h + 8, 18, fill=1, stroke=1)
+    c.drawImage(
+        str(path), x, y, width=width, height=box_h,
+        preserveAspectRatio=True, anchor="c", mask="auto",
+    )
+    return width
+
+
+def gallery(c, number, title, kicker, intro, items):
+    slide_chrome(c, number, title, kicker)
+    slide_paragraph(c, intro, 36, 438, 880, 12, 16, SLIDE_MUTED, "JakartaMed")
+    height = 286
+    widths = [phone_box(OUT / name, height)[0] for name, _cap, _fact in items]
+    gap = 36
+    total = sum(widths) + gap * (len(items) - 1)
+    x = (W - total) / 2
+    for (name, caption, fact), width in zip(items, widths):
+        draw_phone(c, OUT / name, x, 108, height)
+        c.setFillColor(SLIDE_INK)
+        c.setFont("JakartaBold", 12)
+        c.drawCentredString(x + width / 2, 88, caption)
+        slide_paragraph(
+            c, fact, x - 6, 76, width + 12, 9, 11.5, SLIDE_MUTED, "Jakarta", "center",
+        )
+        x += width + gap
 
 
 def build_slides():
@@ -577,209 +731,378 @@ def build_slides():
     c.setTitle("BahtBuddy — ITCS259 Final Presentation")
     c.setAuthor("Jirathiwat Suntipreedatham and Sakkaraj Tuvajit")
 
-    # 1 Cover
-    c.setFillColor(NAVY); c.rect(0, 0, W, H, fill=1, stroke=0)
-    c.setFillColor(TEAL); c.rect(0, 0, 14, H, fill=1, stroke=0)
-    c.setFillColor(TEAL); c.setFont("SegoeSemi", 12)
-    c.drawString(48, H - 72, "ITCS259 · MOBILE APPLICATION DEVELOPMENT")
-    c.setFillColor(WHITE); c.setFont("SegoeBold", 52)
-    c.drawString(48, H - 148, "BahtBuddy")
-    c.setFillColor(HexColor("#D8EBE7")); c.setFont("Segoe", 19)
-    c.drawString(48, H - 188, "Offline-first expense tracking with on-device slip reading")
-    c.setStrokeColor(TEAL); c.setLineWidth(3); c.line(48, 300, 260, 300)
-    c.setFillColor(WHITE); c.setFont("Segoe", 15)
-    c.drawString(48, 150, "Jirathiwat Suntipreedatham · 6788122")
-    c.drawString(48, 124, "Sakkaraj Tuvajit · 6788140")
-    c.setFillColor(HexColor("#A6D8CF")); c.setFont("Segoe", 12)
-    c.drawString(48, 64, "Final presentation · 26 November 2026")
-    c.showPage()
-
-    slide_base(c, 2, "Problem and motivation", "Introduction")
-    slide_bullets(c, [
-        "Small digital or cash purchases are easy to forget.",
-        "Notebook entry is slow and provides little long-term analysis.",
-        "Bank applications confirm transfers but are not category budget tools.",
-        "Slips already contain amount, date, recipient, and reference.",
-        "The objective is privacy-preserving entry with a final human review.",
-    ], 48, 405, 840, 17)
-    c.showPage()
-
-    slide_base(c, 3, "Related work and design position", "Related work")
-    cols = [
-        ("Notebook", "Private and offline", "No OCR or analysis"),
-        ("Cloud app", "Sync and rich charts", "Account and cloud receipt"),
-        ("Banking app", "Trusted transfer data", "Limited personal budgets"),
-        ("BahtBuddy", "Local OCR and ledger", "Review before save"),
+    # 1 Cover — Ocean banner, the same gradient as the home balance card.
+    hgrad(c, 0, 0, W, H, DEEP, SKY)
+    c.setFillColor(HexColor("#1677C9"))
+    c.circle(820, 250, 210, fill=1, stroke=0)
+    c.setFillColor(HexColor("#0A3474"))
+    c.circle(880, 460, 80, fill=1, stroke=0)
+    draw_phone(c, OUT / "screen_home.png", 690, 48, 430)
+    c.setFillColor(HexColor("#D7F6F0"))
+    c.setFont("JakartaSemi", 12)
+    c.drawString(44, H - 64, "ITCS259   ·   MOBILE APPLICATION DEVELOPMENT")
+    c.setFillColor(WHITE)
+    c.setFont("JakartaExtra", 52)
+    c.drawString(44, H - 128, "BahtBuddy")
+    slide_paragraph(
+        c,
+        "A local money app for a Thai student. The ledger stays on the phone. A slip becomes a draft, and you confirm it before it is saved.",
+        44, H - 150, 600, 15, 21, HexColor("#E7F4FF"), "Jakarta",
+    )
+    facts = [
+        ("On this phone", "SQLite ledger, no account"),
+        ("Slip review", "Latin text, then you confirm"),
+        ("English and Thai", "Six themes; Ocean is shown"),
+        ("23 tests", "Passed 24 November 2026"),
     ]
-    x = 42
-    for i, (name, strength, gap) in enumerate(cols):
-        c.setFillColor(WHITE); c.roundRect(x, 120, 205, 245, 14, fill=1, stroke=0)
-        c.setFillColor(TEAL if i == 3 else NAVY)
-        c.roundRect(x, 315, 205, 50, 14, fill=1, stroke=0)
-        c.setFillColor(WHITE); c.setFont("SegoeBold", 16); c.drawCentredString(x + 102, 335, name)
-        c.setFillColor(NAVY); c.setFont("SegoeBold", 12)
-        c.drawString(x + 16, 280, "Strength")
-        slide_paragraph(c, strength, x + 16, 260, 170, 11, 15)
-        c.setFillColor(NAVY); c.setFont("SegoeBold", 12)
-        c.drawString(x + 16, 210, "Limitation / role")
-        slide_paragraph(c, gap, x + 16, 190, 170, 11, 15)
-        x += 220
+    x = 44
+    for title, detail in facts:
+        c.setFillColor(HexColor("#F4F9FF"))
+        c.roundRect(x, 108, 146, 84, 14, fill=1, stroke=0)
+        c.setFillColor(SLIDE_TEAL)
+        c.rect(x, 108, 146, 4, fill=1, stroke=0)
+        c.setFillColor(SLIDE_INK)
+        c.setFont("JakartaBold", 11)
+        c.drawString(x + 12, 166, title)
+        slide_paragraph(c, detail, x + 12, 156, 122, 9, 12, SLIDE_MUTED)
+        x += 158
+    c.setFillColor(WHITE)
+    c.setFont("JakartaMed", 13)
+    c.drawString(44, 78, "Jirathiwat Suntipreedatham  ·  6788122")
+    c.drawString(44, 56, "Sakkaraj Tuvajit  ·  6788140")
+    c.setFillColor(HexColor("#D7F6F0"))
+    c.setFont("Jakarta", 11)
+    c.drawString(44, 28, "Final presentation  ·  26 November 2026  ·  4 minutes")
     c.showPage()
 
-    slide_base(c, 4, "Completed product", "Features")
-    left = [
-        "Manual expense and income",
-        "Slip camera or photo-library entry",
-        "Editable OCR draft before save",
-        "Duplicate slip-reference check",
-        "Recipient category learning",
+    # 2 Problem
+    slide_chrome(c, 2, "Why a student still loses the month", "Introduction")
+    problems = [
+        ("The moment passes", "A coffee, a bus fare, or a transfer is easy to forget once the screen is gone. The month becomes a guess."),
+        ("A notebook is private", "It works with no account and no network. It cannot read a slip, budget a category, or show the month."),
+        ("A bank app confirms", "The transfer is trusted. Cash, a personal category, and a tip about this month sit outside that screen."),
     ]
-    right = [
-        "History search and filters",
-        "Monthly category budgets",
-        "Reports and charts",
-        "PIN and biometric lock",
-        "CSV/JSON backup and restore",
-    ]
-    slide_bullets(c, left, 48, 405, 410, 15)
-    slide_bullets(c, right, 500, 405, 410, 15)
+    x = 32
+    for title, body in problems:
+        soft_card(c, x, 168, 290, 230)
+        c.setFillColor(SLIDE_TEAL)
+        c.circle(x + 28, 358, 8, fill=1, stroke=0)
+        c.setFillColor(SLIDE_INK)
+        c.setFont("JakartaBold", 16)
+        c.drawString(x + 46, 352, title)
+        slide_paragraph(c, body, x + 20, 328, 250, 13, 18)
+        x += 306
+    hgrad(c, 32, 48, 896, 100, DEEP, OCEAN)
+    c.setFillColor(WHITE)
+    c.setFont("JakartaBold", 14)
+    c.drawString(52, 118, "Design response")
+    slide_paragraph(
+        c,
+        "The ledger, the budgets, and the tips stay on the phone. A record can come from the camera, the photo library, or a typed amount. The slip remains a draft until the user saves it. The interface is available in English and Thai, with six visual themes.",
+        52, 108, 850, 12, 16, HexColor("#E7F4FF"),
+    )
     c.showPage()
 
-    slide_base(c, 5, "Live interface evidence", "Demonstration")
-    c.setFillColor(WHITE); c.roundRect(42, 75, 260, 330, 14, fill=1, stroke=0)
-    c.drawImage(str(OUT / "screen_home.png"), 58, 92, width=228, height=295,
-                preserveAspectRatio=True, anchor="c")
-    c.setFillColor(NAVY); c.setFont("SegoeBold", 13)
-    c.drawCentredString(172, 83, "Home")
-    c.setFillColor(WHITE); c.roundRect(325, 75, 260, 330, 14, fill=1, stroke=0)
-    c.drawImage(str(OUT / "screen_reports.png"), 341, 92, width=228, height=295,
-                preserveAspectRatio=True, anchor="c")
-    c.setFillColor(NAVY); c.setFont("SegoeBold", 13)
-    c.drawCentredString(455, 83, "Reports")
-    slide_paragraph(c,
-                    "<b>Demonstration flow</b><br/>"
-                    "Home → History or Add → manual/Slip entry → Reports.",
-                    625, 360, 290, 15, 21)
-    slide_paragraph(c,
-                    "Figures are authentic screenshots from the Android debug build.",
-                    625, 260, 290, 12, 17, MUTED)
-    c.showPage()
-
-    slide_base(c, 6, "System architecture", "Methodology")
-    boxes = [
-        ("Presentation", "Screens · Entry · Shell"),
-        ("State", "Riverpod providers"),
-        ("Repositories", "Save · Query · Restore"),
-        ("Drift/SQLite", "5 typed local tables"),
-    ]
-    x = 42
-    for i, (name, detail) in enumerate(boxes):
-        c.setFillColor(NAVY if i % 2 == 0 else TEAL)
-        c.roundRect(x, 190, 188, 150, 14, fill=1, stroke=0)
-        c.setFillColor(WHITE); c.setFont("SegoeBold", 14)
-        c.drawString(x + 14, 300, name)
-        c.setFont("Segoe", 11)
-        slide_paragraph(c, detail, x + 14, 270, 160, 11, 15, WHITE)
-        if i < 3:
-            c.setFillColor(NAVY); c.setFont("SegoeBold", 20)
-            c.drawString(x + 198, 250, "›")
-        x += 226
-    slide_paragraph(c,
-                    "Adjacent services: ML Kit OCR, slip parser, notifications, exchange-rate cache, and local-auth.",
-                    42, 145, 880, 13, 17)
-    c.showPage()
-
-    slide_base(c, 7, "Slip and transaction workflow", "Implementation")
-    workflow = [
-        ("1", "Image"),
-        ("2", "OCR"),
-        ("3", "Parser"),
-        ("4", "Review"),
-        ("5", "Validate"),
-        ("6", "SQLite"),
-    ]
-    x = 42
-    for i, (n, label) in enumerate(workflow):
-        c.setFillColor(TEAL); c.circle(x + 45, 285, 36, fill=1, stroke=0)
-        c.setFillColor(WHITE); c.setFont("SegoeBold", 18)
-        c.drawCentredString(x + 45, 278, n)
-        c.setFillColor(NAVY); c.setFont("SegoeBold", 13)
-        c.drawCentredString(x + 45, 225, label)
-        if i < 5:
-            c.setStrokeColor(NAVY); c.setLineWidth(2)
-            c.line(x + 81, 285, x + 115, 285)
-        x += 148
-    slide_paragraph(c,
-                    "<b>Safety rule:</b> OCR proposes fields; the user confirms the amount, category, date, recipient, and reference. Duplicate references are blocked unless the user is editing the existing record.",
-                    42, 175, 870, 14, 19)
-    c.showPage()
-
-    slide_base(c, 8, "Data model", "Implementation")
+    # 3 Related work
+    slide_chrome(c, 3, "Where BahtBuddy sits", "Related work")
     rows = [
-        ("Categories", "Code, English/Thai name, income flag"),
-        ("MoneyTransactions", "Amount, type, category, date, recipient, slip reference"),
-        ("Budgets", "One monthly limit per category"),
-        ("RecipientRules", "Normalized recipient → learned category"),
-        ("Preferences", "Theme, language, PIN, biometrics, reminder, timezone"),
+        ["", "Notebook", "Cloud app", "Bank app", "BahtBuddy"],
+        ["Offline", "Yes", "Account required", "Partial", "Yes, the ledger is local"],
+        ["A transfer slip", "Copy by hand", "Upload the image", "No reading", "On device, then confirm"],
+        ["Cash and transfer", "Both, by hand", "Usually both", "Mostly the transfer", "Both, one entry form"],
+        ["Budget and tips", "None", "Often in the cloud", "Rarely", "Local rules, no model"],
+        ["Who can read it", "Only you", "The service", "The bank", "This phone only"],
     ]
-    y = 410
-    for name, detail in rows:
-        c.setFillColor(NAVY)
-        c.roundRect(42, y - 35, 220, 50, 10, fill=1, stroke=0)
-        c.setFillColor(WHITE); c.setFont("SegoeBold", 12)
-        c.drawCentredString(152, y - 16, name)
-        c.setFillColor(WHITE); c.roundRect(278, y - 35, 640, 50, 10, fill=1, stroke=0)
-        c.setFillColor(INK); c.setFont("Segoe", 12)
-        c.drawString(298, y - 16, detail)
-        y -= 65
+    col_w = [150, 170, 180, 180, 196]
+    row_h = 46
+    top = 424
+    left = 36
+    total_w = sum(col_w)
+    for r, row in enumerate(rows):
+        yy = top - (r + 1) * row_h
+        if r == 0:
+            hgrad(c, left, yy, total_w, row_h, DEEP, OCEAN)
+        else:
+            c.setFillColor(WHITE if r % 2 else MIST)
+            c.rect(left, yy, total_w, row_h, stroke=0, fill=1)
+            c.setFillColor(HexColor("#E5F7F3"))
+            c.rect(left + sum(col_w[:-1]), yy, col_w[-1], row_h, stroke=0, fill=1)
+        cx = left
+        for i, (cell, w) in enumerate(zip(row, col_w)):
+            if r == 0:
+                color, font, size = WHITE, "JakartaSemi", 11
+            elif i == 0:
+                color, font, size = SLIDE_INK, "JakartaSemi", 11
+            elif i == len(row) - 1:
+                color, font, size = HexColor("#0B6B5C"), "JakartaSemi", 10.5
+            else:
+                color, font, size = SLIDE_INK, "Jakarta", 10.5
+            slide_paragraph(c, cell, cx + 10, yy + row_h - 14, w - 18, size, size + 3, color, font)
+            cx += w
+    slide_paragraph(
+        c,
+        "The parser still understands Thai and English amount labels. The recognizer itself reads Latin letters and digits, so the review form stays mandatory.",
+        40, 118, 880, 12, 16, SLIDE_MUTED, "JakartaMed",
+    )
     c.showPage()
 
-    slide_base(c, 9, "Testing and validation", "Results")
-    cards = [
-        ("Parser", "Thai/English slip text, dates, references"),
-        ("Repository", "Duplicate references and category learning"),
-        ("Widget", "Manual entry and slip confirmation"),
-        ("Android", "Home, history, reports, add, and settings"),
+    # 4 Features
+    slide_chrome(c, 4, "What the finished app can do", "The application")
+    features = [
+        ("Entry", SLIDE_TEAL, "Expense in red, income in green. The baht sign stays with the amount. Date, note, shop, and reference."),
+        ("Categories", OCEAN, "Food through Other for spending. Salary, bonus, freelance, gift, interest, refund, and other income."),
+        ("Slip draft", SLIDE_TEAL, "Camera or photo library. Latin text is parsed into fields. Nothing is written until you press Save."),
+        ("Budgets", OCEAN, "One monthly limit for each expense category. The phone warns when a category crosses 80% and 100%."),
+        ("Reports", SLIDE_TEAL, "Today, this week, or this month. Kept share, a day’s pace, last period, category share, and the month line."),
+        ("Local tips", OCEAN, "Ranked from the ledger: spending above income, one category taking the month, a thin buffer, a large row."),
+        ("Six currencies", SLIDE_TEAL, "This month’s baht balance in USD, EUR, JPY, CNY, GBP, and SGD. The board is cached after Frankfurter."),
+        ("Zone, lock, backup", OCEAN, "Follow the phone or pick a zone. A hashed PIN and biometrics. A JSON backup you can restore later."),
     ]
-    x = 42
-    for i, (name, detail) in enumerate(cards):
-        c.setFillColor(WHITE); c.roundRect(x, 150, 205, 220, 14, fill=1, stroke=0)
-        c.setFillColor(TEAL); c.rect(x, 320, 205, 50, fill=1, stroke=0)
-        c.setFillColor(WHITE); c.setFont("SegoeBold", 15)
-        c.drawCentredString(x + 102, 338, name)
-        slide_paragraph(c, detail, x + 18, 285, 170, 12, 16)
-        x += 220
-    slide_paragraph(c,
-                    "<b>Verified evidence:</b> the complete Flutter suite passed 23 tests on 24 November 2026. Android emulator workflows were exercised for Home, History, Reports, Add/Slip, and Settings.",
-                    42, 125, 880, 12, 16, MUTED)
+    for i, (title, tone, body) in enumerate(features):
+        col, row = i % 4, i // 4
+        x = 28 + col * 232
+        y = 246 - row * 176
+        soft_card(c, x, y, 220, 164)
+        c.setFillColor(tone)
+        c.roundRect(x + 14, y + 124, 8, 22, 4, fill=1, stroke=0)
+        c.setFillColor(SLIDE_INK)
+        c.setFont("JakartaBold", 13)
+        c.drawString(x + 30, y + 128, title)
+        slide_paragraph(c, body, x + 14, y + 114, 192, 10.5, 14)
     c.showPage()
 
-    slide_base(c, 10, "Limitations and future work", "Evaluation")
-    slide_bullets(c, [
-        "The configured ML Kit recognizer uses the Latin model, not complete Thai-script OCR.",
-        "No controlled 50-slip OCR accuracy study has been completed.",
-        "Cloud synchronization is intentionally outside the local-first scope.",
-        "Future work: Thai recognition, dataset evaluation, encrypted backup, and optional synchronization.",
-        "Future evaluation: usability testing and SUS/task-completion metrics.",
-    ], 48, 405, 840, 15)
+    gallery(c, 5, "The four tabs", "Application",
+            "Home shows this month. History is the ledger. Reports explain it. Settings holds the look, the language, the zone, and the lock.",
+            [
+                ("screen_home.png", "Home", "฿580 this month, and the balance in six currencies."),
+                ("screen_history.png", "History", "Search, then All, Expense, or Income."),
+                ("screen_reports.png", "Reports", "Kept 97%. Two tips from three rows."),
+                ("screen_settings.png", "Settings", "Ocean, English, and the zone on Automatic."),
+            ])
     c.showPage()
 
-    slide_base(c, 11, "Conclusion and team responsibilities", "Conclusion")
-    slide_paragraph(c,
-                    "<b>Conclusion</b><br/>"
-                    "BahtBuddy provides a complete local-first course implementation combining slip-assisted entry, SQLite storage, budgets, reports, security, and customization.",
-                    48, 390, 860, 16, 21)
-    slide_paragraph(c,
-                    "<b>Jirathiwat Suntipreedatham — 6788122</b><br/>"
-                    "Frontend UI, Riverpod state, reports, testing, documentation, presentation.",
-                    48, 270, 860, 13, 18)
-    slide_paragraph(c,
-                    "<b>Sakkaraj Tuvajit — 6788140</b><br/>"
-                    "Database, repositories, OCR/parser integration, services, platform configuration.",
-                    48, 205, 860, 13, 18)
-    slide_paragraph(c,
-                    "Source: github.com/Sakkaraj/BahtBuddy",
-                    48, 115, 860, 12, 16, MUTED)
+    gallery(c, 6, "How a record gets in", "Application",
+            "The add sheet offers the camera, the photo library, or a manual amount. Expense opens in red. Income opens in green, with more than salary.",
+            [
+                ("screen_add.png", "Add", "Scan a slip, or enter cash that has no picture."),
+                ("screen_expense.png", "Expense", "Food first. The baht sign stays on the amount."),
+                ("screen_income.png", "Income", "Salary, bonus, freelance, gift, and more."),
+                ("screen_budgets.png", "Budgets", "A monthly limit on each expense category."),
+            ])
+    c.showPage()
+
+    gallery(c, 7, "Rates, the zone, and the month line", "Application",
+            "The chips and the converter use this month’s balance. The clock follows the phone, or a zone you pick. The report line is the real spending, day by day.",
+            [
+                ("screen_exchange.png", "Exchange", "฿580.00 becomes 17.04 USD on the 23 November board."),
+                ("screen_timezone.png", "Time zone", "Automatic is Asia/Bangkok, GMT+7, on this phone."),
+                ("screen_reports_charts.png", "Over time", "Food is the one expense, on the day it was saved."),
+            ])
+    c.showPage()
+
+    # 8 Architecture
+    slide_chrome(c, 8, "How a tap becomes a saved row", "Methodology")
+    layers = [
+        ("Screens", "Home, History, Reports, Settings, entry, and budgets."),
+        ("Riverpod", "The open pages share one state, including the active time zone."),
+        ("Repositories", "Save a row, refuse a repeated slip reference, export a backup."),
+        ("SQLite", "Categories, the ledger, budgets, recipient rules, and preferences."),
+    ]
+    y = 360
+    for i, (name, detail) in enumerate(layers):
+        hgrad(c, 32, y, 430, 58, DEEP if i < 3 else SLIDE_TEAL, OCEAN if i < 3 else HexColor("#14B8A6"))
+        c.setFillColor(WHITE)
+        c.setFont("JakartaBold", 14)
+        c.drawString(48, y + 32, name)
+        slide_paragraph(c, detail, 48, y + 26, 398, 11, 14, HexColor("#E7F4FF"))
+        if i < 3:
+            c.setFillColor(SLIDE_TEAL)
+            c.setFont("JakartaBold", 12)
+            c.drawCentredString(247, y - 14, "↓")
+        y -= 76
+    soft_card(c, 488, 78, 440, 336)
+    c.setFillColor(SLIDE_TEAL)
+    c.setFont("JakartaBold", 14)
+    c.drawString(508, 386, "On the phone")
+    stack = [
+        "Flutter and Dart, Material 3, Plus Jakarta Sans",
+        "Riverpod for state, go_router for the four tabs",
+        "Drift and SQLite, schema version 3",
+        "fl_chart for the share and the month line",
+        "ML Kit text recognition, Latin script",
+        "A rule parser for Thai and English labels",
+        "flutter_timezone, so Automatic matches the phone",
+        "local_auth for the PIN and biometrics",
+        "Frankfurter for the rate board, then a local cache",
+        "One network call, dated in the active zone",
+    ]
+    yy = 352
+    for item in stack:
+        c.setFillColor(SLIDE_TEAL)
+        c.circle(516, yy - 4, 3, fill=1, stroke=0)
+        slide_paragraph(c, item, 528, yy + 6, 380, 11, 14)
+        yy -= 28
+    c.showPage()
+
+    # 9 Slip path
+    slide_chrome(c, 9, "From a slip to a saved record", "Implementation")
+    steps = [
+        ("1", "Image", "Camera or the photo library. The picture stays with the draft."),
+        ("2", "Read", "ML Kit returns Latin letters, digits, and the reference line."),
+        ("3", "Parse", "Rules take the amount, the date, the shop, and the reference."),
+        ("4", "Review", "Every field can change. A past recipient can suggest the category."),
+        ("5", "Check", "A reference already stored in the ledger is refused."),
+        ("6", "Save", "The row is stored at that moment in the active time zone."),
+    ]
+    for i, (num, title, body) in enumerate(steps):
+        col, row = i % 3, i // 3
+        x = 32 + col * 308
+        y = 248 - row * 168
+        soft_card(c, x, y, 294, 152)
+        c.setFillColor(SLIDE_TEAL)
+        c.circle(x + 28, y + 112, 16, fill=1, stroke=0)
+        c.setFillColor(WHITE)
+        c.setFont("JakartaBold", 13)
+        c.drawCentredString(x + 28, y + 107, num)
+        c.setFillColor(SLIDE_INK)
+        c.setFont("JakartaBold", 15)
+        c.drawString(x + 54, y + 106, title)
+        slide_paragraph(c, body, x + 16, y + 86, 262, 12, 16)
+    c.showPage()
+
+    # 10 Time, rates, lock
+    slide_chrome(c, 10, "Time, money in other units, and the lock", "Implementation")
+    blocks = [
+        (SLIDE_TEAL, "Time zone", [
+            "Automatic reads the phone’s IANA zone. On this emulator that is Asia/Bangkok, GMT+7.",
+            "You can pick another zone. Day grouping, reports, and the rate request follow it.",
+            "A stored row keeps its instant. The screen shows that instant in the zone you chose.",
+            "The daily reminder, when it is on, fires in that same zone.",
+        ]),
+        (OCEAN, "Exchange", [
+            "The home chips convert this month’s balance, not a single mid-market quote.",
+            "USD, EUR, JPY, CNY, GBP, and SGD. Yen is shown with no decimals.",
+            "The request asks Frankfurter for the active zone’s calendar day, then falls back to the latest board.",
+            "The board is cached, so the chips still appear when the network is down.",
+        ]),
+        (DEEP, "Lock and backup", [
+            "The PIN is stored as a hash. Biometrics uses the phone’s own secure check.",
+            "Backup writes versioned JSON, including the time zone choice.",
+            "Restore reads the file you pick. A missing zone comes back as Automatic.",
+            "Sharing the file uses the system sheet on Android and on iPhone.",
+        ]),
+    ]
+    x = 28
+    for tone, title, lines in blocks:
+        soft_card(c, x, 52, 296, 360)
+        c.setFillColor(tone)
+        c.roundRect(x, 364, 296, 48, 18, fill=1, stroke=0)
+        c.rect(x, 364, 296, 20, fill=1, stroke=0)
+        c.setFillColor(WHITE)
+        c.setFont("JakartaBold", 16)
+        c.drawString(x + 16, 380, title)
+        yy = 340
+        for line in lines:
+            c.setFillColor(tone)
+            c.circle(x + 18, yy - 6, 3.5, fill=1, stroke=0)
+            h = slide_paragraph(c, line, x + 30, yy + 6, 248, 11, 14)
+            yy -= max(h + 12, 48)
+        x += 312
+    c.showPage()
+
+    # 11 Testing
+    slide_chrome(c, 11, "What was checked, and what was not", "Results")
+    soft_card(c, 28, 48, 520, 364)
+    c.setFillColor(SLIDE_GREEN)
+    c.roundRect(48, 360, 150, 26, 13, fill=1, stroke=0)
+    c.setFillColor(WHITE)
+    c.setFont("JakartaBold", 12)
+    c.drawCentredString(123, 368, "23 passed")
+    c.setFillColor(SLIDE_INK)
+    c.setFont("JakartaBold", 14)
+    c.drawString(210, 366, "24 November 2026")
+    tests = [
+        ("slip_parser_test", "Thai and English slips, dates, references, categories"),
+        ("duplicate_test", "A stored slip reference is rejected"),
+        ("widget_test", "Manual save, and the slip confirmation fields"),
+        ("exchange_rates_test", "Baht converted with the cached board and the dated URL"),
+        ("history_filter_test", "Search, type, and the Bangkok day"),
+        ("report_tips_test", "Glance facts and the ranked tip rules"),
+        ("pin_pad_test", "Six digits complete the PIN"),
+        ("bangkok_time_test", "Wall clock, a picked time, and a chosen UTC zone"),
+    ]
+    yy = 340
+    for name, detail in tests:
+        c.setFillColor(OCEAN)
+        c.setFont("JakartaSemi", 10)
+        c.drawString(48, yy, name)
+        slide_paragraph(c, detail, 210, yy + 12, 310, 10, 13, SLIDE_MUTED)
+        yy -= 34
+    soft_card(c, 564, 48, 368, 364)
+    c.setFillColor(SLIDE_RED)
+    c.roundRect(584, 360, 118, 26, 13, fill=1, stroke=0)
+    c.setFillColor(WHITE)
+    c.setFont("JakartaBold", 12)
+    c.drawCentredString(643, 368, "Limits")
+    limits = [
+        ("Latin slip text", "Thai script is outside the current recognizer. The user confirms every draft."),
+        ("Accuracy study", "A 50-slip corpus was not recorded, so no accuracy score is reported."),
+        ("Cloud sync", "The ledger remains on the device. The application has no account."),
+        ("Exchange rates", "The first request needs a network. Later views use the saved board."),
+        ("iOS build", "The same screens run on iOS. The walkthrough used the Android emulator."),
+    ]
+    yy = 336
+    for title, detail in limits:
+        c.setFillColor(SLIDE_INK)
+        c.setFont("JakartaBold", 12)
+        c.drawString(584, yy, title)
+        h = slide_paragraph(c, detail, 584, yy - 4, 328, 11, 14, SLIDE_MUTED)
+        yy -= h + 22
+    c.showPage()
+
+    # 12 Close
+    hgrad(c, 0, 0, W, H, DEEP, SKY)
+    c.setFillColor(HexColor("#0A3474"))
+    c.circle(860, 430, 90, fill=1, stroke=0)
+    c.setFillColor(HexColor("#D7F6F0"))
+    c.setFont("JakartaSemi", 12)
+    c.drawString(44, H - 52, "CONCLUSION")
+    c.setFillColor(WHITE)
+    c.setFont("JakartaExtra", 32)
+    c.drawString(44, H - 96, "A local ledger for the month")
+    slide_paragraph(
+        c,
+        "BahtBuddy records expenses and income on the phone: a reviewed slip, a ledger, budgets, reports, a lock, and a backup. Tips are calculated from the stored rows.",
+        44, H - 118, 860, 14, 19, HexColor("#E7F4FF"),
+    )
+    shipped = [
+        ("Demonstration", "Home balance, Add, an editable draft, History, then Reports."),
+        ("Settings", "Ocean theme, Automatic time zone, and ฿580 shown in USD."),
+        ("Evidence", "SQLite on the device, Latin slip reading, and 23 passing tests."),
+    ]
+    x = 44
+    for title, body in shipped:
+        c.setFillColor(HexColor("#F4F9FF"))
+        c.roundRect(x, 168, 286, 110, 16, fill=1, stroke=0)
+        c.setFillColor(SLIDE_TEAL)
+        c.rect(x, 168, 286, 4, fill=1, stroke=0)
+        c.setFillColor(SLIDE_INK)
+        c.setFont("JakartaBold", 14)
+        c.drawString(x + 16, 244, title)
+        slide_paragraph(c, body, x + 16, 230, 254, 12, 16)
+        x += 302
+    c.setFillColor(WHITE)
+    c.setFont("JakartaMed", 12)
+    c.drawString(44, 124, "Jirathiwat Suntipreedatham  ·  6788122  —  screens, state, reports, tests, and this presentation")
+    c.drawString(44, 102, "Sakkaraj Tuvajit  ·  6788140  —  database, save rules, slip reading, and the phone build")
+    c.setFillColor(SLIDE_TEAL)
+    c.roundRect(44, 44, 300, 34, 12, fill=1, stroke=0)
+    c.setFillColor(WHITE)
+    c.setFont("JakartaSemi", 12)
+    c.drawString(60, 56, "github.com/Sakkaraj/BahtBuddy")
+    c.setFillColor(HexColor("#D7F6F0"))
+    c.setFont("Jakarta", 11)
+    c.drawRightString(W - 44, 56, "26 November 2026")
     c.showPage()
 
     c.save()
@@ -788,4 +1111,4 @@ def build_slides():
 if __name__ == "__main__":
     build_report()
     build_slides()
-    print(f"Final report and slide deck written to {OUT}")
+    print("Wrote report and slides to", OUT)
