@@ -12,23 +12,6 @@ These materials document the current BahtBuddy Flutter application for
 - [BahtBuddy_Presentation_Slides.pdf](./BahtBuddy_Presentation_Slides.pdf) —
   12-slide 16:9 deck in the app’s Ocean theme (cobalt banner, teal
   actions, Plus Jakarta Sans) for the 26 November 2026 presentation.
-- [build_final_deliverables.py](./build_final_deliverables.py) — regenerates
-  both PDFs. Phone screenshots keep their real 1344×2992 proportions.
-- Screenshots used in both PDFs:
-  `screen_home.png`, `screen_history.png`, `screen_reports.png`,
-  `screen_reports_charts.png`, `screen_settings.png`, `screen_timezone.png`,
-  `screen_expense.png`, `screen_income.png`, `screen_budgets.png`,
-  `screen_exchange.png`, `screen_add.png`.
-
-## Regenerating the PDFs
-
-From the repository root:
-
-```powershell
-python docs\ITCS259\build_final_deliverables.py
-```
-
-The generator needs Python, ReportLab, and Pillow.
 
 ## Demonstration order
 

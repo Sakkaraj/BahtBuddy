@@ -68,3 +68,7 @@ buildServer.json
 
 # ML Kit OCR model zip (bundle itself is committed)
 ios/Runner/MLKitBundles/*.zip
+
+# Local inputs for the course PDFs. The finished PDFs stay in the repo.
+docs/ITCS259/build_final_deliverables.py
+docs/ITCS259/screen_*.png
