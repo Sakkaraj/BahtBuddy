@@ -11,5 +11,10 @@ void main() {
     expect(board.bahtPerUnit['USD'], closeTo(37.242 / 1.0939, 0.001));
     expect(board.bahtPerUnit['JPY'], closeTo(37.242 / 174.01, 0.0001));
     expect(board.date, DateTime.parse('2026-11-23'));
+    expect(
+      foreignFromBaht(board, 'USD', 280),
+      closeTo(280 / (37.242 / 1.0939), 0.001),
+    );
+    expect(foreignFromBaht(board, 'USD', 0), 0);
   });
 }

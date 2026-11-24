@@ -27,6 +27,13 @@ class ExchangeBoard {
 
 const exchangeCodes = ['USD', 'EUR', 'JPY', 'CNY', 'GBP', 'SGD'];
 
+/// How much [code] the baht [balance] buys at this board.
+double foreignFromBaht(ExchangeBoard board, String code, double balance) {
+  final bahtPerUnit = board.bahtPerUnit[code];
+  if (bahtPerUnit == null || bahtPerUnit == 0) return 0;
+  return balance / bahtPerUnit;
+}
+
 ExchangeBoard parseFrankfurter(String body) {
   final json = jsonDecode(body) as Map<String, dynamic>;
   final raw = (json['rates'] as Map).map(

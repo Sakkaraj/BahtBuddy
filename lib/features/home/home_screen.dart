@@ -102,9 +102,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     pace: pace,
                   ),
                 ),
-              'rates': const Appear(
-                  delay: Duration(milliseconds: 40),
-                  child: ExchangeRateCard(),
+              'rates': Appear(
+                  delay: const Duration(milliseconds: 40),
+                  child: ExchangeRateCard(balance: month.balance),
                 ),
               'shortcuts': Appear(
                   delay: const Duration(milliseconds: 80),

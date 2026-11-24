@@ -9,7 +9,9 @@ import '../providers.dart';
 import '../services/exchange_rates.dart';
 
 class ExchangeRateCard extends ConsumerWidget {
-  const ExchangeRateCard({super.key});
+  const ExchangeRateCard({super.key, required this.balance});
+
+  final double balance;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -77,7 +79,7 @@ class ExchangeRateCard extends ConsumerWidget {
                     ],
                   ),
                   Text(
-                    l10n.exchangeAsOf(date),
+                    '${formatBaht(locale, balance)} · ${l10n.exchangeAsOf(date)}',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                   const SizedBox(height: 10),
@@ -89,11 +91,13 @@ class ExchangeRateCard extends ConsumerWidget {
                       separatorBuilder: (_, _) => const SizedBox(width: 8),
                       itemBuilder: (context, index) {
                         final code = exchangeCodes[index];
-                        final rate = board.bahtPerUnit[code];
-                        if (rate == null) return const SizedBox.shrink();
+                        if (board.bahtPerUnit[code] == null) {
+                          return const SizedBox.shrink();
+                        }
+                        final foreign = foreignFromBaht(board, code, balance);
                         return _RateChip(
                           code: code,
-                          value: formatBaht(locale, rate),
+                          value: formatForeign(code, foreign),
                           onTap: () => _openConverter(context, board, code),
                         );
                       },
@@ -114,9 +118,22 @@ class ExchangeRateCard extends ConsumerWidget {
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      builder: (context) => _Converter(board: board, initial: code),
+      builder: (context) => _Converter(
+        board: board,
+        initial: code,
+        balance: balance,
+      ),
     );
   }
+}
+
+String formatForeign(String code, double amount) {
+  final digits = code == 'JPY' ? 0 : 2;
+  return NumberFormat.currency(
+    name: code,
+    symbol: '',
+    decimalDigits: digits,
+  ).format(amount).trim();
 }
 
 class _RateChip extends StatelessWidget {
@@ -145,7 +162,7 @@ class _RateChip extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                '1 $code',
+                code,
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   color: bahtAccent,
                   fontWeight: FontWeight.w700,
@@ -189,10 +206,15 @@ class _Offline extends StatelessWidget {
 }
 
 class _Converter extends StatefulWidget {
-  const _Converter({required this.board, required this.initial});
+  const _Converter({
+    required this.board,
+    required this.initial,
+    required this.balance,
+  });
 
   final ExchangeBoard board;
   final String initial;
+  final double balance;
 
   @override
   State<_Converter> createState() => _ConverterState();
@@ -200,7 +222,9 @@ class _Converter extends StatefulWidget {
 
 class _ConverterState extends State<_Converter> {
   late String _code = widget.initial;
-  final _amount = TextEditingController(text: '1');
+  late final _amount = TextEditingController(
+    text: widget.balance.toStringAsFixed(2),
+  );
 
   @override
   void dispose() {
@@ -211,10 +235,8 @@ class _ConverterState extends State<_Converter> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final locale = Localizations.localeOf(context);
     final input = double.tryParse(_amount.text.replaceAll(',', '')) ?? 0;
-    final rate = widget.board.bahtPerUnit[_code] ?? 0;
-    final result = input * rate;
+    final result = foreignFromBaht(widget.board, _code, input);
     return Padding(
       padding: EdgeInsets.fromLTRB(
         20,
@@ -226,7 +248,10 @@ class _ConverterState extends State<_Converter> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.convertToBaht, style: Theme.of(context).textTheme.titleLarge),
+          Text(
+            '${l10n.balance} · $_code',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
           const SizedBox(height: 12),
           TextField(
             controller: _amount,
@@ -250,7 +275,7 @@ class _ConverterState extends State<_Converter> {
           ),
           const SizedBox(height: 16),
           Text(
-            formatBaht(locale, result),
+            '${formatForeign(_code, result)} $_code',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
               color: bahtAccent,
               fontWeight: FontWeight.w800,
