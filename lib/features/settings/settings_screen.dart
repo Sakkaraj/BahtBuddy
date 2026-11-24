@@ -9,12 +9,14 @@ import 'package:go_router/go_router.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../core/format.dart';
 import '../../core/pin_hash.dart';
 import '../../l10n/app_localizations.dart';
 import '../../providers.dart';
 import '../lock/pin_flow.dart';
 import '../../widgets/bb_grouped_section.dart';
 import '../../widgets/bb_scaffold.dart';
+import '../../widgets/motion.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -32,98 +34,138 @@ class SettingsScreen extends ConsumerWidget {
           ),
           error: (error, _) =>
               SliverFillRemaining(child: Center(child: Text('$error'))),
-          data: (prefs) => SliverList(
-            delegate: SliverChildListDelegate([
-              BbGroupedSection(
-                header: l10n.appearance,
-                children: [
-                  _NavRow(
-                    title: l10n.theme,
-                    value: _themeLabel(l10n, prefs.themeMode),
-                    onTap: () => _pickTheme(context, ref, prefs.themeMode),
-                  ),
-                  _NavRow(
-                    title: l10n.language,
-                    value: prefs.localeCode == 'th' ? l10n.thai : l10n.english,
-                    onTap: () =>
+          data: (prefs) {
+            final themeName = _themeLabel(l10n, prefs.themeMode);
+            final languageName = prefs.localeCode == 'th'
+                ? l10n.thai
+                : l10n.english;
+            return SliverList(
+              delegate: SliverChildListDelegate([
+                Appear(
+                  child: _LookCard(
+                    title: l10n.appTitle,
+                    theme: themeName,
+                    language: languageName,
+                    onTheme: () => _pickTheme(context, ref, prefs.themeMode),
+                    onLanguage: () =>
                         _pickLanguage(context, ref, prefs.localeCode),
                   ),
-                ],
-              ),
-              BbGroupedSection(
-                header: l10n.security,
-                children: [
-                  _NavRow(
-                    title: prefs.pinHash == null ? l10n.setPin : l10n.changePin,
-                    onTap: () => _setPin(context, ref, prefs.pinHash),
+                ),
+                Appear(
+                  delay: const Duration(milliseconds: 50),
+                  child: BbGroupedSection(
+                    header: l10n.appearance,
+                    children: [
+                      _NavRow(
+                        title: l10n.theme,
+                        value: themeName,
+                        icon: Icons.palette_rounded,
+                        color: bahtSky,
+                        onTap: () => _pickTheme(context, ref, prefs.themeMode),
+                      ),
+                      _NavRow(
+                        title: l10n.language,
+                        value: languageName,
+                        icon: Icons.translate_rounded,
+                        color: bahtSky,
+                        onTap: () =>
+                            _pickLanguage(context, ref, prefs.localeCode),
+                      ),
+                    ],
                   ),
-                  if (prefs.pinHash != null)
-                    _NavRow(
-                      title: l10n.removePin,
-                      destructive: true,
-                      onTap: () => _removePin(context, ref, prefs.pinHash!),
-                    ),
-                  BbRow(
-                    child: Row(
-                      children: [
-                        Expanded(child: Text(l10n.biometrics)),
-                        Switch.adaptive(
-                          value: prefs.biometricsEnabled,
-                          onChanged: prefs.pinHash == null
-                              ? null
-                              : (value) => _setBiometrics(context, ref, value),
+                ),
+                Appear(
+                  delay: const Duration(milliseconds: 60),
+                  child: BbGroupedSection(
+                    header: l10n.security,
+                    children: [
+                      _NavRow(
+                        title: prefs.pinHash == null
+                            ? l10n.setPin
+                            : l10n.changePin,
+                        icon: Icons.lock_rounded,
+                        color: bahtAccent,
+                        onTap: () => _setPin(context, ref, prefs.pinHash),
+                      ),
+                      if (prefs.pinHash != null)
+                        _NavRow(
+                          title: l10n.removePin,
+                          icon: Icons.lock_open_rounded,
+                          color: bahtExpense,
+                          destructive: true,
+                          onTap: () => _removePin(context, ref, prefs.pinHash!),
                         ),
-                      ],
-                    ),
+                      _SwitchRow(
+                        title: l10n.biometrics,
+                        icon: Icons.fingerprint_rounded,
+                        color: bahtSky,
+                        value: prefs.biometricsEnabled,
+                        onChanged: prefs.pinHash == null
+                            ? null
+                            : (value) => _setBiometrics(context, ref, value),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              BbGroupedSection(
-                header: l10n.reminders,
-                children: [
-                  BbRow(
-                    child: Row(
-                      children: [
-                        Expanded(child: Text(l10n.dailyReminder)),
-                        Switch.adaptive(
-                          value: prefs.dailyReminder,
-                          onChanged: (value) =>
-                              _setReminder(context, ref, value),
-                        ),
-                      ],
-                    ),
+                ),
+                Appear(
+                  delay: const Duration(milliseconds: 140),
+                  child: BbGroupedSection(
+                    header: l10n.reminders,
+                    children: [
+                      _SwitchRow(
+                        title: l10n.dailyReminder,
+                        icon: Icons.notifications_active_rounded,
+                        color: bahtSun,
+                        value: prefs.dailyReminder,
+                        onChanged: (value) => _setReminder(context, ref, value),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              BbGroupedSection(
-                header: l10n.budgets,
-                children: [
-                  _NavRow(
-                    title: l10n.budgets,
-                    onTap: () => context.push('/budgets'),
+                ),
+                Appear(
+                  delay: const Duration(milliseconds: 180),
+                  child: BbGroupedSection(
+                    header: l10n.budgets,
+                    children: [
+                      _NavRow(
+                        title: l10n.budgets,
+                        icon: Icons.savings_rounded,
+                        color: bahtIncome,
+                        onTap: () => context.push('/budgets'),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              BbGroupedSection(
-                header: l10n.dataSection,
-                children: [
-                  _NavRow(
-                    title: l10n.exportCsv,
-                    onTap: () => _shareFile(context, ref, csv: true),
+                ),
+                Appear(
+                  delay: const Duration(milliseconds: 220),
+                  child: BbGroupedSection(
+                    header: l10n.dataSection,
+                    children: [
+                      _NavRow(
+                        title: l10n.exportCsv,
+                        icon: Icons.table_chart_rounded,
+                        color: bahtSky,
+                        onTap: () => _shareFile(context, ref, csv: true),
+                      ),
+                      _NavRow(
+                        title: l10n.backup,
+                        icon: Icons.cloud_upload_rounded,
+                        color: const Color(0xFF1E4B7A),
+                        onTap: () => _shareFile(context, ref, csv: false),
+                      ),
+                      _NavRow(
+                        title: l10n.restore,
+                        icon: Icons.cloud_download_rounded,
+                        color: bahtAccent,
+                        onTap: () => _restore(context, ref),
+                      ),
+                    ],
                   ),
-                  _NavRow(
-                    title: l10n.backup,
-                    onTap: () => _shareFile(context, ref, csv: false),
-                  ),
-                  _NavRow(
-                    title: l10n.restore,
-                    onTap: () => _restore(context, ref),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 32),
-            ]),
-          ),
+                ),
+                const SizedBox(height: 32),
+              ]),
+            );
+          },
         ),
       ],
     );
@@ -131,8 +173,11 @@ class SettingsScreen extends ConsumerWidget {
 
   String _themeLabel(AppLocalizations l10n, String mode) {
     return switch (mode) {
-      'light' => l10n.light,
+      'white' || 'light' => l10n.white,
+      'color' => l10n.colorTheme,
+      'ocean' => l10n.ocean,
       'dark' => l10n.dark,
+      'black' => l10n.black,
       _ => l10n.system,
     };
   }
@@ -143,28 +188,73 @@ class SettingsScreen extends ConsumerWidget {
     String current,
   ) async {
     final l10n = AppLocalizations.of(context);
-    final mode = await showCupertinoModalPopup<String>(
+    final selected = current == 'light' ? 'white' : current;
+    final choices = <_ThemeChoice>[
+      _ThemeChoice('system', l10n.system, const [
+        Color(0xFFE4E9EF),
+        Color(0xFFF7F8FA),
+        Color(0xFF1C2B3A),
+        Color(0xFF0B1220),
+      ], stops: const [0, 0.5, 0.5, 1]),
+      _ThemeChoice('white', l10n.white, const [
+        Color(0xFFFFFFFF),
+        Color(0xFFF3F4F6),
+      ]),
+      _ThemeChoice('color', l10n.colorTheme, const [
+        Color(0xFF34D399),
+        Color(0xFF065F46),
+      ]),
+      _ThemeChoice('ocean', l10n.ocean, const [
+        Color(0xFF38BDF8),
+        Color(0xFF0B3A82),
+      ]),
+      _ThemeChoice('dark', l10n.dark, const [
+        Color(0xFF2563EB),
+        Color(0xFF0B1220),
+      ]),
+      _ThemeChoice('black', l10n.black, const [
+        Color(0xFF11100C),
+        Color(0xFFC4A35A),
+      ]),
+    ];
+    final mode = await showModalBottomSheet<String>(
       context: context,
-      builder: (context) => CupertinoActionSheet(
-        title: Text(l10n.theme),
-        actions: [
-          for (final entry in {
-            'system': l10n.system,
-            'light': l10n.light,
-            'dark': l10n.dark,
-          }.entries)
-            CupertinoActionSheetAction(
-              onPressed: () => Navigator.pop(context, entry.key),
-              child: Text(entry.value),
-            ),
-        ],
-        cancelButton: CupertinoActionSheetAction(
-          onPressed: () => Navigator.pop(context),
-          child: Text(l10n.cancel),
-        ),
-      ),
+      showDragHandle: true,
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.theme,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 12),
+              GridView.count(
+                crossAxisCount: 3,
+                shrinkWrap: true,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                childAspectRatio: 1.15,
+                physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  for (final choice in choices)
+                    _ThemeTile(
+                      choice: choice,
+                      selected: choice.id == selected ||
+                          (choice.id == 'system' && selected == 'system'),
+                      onTap: () => Navigator.pop(context, choice.id),
+                    ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
-    if (mode != null && mode != current) {
+    if (mode != null && mode != selected) {
       await ref.read(settingsProvider.notifier).setTheme(mode);
     }
   }
@@ -326,33 +416,185 @@ class SettingsScreen extends ConsumerWidget {
   }
 }
 
+class _LookCard extends StatelessWidget {
+  const _LookCard({
+    required this.title,
+    required this.theme,
+    required this.language,
+    required this.onTheme,
+    required this.onLanguage,
+  });
+
+  final String title;
+  final String theme;
+  final String language;
+  final VoidCallback onTheme;
+  final VoidCallback onLanguage;
+
+  @override
+  Widget build(BuildContext context) {
+    final look = BuddyLook.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: look.banner,
+          borderRadius: BorderRadius.circular(26),
+          border: look.bannerFilled
+              ? null
+              : Border.all(color: look.bannerInk.withValues(alpha: 0.1)),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF12324F).withValues(
+                alpha: look.brightness == Brightness.dark ? 0.28 : 0.12,
+              ),
+              blurRadius: 18,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: look.bannerFilled
+                          ? Colors.white.withValues(alpha: 0.2)
+                          : bahtAccent.withValues(alpha: 0.14),
+                      shape: BoxShape.circle,
+                    ),
+                    child: SizedBox(
+                      width: 42,
+                      height: 42,
+                      child: Icon(
+                        Icons.auto_awesome_rounded,
+                        color: look.bannerFilled ? Colors.white : bahtAccent,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: TextStyle(
+                        color: look.bannerInk,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  Expanded(
+                    child: _LookChip(
+                      icon: Icons.palette_rounded,
+                      label: theme,
+                      ink: look.bannerInk,
+                      onTap: onTheme,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _LookChip(
+                      icon: Icons.translate_rounded,
+                      label: language,
+                      ink: look.bannerInk,
+                      onTap: onLanguage,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LookChip extends StatelessWidget {
+  const _LookChip({
+    required this.icon,
+    required this.label,
+    required this.ink,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color ink;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: ink.withValues(alpha: 0.12),
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          child: Row(
+            children: [
+              Icon(icon, size: 16, color: ink),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: ink,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _NavRow extends StatelessWidget {
   const _NavRow({
     required this.title,
+    required this.icon,
+    required this.color,
     required this.onTap,
     this.value,
     this.destructive = false,
   });
 
   final String title;
+  final IconData icon;
+  final Color color;
   final String? value;
   final VoidCallback onTap;
   final bool destructive;
 
   @override
   Widget build(BuildContext context) {
+    final ink = destructive ? Theme.of(context).colorScheme.error : null;
     return BbRow(
       onTap: onTap,
       child: Row(
         children: [
+          _IconBadge(icon: icon, color: destructive ? bahtExpense : color),
+          const SizedBox(width: 12),
           Expanded(
             child: Text(
               title,
-              style: TextStyle(
-                color: destructive
-                    ? Theme.of(context).colorScheme.error
-                    : null,
-              ),
+              style: TextStyle(color: ink, fontWeight: FontWeight.w600),
             ),
           ),
           if (value != null)
@@ -360,15 +602,160 @@ class _NavRow extends StatelessWidget {
               value!,
               style: TextStyle(
                 color: CupertinoColors.secondaryLabel.resolveFrom(context),
+                fontWeight: FontWeight.w600,
               ),
             ),
-          const SizedBox(width: 6),
+          const SizedBox(width: 4),
           Icon(
             CupertinoIcons.chevron_forward,
             size: 16,
             color: CupertinoColors.tertiaryLabel.resolveFrom(context),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _SwitchRow extends StatelessWidget {
+  const _SwitchRow({
+    required this.title,
+    required this.icon,
+    required this.color,
+    required this.value,
+    required this.onChanged,
+  });
+
+  final String title;
+  final IconData icon;
+  final Color color;
+  final bool value;
+  final ValueChanged<bool>? onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return BbRow(
+      child: Row(
+        children: [
+          _IconBadge(icon: icon, color: color),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+          Switch.adaptive(
+            value: value,
+            activeTrackColor: color,
+            onChanged: onChanged,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _IconBadge extends StatelessWidget {
+  const _IconBadge({required this.icon, required this.color});
+
+  final IconData icon;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: SizedBox(
+        width: 36,
+        height: 36,
+        child: Icon(icon, color: color, size: 20),
+      ),
+    );
+  }
+}
+
+class _ThemeChoice {
+  const _ThemeChoice(this.id, this.label, this.colors, {this.stops});
+
+  final String id;
+  final String label;
+  final List<Color> colors;
+  final List<double>? stops;
+}
+
+class _ThemeTile extends StatelessWidget {
+  const _ThemeTile({
+    required this.choice,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final _ThemeChoice choice;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: onTap,
+        child: Ink(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: choice.colors,
+              stops: choice.stops,
+            ),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: selected ? bahtAccent : Colors.transparent,
+              width: 2.5,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Align(
+              alignment: Alignment.bottomLeft,
+              child: choice.stops == null
+                  ? _ThemeLabel(choice: choice)
+                  : FractionallySizedBox(
+                      widthFactor: 0.46,
+                      alignment: Alignment.centerLeft,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: _ThemeLabel(choice: choice),
+                      ),
+                    ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ThemeLabel extends StatelessWidget {
+  const _ThemeLabel({required this.choice});
+
+  final _ThemeChoice choice;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      choice.label,
+      maxLines: 1,
+      style: TextStyle(
+        color: choice.colors.first.computeLuminance() > 0.7
+            ? const Color(0xFF142033)
+            : Colors.white,
+        fontWeight: FontWeight.w800,
+        fontSize: 14,
       ),
     );
   }

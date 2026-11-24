@@ -24,7 +24,7 @@ class BbGroupedSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (header != null || headerTrailing != null)
             Padding(
@@ -51,8 +51,15 @@ class BbGroupedSection extends StatelessWidget {
             ),
           DecoratedBox(
             decoration: BoxDecoration(
-              color: groupedSurface(context),
-              borderRadius: BorderRadius.circular(12),
+              gradient: cardWash(context),
+              borderRadius: BorderRadius.circular(22),
+              boxShadow: [
+                BoxShadow(
+                  color: BuddyLook.of(context).orbA.withValues(alpha: 0.14),
+                  blurRadius: 18,
+                  offset: const Offset(0, 8),
+                ),
+              ],
             ),
             child: Column(
               children: [

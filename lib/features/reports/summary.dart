@@ -32,31 +32,68 @@ class PeriodSummary {
     required this.income,
     required this.expense,
     required this.expenseByCategory,
+    required this.incomeByCategory,
   });
 
   final double income;
   final double expense;
   final Map<int, double> expenseByCategory;
+  final Map<int, double> incomeByCategory;
 
   double get balance => income - expense;
+}
+
+class DayPoint {
+  const DayPoint(this.day, this.income, this.expense);
+
+  final DateTime day;
+  final double income;
+  final double expense;
+}
+
+List<DayPoint> dailySeries(List<MoneyTransaction> rows, ReportRange range) {
+  final count = range.end.difference(range.start).inDays.clamp(1, 62);
+  final income = List<double>.filled(count, 0);
+  final expense = List<double>.filled(count, 0);
+  final origin = DateTime(range.start.year, range.start.month, range.start.day);
+  for (final row in rows) {
+    if (!range.contains(row.occurredAt)) continue;
+    final day = DateTime(row.occurredAt.year, row.occurredAt.month, row.occurredAt.day);
+    final index = day.difference(origin).inDays;
+    if (index < 0 || index >= count) continue;
+    if (row.type == 'income') {
+      income[index] += row.amount;
+    } else {
+      expense[index] += row.amount;
+    }
+  }
+  return [
+    for (var i = 0; i < count; i++)
+      DayPoint(origin.add(Duration(days: i)), income[i], expense[i]),
+  ];
 }
 
 PeriodSummary summarize(List<MoneyTransaction> rows, ReportRange range) {
   var income = 0.0;
   var expense = 0.0;
-  final byCategory = <int, double>{};
+  final expenseByCategory = <int, double>{};
+  final incomeByCategory = <int, double>{};
   for (final row in rows) {
     if (!range.contains(row.occurredAt)) continue;
     if (row.type == 'income') {
       income += row.amount;
+      incomeByCategory[row.categoryId] =
+          (incomeByCategory[row.categoryId] ?? 0) + row.amount;
       continue;
     }
     expense += row.amount;
-    byCategory[row.categoryId] = (byCategory[row.categoryId] ?? 0) + row.amount;
+    expenseByCategory[row.categoryId] =
+        (expenseByCategory[row.categoryId] ?? 0) + row.amount;
   }
   return PeriodSummary(
     income: income,
     expense: expense,
-    expenseByCategory: byCategory,
+    expenseByCategory: expenseByCategory,
+    incomeByCategory: incomeByCategory,
   );
 }

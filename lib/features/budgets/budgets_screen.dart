@@ -22,9 +22,13 @@ class BudgetsScreen extends ConsumerWidget {
     final rows = ref.watch(transactionsProvider).asData?.value ?? [];
     final month = summarize(rows, ReportRange.month(DateTime.now()));
     final expenseCategories = categories.where((c) => !c.isIncome).toList();
-    return Scaffold(
-      backgroundColor: groupedBackground(context),
-      appBar: AppBar(title: Text(l10n.budgets)),
+    return BuddyBackdrop(
+      child: Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        title: Text(l10n.budgets),
+      ),
       body: ListView(
         children: [
           BbGroupedSection(
@@ -41,6 +45,7 @@ class BudgetsScreen extends ConsumerWidget {
           ),
         ],
       ),
+    ),
     );
   }
 
@@ -123,18 +128,28 @@ class _BudgetTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     if (budget != null) {
+      final style = categoryStyle(category.key);
       return BudgetProgress(
         name: categoryLabel(category, locale),
         spent: spent,
         limit: budget!.monthlyLimit,
         locale: locale,
+        color: style.color,
+        icon: style.icon,
         onTap: onTap,
       );
     }
+    final style = categoryStyle(category.key);
     return BbRow(
       onTap: onTap,
       child: Row(
         children: [
+          CircleAvatar(
+            radius: 16,
+            backgroundColor: style.color.withValues(alpha: 0.16),
+            child: Icon(style.icon, size: 16, color: style.color),
+          ),
+          const SizedBox(width: 10),
           Expanded(child: Text(categoryLabel(category, locale))),
           Text(
             l10n.noBudget,

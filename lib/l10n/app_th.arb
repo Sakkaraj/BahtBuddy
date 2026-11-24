@@ -37,7 +37,9 @@
   "duplicateTitle": "สลิปนี้ถูกบันทึกแล้ว",
   "duplicateBody": "มีรายการที่ใช้เลขอ้างอิงนี้อยู่แล้ว",
   "saveWithoutReference": "บันทึกโดยไม่ใช้เลขอ้างอิง",
-  "searchHint": "ค้นหาบันทึก ผู้รับ หรือเลขอ้างอิง",
+  "searchHint": "ค้นหาบันทึก ร้าน หรือหมวด",
+  "allRecords": "ทั้งหมด",
+  "noMatches": "ไม่พบรายการที่ค้นหา",
   "filters": "ตัวกรอง",
   "clearFilters": "ล้างตัวกรอง",
   "from": "ตั้งแต่",
@@ -50,6 +52,7 @@
   "reportsEmpty": "ยังไม่มีข้อมูลในช่วงนี้",
   "byCategory": "ตามหมวดหมู่",
   "overTime": "ตามช่วงเวลา",
+  "byDay": "รายวัน",
   "incomeVsExpense": "รายรับเทียบรายจ่าย",
   "budgets": "งบประมาณ",
   "monthlyLimit": "วงเงินต่อเดือน",
@@ -61,6 +64,11 @@
   "system": "ตามระบบ",
   "light": "สว่าง",
   "dark": "มืด",
+  "white": "ขาว",
+  "black": "ดำ",
+  "colorTheme": "สีสัน",
+  "ocean": "ทะเล",
+  "appTagline": "เงินของคุณ อยู่ในเครื่องนี้",
   "language": "ภาษา",
   "english": "English",
   "thai": "ไทย",
@@ -120,5 +128,122 @@
   "lockSubtitle": "ใส่รหัส PIN เพื่อดูรายการ",
   "filterCategoryChip": "หมวดหมู่",
   "overBudget": "เกินงบ",
-  "monthBalance": "เดือนนี้"
+  "monthBalance": "เดือนนี้",
+  "emptyHint": "ยังไม่มีรายการในเครื่องนี้ สแกนสลิป หรือเพิ่มเงินสดเอง",
+  "sampleSlip": "ลองอ่านสลิปตัวอย่าง",
+  "ocrText": "ข้อความที่อ่านได้จากสลิป",
+  "spentThisMonth": "ใช้ไปเดือนนี้",
+  "dailyAverage": "เฉลี่ยต่อวัน",
+  "topCategory": "หมวดที่ใช้มากสุด",
+  "daysLeft": "เหลืออีก {count} วัน",
+  "@daysLeft": {
+    "placeholders": {
+      "count": {"type": "String"}
+    }
+  },
+  "sameAsLastMonth": "ใกล้เคียงกับเดือนที่แล้ว",
+  "noSpendingLastMonth": "เดือนที่แล้วไม่มีการใช้จ่าย",
+  "noIncomeLastMonth": "เดือนที่แล้วไม่มีรายรับ",
+  "comparedWithLastMonth": "{change} เทียบกับเดือนที่แล้ว",
+  "@comparedWithLastMonth": {
+    "placeholders": {
+      "change": {"type": "String"}
+    }
+  },
+  "bannerSaveTitle": "ออมนิดหน่อยทุกวัน",
+  "bannerSaveBody": "นิสัยเล็กๆ เก็บเงินไว้ใช้ทีหลัง",
+  "bannerTrackTitle": "ดูว่าเงินไปไหน",
+  "bannerTrackBody": "รู้รายเดือน เก็บเงินได้ง่ายขึ้น",
+  "safePerDay": "ใช้ได้วันละ {amount}",
+  "@safePerDay": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "nothingLeft": "เดือนนี้ใช้ได้ครบแล้ว",
+  "overIncome": "ใช้เกินรายรับเดือนนี้ {amount}",
+  "@overIncome": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "exchangeRates": "อัตราแลกเปลี่ยน",
+  "exchangeAsOf": "ธนาคารกลางยุโรป · {date}",
+  "@exchangeAsOf": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "exchangeOffline": "ต่อเน็ตครั้งหนึ่งเพื่อดูอัตราแลกเปลี่ยน",
+  "exchangeRetry": "ลองอีกครั้ง",
+  "convertToBaht": "แปลงเป็นบาท",
+  "arrange": "จัดเรียง",
+  "done": "เสร็จ",
+  "arrangeHint": "กดค้างที่มือจับ แล้วลากการ์ด",
+  "resetLayout": "คืนค่าเดิม",
+  "cardTips": "เคล็ดลับ",
+  "cardShortcuts": "ทางลัด",
+  "cardSpending": "รายจ่าย",
+  "cardWaiting": "การ์ดนี้จะมีข้อมูลเมื่อเริ่มบันทึก",
+  "reportGlance": "ภาพรวม",
+  "keptShare": "เหลือไว้",
+  "vsLastPeriod": "เทียบช่วงก่อน",
+  "recordCount": "รายการ",
+  "perDay": "ต่อวัน",
+  "forYou": "คำแนะนำ",
+  "tipEmpty": "บันทึกรายรับและรายจ่ายเพื่อรับคำแนะนำของช่วงนี้",
+  "tipSteady": "รายรับและรายจ่ายอยู่ในช่วงคงที่ บันทึกต่อไปเพื่อให้คำแนะนำคมขึ้น",
+  "tipOverspent": "ใช้จ่ายสูงกว่ารายรับ {amount} ลองชะลอของที่ไม่จำเป็น",
+  "@tipOverspent": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "tipMissingIncome": "มีรายจ่ายแต่ยังไม่บันทึกรายรับ ใส่รายรับเพื่อให้ยอดตรง",
+  "tipNoSpending": "มีรายรับและยังไม่มีรายจ่าย ช่วงนี้เก็บเงินได้ดี",
+  "tipCategory": "{name} คือ {percent} ของรายจ่าย ลดหมวดนี้แล้วภาพรวมขยับมากสุด",
+  "@tipCategory": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "percent": {"type": "String"}
+    }
+  },
+  "tipSpendUp": "รายจ่ายสูงกว่าช่วงก่อน {percent}",
+  "@tipSpendUp": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "tipSpendDown": "รายจ่ายต่ำกว่าช่วงก่อน {percent}",
+  "@tipSpendDown": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "tipThin": "เหลือรายรับเพียง {percent} เป้าที่มั่นคงกว่าคือเหลือสัก 20%",
+  "@tipThin": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "tipHealthy": "เหลือรายรับไว้ {percent} พอเป็นกันชนค่าใช้จ่ายไม่คาดคิด",
+  "@tipHealthy": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "tipPace": "ตามจังหวะนี้ ช่วงที่เหลือจะใช้เกินยอดคงเหลือประมาณ {amount}",
+  "@tipPace": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "tipLargest": "รายการใหญ่สุดคือ {amount} ใน{name} ตรวจว่าตั้งใจจ่ายหรือไม่",
+  "@tipLargest": {
+    "placeholders": {
+      "amount": {"type": "String"},
+      "name": {"type": "String"}
+    }
+  },
+  "runningTotal": "ยอดสะสม"
 }

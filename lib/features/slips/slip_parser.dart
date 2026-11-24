@@ -44,6 +44,9 @@ class SlipParser {
     r'([0-9][0-9,]*(?:\.[0-9]{1,2})?)\s*(?:บาท|thb|฿)',
     caseSensitive: false,
   );
+  static final _decimalAmount = RegExp(
+    r'(?:^|\n)\s*([0-9]{1,7}(?:,[0-9]{3})*\.[0-9]{2})\s*(?=\n|$)',
+  );
   static final _numericDate = RegExp(
     r'(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4}|\d{2})(?!\d)',
   );
@@ -130,6 +133,8 @@ class SlipParser {
     if (first != null) return _number(first.group(1)!);
     final after = _currencyAfter.firstMatch(text);
     if (after != null) return _number(after.group(1)!);
+    final plain = _decimalAmount.firstMatch(text);
+    if (plain != null) return _number(plain.group(1)!);
     return null;
   }
 

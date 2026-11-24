@@ -120,7 +120,13 @@ class AppLocalizationsTh extends AppLocalizations {
   String get saveWithoutReference => 'บันทึกโดยไม่ใช้เลขอ้างอิง';
 
   @override
-  String get searchHint => 'ค้นหาบันทึก ผู้รับ หรือเลขอ้างอิง';
+  String get searchHint => 'ค้นหาบันทึก ร้าน หรือหมวด';
+
+  @override
+  String get allRecords => 'ทั้งหมด';
+
+  @override
+  String get noMatches => 'ไม่พบรายการที่ค้นหา';
 
   @override
   String get filters => 'ตัวกรอง';
@@ -159,6 +165,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get overTime => 'ตามช่วงเวลา';
 
   @override
+  String get byDay => 'รายวัน';
+
+  @override
   String get incomeVsExpense => 'รายรับเทียบรายจ่าย';
 
   @override
@@ -190,6 +199,21 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get dark => 'มืด';
+
+  @override
+  String get white => 'ขาว';
+
+  @override
+  String get black => 'ดำ';
+
+  @override
+  String get colorTheme => 'สีสัน';
+
+  @override
+  String get ocean => 'ทะเล';
+
+  @override
+  String get appTagline => 'เงินของคุณ อยู่ในเครื่องนี้';
 
   @override
   String get language => 'ภาษา';
@@ -350,4 +374,183 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get monthBalance => 'เดือนนี้';
+
+  @override
+  String get emptyHint =>
+      'ยังไม่มีรายการในเครื่องนี้ สแกนสลิป หรือเพิ่มเงินสดเอง';
+
+  @override
+  String get sampleSlip => 'ลองอ่านสลิปตัวอย่าง';
+
+  @override
+  String get ocrText => 'ข้อความที่อ่านได้จากสลิป';
+
+  @override
+  String get spentThisMonth => 'ใช้ไปเดือนนี้';
+
+  @override
+  String get dailyAverage => 'เฉลี่ยต่อวัน';
+
+  @override
+  String get topCategory => 'หมวดที่ใช้มากสุด';
+
+  @override
+  String daysLeft(String count) {
+    return 'เหลืออีก $count วัน';
+  }
+
+  @override
+  String get sameAsLastMonth => 'ใกล้เคียงกับเดือนที่แล้ว';
+
+  @override
+  String get noSpendingLastMonth => 'เดือนที่แล้วไม่มีการใช้จ่าย';
+
+  @override
+  String get noIncomeLastMonth => 'เดือนที่แล้วไม่มีรายรับ';
+
+  @override
+  String comparedWithLastMonth(String change) {
+    return '$change เทียบกับเดือนที่แล้ว';
+  }
+
+  @override
+  String get bannerSaveTitle => 'ออมนิดหน่อยทุกวัน';
+
+  @override
+  String get bannerSaveBody => 'นิสัยเล็กๆ เก็บเงินไว้ใช้ทีหลัง';
+
+  @override
+  String get bannerTrackTitle => 'ดูว่าเงินไปไหน';
+
+  @override
+  String get bannerTrackBody => 'รู้รายเดือน เก็บเงินได้ง่ายขึ้น';
+
+  @override
+  String safePerDay(String amount) {
+    return 'ใช้ได้วันละ $amount';
+  }
+
+  @override
+  String get nothingLeft => 'เดือนนี้ใช้ได้ครบแล้ว';
+
+  @override
+  String overIncome(String amount) {
+    return 'ใช้เกินรายรับเดือนนี้ $amount';
+  }
+
+  @override
+  String get exchangeRates => 'อัตราแลกเปลี่ยน';
+
+  @override
+  String exchangeAsOf(String date) {
+    return 'ธนาคารกลางยุโรป · $date';
+  }
+
+  @override
+  String get exchangeOffline => 'ต่อเน็ตครั้งหนึ่งเพื่อดูอัตราแลกเปลี่ยน';
+
+  @override
+  String get exchangeRetry => 'ลองอีกครั้ง';
+
+  @override
+  String get convertToBaht => 'แปลงเป็นบาท';
+
+  @override
+  String get arrange => 'จัดเรียง';
+
+  @override
+  String get done => 'เสร็จ';
+
+  @override
+  String get arrangeHint => 'กดค้างที่มือจับ แล้วลากการ์ด';
+
+  @override
+  String get resetLayout => 'คืนค่าเดิม';
+
+  @override
+  String get cardTips => 'เคล็ดลับ';
+
+  @override
+  String get cardShortcuts => 'ทางลัด';
+
+  @override
+  String get cardSpending => 'รายจ่าย';
+
+  @override
+  String get cardWaiting => 'การ์ดนี้จะมีข้อมูลเมื่อเริ่มบันทึก';
+
+  @override
+  String get reportGlance => 'ภาพรวม';
+
+  @override
+  String get keptShare => 'เหลือไว้';
+
+  @override
+  String get vsLastPeriod => 'เทียบช่วงก่อน';
+
+  @override
+  String get recordCount => 'รายการ';
+
+  @override
+  String get perDay => 'ต่อวัน';
+
+  @override
+  String get forYou => 'คำแนะนำ';
+
+  @override
+  String get tipEmpty => 'บันทึกรายรับและรายจ่ายเพื่อรับคำแนะนำของช่วงนี้';
+
+  @override
+  String get tipSteady =>
+      'รายรับและรายจ่ายอยู่ในช่วงคงที่ บันทึกต่อไปเพื่อให้คำแนะนำคมขึ้น';
+
+  @override
+  String tipOverspent(String amount) {
+    return 'ใช้จ่ายสูงกว่ารายรับ $amount ลองชะลอของที่ไม่จำเป็น';
+  }
+
+  @override
+  String get tipMissingIncome =>
+      'มีรายจ่ายแต่ยังไม่บันทึกรายรับ ใส่รายรับเพื่อให้ยอดตรง';
+
+  @override
+  String get tipNoSpending => 'มีรายรับและยังไม่มีรายจ่าย ช่วงนี้เก็บเงินได้ดี';
+
+  @override
+  String tipCategory(String name, String percent) {
+    return '$name คือ $percent ของรายจ่าย ลดหมวดนี้แล้วภาพรวมขยับมากสุด';
+  }
+
+  @override
+  String tipSpendUp(String percent) {
+    return 'รายจ่ายสูงกว่าช่วงก่อน $percent';
+  }
+
+  @override
+  String tipSpendDown(String percent) {
+    return 'รายจ่ายต่ำกว่าช่วงก่อน $percent';
+  }
+
+  @override
+  String tipThin(String percent) {
+    return 'เหลือรายรับเพียง $percent เป้าที่มั่นคงกว่าคือเหลือสัก 20%';
+  }
+
+  @override
+  String tipHealthy(String percent) {
+    return 'เหลือรายรับไว้ $percent พอเป็นกันชนค่าใช้จ่ายไม่คาดคิด';
+  }
+
+  @override
+  String tipPace(String amount) {
+    return 'ตามจังหวะนี้ ช่วงที่เหลือจะใช้เกินยอดคงเหลือประมาณ $amount';
+  }
+
+  @override
+  String tipLargest(String amount, String name) {
+    return 'รายการใหญ่สุดคือ $amount ใน$name ตรวจว่าตั้งใจจ่ายหรือไม่';
+  }
+
+  @override
+  String get runningTotal => 'ยอดสะสม';
 }

@@ -64,7 +64,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.memory() : super(NativeDatabase.memory());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -72,7 +72,19 @@ class AppDatabase extends _$AppDatabase {
       await m.createAll();
       await _seed();
     },
+    onUpgrade: (m, from, to) async {
+      if (from < 2) await _ensureIncomeCategories();
+    },
   );
+
+  static const _incomeExtras = <(String, String, String)>[
+    ('bonus', 'Bonus', 'โบนัส'),
+    ('freelance', 'Freelance', 'งานอิสระ'),
+    ('gift', 'Gift', 'ของขวัญ'),
+    ('interest', 'Interest', 'ดอกเบี้ย'),
+    ('refund', 'Refund', 'เงินคืน'),
+    ('other_income', 'Other income', 'รายรับอื่น'),
+  ];
 
   Future<void> _seed() async {
     await batch((b) {
@@ -120,12 +132,44 @@ class AppDatabase extends _$AppDatabase {
         CategoriesCompanion.insert(
           key: 'salary',
           nameEn: 'Salary',
-          nameTh: 'รายได้',
+          nameTh: 'เงินเดือน',
           isIncome: const Value(true),
         ),
+        for (final row in _incomeExtras)
+          CategoriesCompanion.insert(
+            key: row.$1,
+            nameEn: row.$2,
+            nameTh: row.$3,
+            isIncome: const Value(true),
+          ),
       ]);
     });
     await into(preferences).insert(PreferencesCompanion.insert());
+  }
+
+  Future<void> _ensureIncomeCategories() async {
+    for (final row in _incomeExtras) {
+      final existing = await (select(
+        categories,
+      )..where((c) => c.key.equals(row.$1))).getSingleOrNull();
+      if (existing != null) continue;
+      await into(categories).insert(
+        CategoriesCompanion.insert(
+          key: row.$1,
+          nameEn: row.$2,
+          nameTh: row.$3,
+          isIncome: const Value(true),
+        ),
+      );
+    }
+    final salary = await (select(
+      categories,
+    )..where((c) => c.key.equals('salary'))).getSingleOrNull();
+    if (salary != null && salary.nameTh == 'รายได้') {
+      await (update(categories)..where((c) => c.id.equals(salary.id))).write(
+        const CategoriesCompanion(nameTh: Value('เงินเดือน')),
+      );
+    }
   }
 
   Future<List<Category>> allCategories() =>

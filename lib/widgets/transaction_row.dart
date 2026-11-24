@@ -10,6 +10,7 @@ class TransactionRow extends StatelessWidget {
     required this.transaction,
     required this.title,
     required this.locale,
+    this.categoryKey,
     this.onTap,
     this.onLongPress,
     this.showDate = true,
@@ -18,6 +19,7 @@ class TransactionRow extends StatelessWidget {
   final MoneyTransaction transaction;
   final String title;
   final Locale locale;
+  final String? categoryKey;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
   final bool showDate;
@@ -25,6 +27,7 @@ class TransactionRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final income = transaction.type == 'income';
+    final style = categoryStyle(categoryKey);
     final subtitleParts = <String>[
       if (showDate) formatTime(locale, transaction.occurredAt),
       if (transaction.recipient != null && transaction.recipient!.isNotEmpty)
@@ -37,9 +40,15 @@ class TransactionRow extends StatelessWidget {
         onTap: onTap,
         onLongPress: onLongPress,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           child: Row(
             children: [
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: style.color.withValues(alpha: 0.16),
+                child: Icon(style.icon, color: style.color, size: 20),
+              ),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

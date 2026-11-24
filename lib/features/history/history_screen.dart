@@ -67,6 +67,39 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             ),
           ),
         ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: Center(
+              child: CupertinoSlidingSegmentedControl<String>(
+                groupValue: _filter.type ?? '',
+                children: {
+                  '': Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    child: Text(l10n.allRecords),
+                  ),
+                  'expense': Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    child: Text(l10n.expense),
+                  ),
+                  'income': Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    child: Text(l10n.income),
+                  ),
+                },
+                onValueChanged: (value) {
+                  if (value == null) return;
+                  setState(
+                    () => _filter = _copy(
+                      type: value.isEmpty ? null : value,
+                      setType: true,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
         if (_filter.isActive)
           SliverToBoxAdapter(child: _FilterChips(
             filter: _filter,
@@ -82,15 +115,29 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             child: Center(child: Text('$error')),
           ),
           data: (rows) {
-            final visible = rows.where(_filter.matches).toList();
+            final visible = rows.where((row) {
+              final category = _category(categories, row.categoryId);
+              final names = category == null
+                  ? ''
+                  : '${category.nameEn} ${category.nameTh}';
+              return _filter.matches(row, categoryText: names);
+            }).toList();
             if (visible.isEmpty) {
+              final narrowed =
+                  _filter.query.trim().isNotEmpty ||
+                  _filter.isActive ||
+                  _filter.type != null;
               return SliverFillRemaining(
                 hasScrollBody: false,
                 child: EmptyState(
                   icon: CupertinoIcons.search,
-                  message: l10n.emptyTransactions,
-                  actionLabel: l10n.emptyAddCta,
-                  onAction: () => showAddActions(context, ref),
+                  message: narrowed
+                      ? l10n.noMatches
+                      : l10n.emptyTransactions,
+                  actionLabel: narrowed ? null : l10n.emptyAddCta,
+                  onAction: narrowed
+                      ? null
+                      : () => showAddActions(context, ref),
                 ),
               );
             }
@@ -124,6 +171,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                           child: TransactionRow(
                             transaction: row,
                             title: _title(categories, row, locale),
+                            categoryKey: _category(categories, row.categoryId)?.key,
                             locale: locale,
                             showDate: false,
                             onTap: () => context.push(
@@ -156,9 +204,10 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     return null;
   }
 
-  HistoryFilter _copy({String? query}) {
+  HistoryFilter _copy({String? query, String? type, bool setType = false}) {
     return HistoryFilter(
       query: query ?? _filter.query,
+      type: setType ? type : _filter.type,
       categoryId: _filter.categoryId,
       from: _filter.from,
       to: _filter.to,
@@ -315,6 +364,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       if (applied == true) {
         _filter = HistoryFilter(
           query: _search.text,
+          type: _filter.type,
           categoryId: categoryId,
           from: from,
           to: to,
@@ -322,7 +372,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           maxAmount: double.tryParse(max.text),
         );
       } else if (applied == false) {
-        _filter = HistoryFilter(query: _search.text);
+        _filter = HistoryFilter(query: _search.text, type: _filter.type);
       }
     });
     min.dispose();
@@ -362,6 +412,7 @@ class _FilterChips extends StatelessWidget {
           onDeleted: () => onChanged(
             HistoryFilter(
               query: filter.query,
+              type: filter.type,
               from: filter.from,
               to: filter.to,
               minAmount: filter.minAmount,
@@ -378,6 +429,7 @@ class _FilterChips extends StatelessWidget {
           onDeleted: () => onChanged(
             HistoryFilter(
               query: filter.query,
+              type: filter.type,
               categoryId: filter.categoryId,
               to: filter.to,
               minAmount: filter.minAmount,
@@ -394,6 +446,7 @@ class _FilterChips extends StatelessWidget {
           onDeleted: () => onChanged(
             HistoryFilter(
               query: filter.query,
+              type: filter.type,
               categoryId: filter.categoryId,
               from: filter.from,
               minAmount: filter.minAmount,
@@ -412,6 +465,7 @@ class _FilterChips extends StatelessWidget {
           onDeleted: () => onChanged(
             HistoryFilter(
               query: filter.query,
+              type: filter.type,
               categoryId: filter.categoryId,
               from: filter.from,
               to: filter.to,
@@ -430,6 +484,7 @@ class _FilterChips extends StatelessWidget {
           onDeleted: () => onChanged(
             HistoryFilter(
               query: filter.query,
+              type: filter.type,
               categoryId: filter.categoryId,
               from: filter.from,
               to: filter.to,

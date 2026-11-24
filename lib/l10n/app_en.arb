@@ -37,7 +37,9 @@
   "duplicateTitle": "This slip is already saved",
   "duplicateBody": "A record with this reference number already exists.",
   "saveWithoutReference": "Save without the reference",
-  "searchHint": "Search note, recipient, or reference",
+  "searchHint": "Search note, shop, or category",
+  "allRecords": "All",
+  "noMatches": "No records match this search",
   "filters": "Filters",
   "clearFilters": "Clear filters",
   "from": "From",
@@ -50,6 +52,7 @@
   "reportsEmpty": "Nothing to chart in this period",
   "byCategory": "By category",
   "overTime": "Over time",
+  "byDay": "By day",
   "incomeVsExpense": "Income vs expense",
   "budgets": "Budgets",
   "monthlyLimit": "Monthly limit",
@@ -61,6 +64,11 @@
   "system": "System",
   "light": "Light",
   "dark": "Dark",
+  "white": "White",
+  "black": "Black",
+  "colorTheme": "Color",
+  "ocean": "Ocean",
+  "appTagline": "Your money, on this phone",
   "language": "Language",
   "english": "English",
   "thai": "ไทย",
@@ -136,5 +144,122 @@
   "lockSubtitle": "Enter your PIN to see your records",
   "filterCategoryChip": "Category",
   "overBudget": "Over budget",
-  "monthBalance": "This month"
+  "monthBalance": "This month",
+  "emptyHint": "Nothing is saved on this phone yet. Scan a slip, or add cash by hand.",
+  "sampleSlip": "Try a sample slip",
+  "ocrText": "Text read from the slip",
+  "spentThisMonth": "Spent this month",
+  "dailyAverage": "Daily average",
+  "topCategory": "Top category",
+  "daysLeft": "{count} days left",
+  "@daysLeft": {
+    "placeholders": {
+      "count": {"type": "String"}
+    }
+  },
+  "sameAsLastMonth": "About the same as last month",
+  "noSpendingLastMonth": "No spending last month",
+  "noIncomeLastMonth": "No income last month",
+  "comparedWithLastMonth": "{change} compared with last month",
+  "@comparedWithLastMonth": {
+    "placeholders": {
+      "change": {"type": "String"}
+    }
+  },
+  "bannerSaveTitle": "Save a little every day",
+  "bannerSaveBody": "Small habits keep your baht for later.",
+  "bannerTrackTitle": "See where your money goes",
+  "bannerTrackBody": "A clear month makes saving easier.",
+  "safePerDay": "Safe to spend {amount} a day",
+  "@safePerDay": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "nothingLeft": "Nothing left to spend this month",
+  "overIncome": "Over this month's income by {amount}",
+  "@overIncome": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "exchangeRates": "Exchange rates",
+  "exchangeAsOf": "European Central Bank · {date}",
+  "@exchangeAsOf": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "exchangeOffline": "Connect once to load exchange rates",
+  "exchangeRetry": "Try again",
+  "convertToBaht": "Convert to baht",
+  "arrange": "Arrange",
+  "done": "Done",
+  "arrangeHint": "Hold the handle and drag a card",
+  "resetLayout": "Reset",
+  "cardTips": "Tips",
+  "cardShortcuts": "Shortcuts",
+  "cardSpending": "Spending",
+  "cardWaiting": "This card fills in after you add records",
+  "reportGlance": "At a glance",
+  "keptShare": "Kept",
+  "vsLastPeriod": "Vs last period",
+  "recordCount": "Records",
+  "perDay": "A day",
+  "forYou": "For you",
+  "tipEmpty": "Log income and spending to get a tip for this period.",
+  "tipSteady": "Income and spending are in a steady range. Keep logging so the next tip can be sharper.",
+  "tipOverspent": "Spending is {amount} above income. Pause the next non-essential buy.",
+  "@tipOverspent": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "tipMissingIncome": "Spending is logged, but income is not. Add income so the balance is true.",
+  "tipNoSpending": "Income is in and nothing went out. This is a good stretch to keep.",
+  "tipCategory": "{name} is {percent} of spending. Trimming that category moves the total the most.",
+  "@tipCategory": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "percent": {"type": "String"}
+    }
+  },
+  "tipSpendUp": "Spending is {percent} higher than the previous period.",
+  "@tipSpendUp": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "tipSpendDown": "Spending is {percent} lower than the previous period.",
+  "@tipSpendDown": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "tipThin": "Only {percent} of income is left. A 20% buffer is a steadier target.",
+  "@tipThin": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "tipHealthy": "You kept {percent} of income. That buffer can cover a surprise bill.",
+  "@tipHealthy": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "tipPace": "At this pace, the rest of the period costs about {amount} more than the balance left.",
+  "@tipPace": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "tipLargest": "The largest record is {amount} in {name}. Check that it was planned.",
+  "@tipLargest": {
+    "placeholders": {
+      "amount": {"type": "String"},
+      "name": {"type": "String"}
+    }
+  },
+  "runningTotal": "Running total"
 }

@@ -323,8 +323,20 @@ abstract class AppLocalizations {
   /// No description provided for @searchHint.
   ///
   /// In en, this message translates to:
-  /// **'Search note, recipient, or reference'**
+  /// **'Search note, shop, or category'**
   String get searchHint;
+
+  /// No description provided for @allRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get allRecords;
+
+  /// No description provided for @noMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'No records match this search'**
+  String get noMatches;
 
   /// No description provided for @filters.
   ///
@@ -398,6 +410,12 @@ abstract class AppLocalizations {
   /// **'Over time'**
   String get overTime;
 
+  /// No description provided for @byDay.
+  ///
+  /// In en, this message translates to:
+  /// **'By day'**
+  String get byDay;
+
   /// No description provided for @incomeVsExpense.
   ///
   /// In en, this message translates to:
@@ -463,6 +481,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dark'**
   String get dark;
+
+  /// No description provided for @white.
+  ///
+  /// In en, this message translates to:
+  /// **'White'**
+  String get white;
+
+  /// No description provided for @black.
+  ///
+  /// In en, this message translates to:
+  /// **'Black'**
+  String get black;
+
+  /// No description provided for @colorTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Color'**
+  String get colorTheme;
+
+  /// No description provided for @ocean.
+  ///
+  /// In en, this message translates to:
+  /// **'Ocean'**
+  String get ocean;
+
+  /// No description provided for @appTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Your money, on this phone'**
+  String get appTagline;
 
   /// No description provided for @language.
   ///
@@ -763,6 +811,306 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This month'**
   String get monthBalance;
+
+  /// No description provided for @emptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing is saved on this phone yet. Scan a slip, or add cash by hand.'**
+  String get emptyHint;
+
+  /// No description provided for @sampleSlip.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a sample slip'**
+  String get sampleSlip;
+
+  /// No description provided for @ocrText.
+  ///
+  /// In en, this message translates to:
+  /// **'Text read from the slip'**
+  String get ocrText;
+
+  /// No description provided for @spentThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Spent this month'**
+  String get spentThisMonth;
+
+  /// No description provided for @dailyAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily average'**
+  String get dailyAverage;
+
+  /// No description provided for @topCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Top category'**
+  String get topCategory;
+
+  /// No description provided for @daysLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days left'**
+  String daysLeft(String count);
+
+  /// No description provided for @sameAsLastMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'About the same as last month'**
+  String get sameAsLastMonth;
+
+  /// No description provided for @noSpendingLastMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'No spending last month'**
+  String get noSpendingLastMonth;
+
+  /// No description provided for @noIncomeLastMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'No income last month'**
+  String get noIncomeLastMonth;
+
+  /// No description provided for @comparedWithLastMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'{change} compared with last month'**
+  String comparedWithLastMonth(String change);
+
+  /// No description provided for @bannerSaveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save a little every day'**
+  String get bannerSaveTitle;
+
+  /// No description provided for @bannerSaveBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Small habits keep your baht for later.'**
+  String get bannerSaveBody;
+
+  /// No description provided for @bannerTrackTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'See where your money goes'**
+  String get bannerTrackTitle;
+
+  /// No description provided for @bannerTrackBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A clear month makes saving easier.'**
+  String get bannerTrackBody;
+
+  /// No description provided for @safePerDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Safe to spend {amount} a day'**
+  String safePerDay(String amount);
+
+  /// No description provided for @nothingLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing left to spend this month'**
+  String get nothingLeft;
+
+  /// No description provided for @overIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Over this month\'s income by {amount}'**
+  String overIncome(String amount);
+
+  /// No description provided for @exchangeRates.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange rates'**
+  String get exchangeRates;
+
+  /// No description provided for @exchangeAsOf.
+  ///
+  /// In en, this message translates to:
+  /// **'European Central Bank · {date}'**
+  String exchangeAsOf(String date);
+
+  /// No description provided for @exchangeOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect once to load exchange rates'**
+  String get exchangeOffline;
+
+  /// No description provided for @exchangeRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get exchangeRetry;
+
+  /// No description provided for @convertToBaht.
+  ///
+  /// In en, this message translates to:
+  /// **'Convert to baht'**
+  String get convertToBaht;
+
+  /// No description provided for @arrange.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrange'**
+  String get arrange;
+
+  /// No description provided for @done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
+  /// No description provided for @arrangeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold the handle and drag a card'**
+  String get arrangeHint;
+
+  /// No description provided for @resetLayout.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get resetLayout;
+
+  /// No description provided for @cardTips.
+  ///
+  /// In en, this message translates to:
+  /// **'Tips'**
+  String get cardTips;
+
+  /// No description provided for @cardShortcuts.
+  ///
+  /// In en, this message translates to:
+  /// **'Shortcuts'**
+  String get cardShortcuts;
+
+  /// No description provided for @cardSpending.
+  ///
+  /// In en, this message translates to:
+  /// **'Spending'**
+  String get cardSpending;
+
+  /// No description provided for @cardWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'This card fills in after you add records'**
+  String get cardWaiting;
+
+  /// No description provided for @reportGlance.
+  ///
+  /// In en, this message translates to:
+  /// **'At a glance'**
+  String get reportGlance;
+
+  /// No description provided for @keptShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Kept'**
+  String get keptShare;
+
+  /// No description provided for @vsLastPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Vs last period'**
+  String get vsLastPeriod;
+
+  /// No description provided for @recordCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Records'**
+  String get recordCount;
+
+  /// No description provided for @perDay.
+  ///
+  /// In en, this message translates to:
+  /// **'A day'**
+  String get perDay;
+
+  /// No description provided for @forYou.
+  ///
+  /// In en, this message translates to:
+  /// **'For you'**
+  String get forYou;
+
+  /// No description provided for @tipEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Log income and spending to get a tip for this period.'**
+  String get tipEmpty;
+
+  /// No description provided for @tipSteady.
+  ///
+  /// In en, this message translates to:
+  /// **'Income and spending are in a steady range. Keep logging so the next tip can be sharper.'**
+  String get tipSteady;
+
+  /// No description provided for @tipOverspent.
+  ///
+  /// In en, this message translates to:
+  /// **'Spending is {amount} above income. Pause the next non-essential buy.'**
+  String tipOverspent(String amount);
+
+  /// No description provided for @tipMissingIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Spending is logged, but income is not. Add income so the balance is true.'**
+  String get tipMissingIncome;
+
+  /// No description provided for @tipNoSpending.
+  ///
+  /// In en, this message translates to:
+  /// **'Income is in and nothing went out. This is a good stretch to keep.'**
+  String get tipNoSpending;
+
+  /// No description provided for @tipCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is {percent} of spending. Trimming that category moves the total the most.'**
+  String tipCategory(String name, String percent);
+
+  /// No description provided for @tipSpendUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Spending is {percent} higher than the previous period.'**
+  String tipSpendUp(String percent);
+
+  /// No description provided for @tipSpendDown.
+  ///
+  /// In en, this message translates to:
+  /// **'Spending is {percent} lower than the previous period.'**
+  String tipSpendDown(String percent);
+
+  /// No description provided for @tipThin.
+  ///
+  /// In en, this message translates to:
+  /// **'Only {percent} of income is left. A 20% buffer is a steadier target.'**
+  String tipThin(String percent);
+
+  /// No description provided for @tipHealthy.
+  ///
+  /// In en, this message translates to:
+  /// **'You kept {percent} of income. That buffer can cover a surprise bill.'**
+  String tipHealthy(String percent);
+
+  /// No description provided for @tipPace.
+  ///
+  /// In en, this message translates to:
+  /// **'At this pace, the rest of the period costs about {amount} more than the balance left.'**
+  String tipPace(String amount);
+
+  /// No description provided for @tipLargest.
+  ///
+  /// In en, this message translates to:
+  /// **'The largest record is {amount} in {name}. Check that it was planned.'**
+  String tipLargest(String amount, String name);
+
+  /// No description provided for @runningTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Running total'**
+  String get runningTotal;
 }
 
 class _AppLocalizationsDelegate

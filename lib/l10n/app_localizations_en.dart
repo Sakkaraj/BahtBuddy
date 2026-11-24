@@ -122,7 +122,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveWithoutReference => 'Save without the reference';
 
   @override
-  String get searchHint => 'Search note, recipient, or reference';
+  String get searchHint => 'Search note, shop, or category';
+
+  @override
+  String get allRecords => 'All';
+
+  @override
+  String get noMatches => 'No records match this search';
 
   @override
   String get filters => 'Filters';
@@ -161,6 +167,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get overTime => 'Over time';
 
   @override
+  String get byDay => 'By day';
+
+  @override
   String get incomeVsExpense => 'Income vs expense';
 
   @override
@@ -192,6 +201,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dark => 'Dark';
+
+  @override
+  String get white => 'White';
+
+  @override
+  String get black => 'Black';
+
+  @override
+  String get colorTheme => 'Color';
+
+  @override
+  String get ocean => 'Ocean';
+
+  @override
+  String get appTagline => 'Your money, on this phone';
 
   @override
   String get language => 'Language';
@@ -353,4 +377,185 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get monthBalance => 'This month';
+
+  @override
+  String get emptyHint =>
+      'Nothing is saved on this phone yet. Scan a slip, or add cash by hand.';
+
+  @override
+  String get sampleSlip => 'Try a sample slip';
+
+  @override
+  String get ocrText => 'Text read from the slip';
+
+  @override
+  String get spentThisMonth => 'Spent this month';
+
+  @override
+  String get dailyAverage => 'Daily average';
+
+  @override
+  String get topCategory => 'Top category';
+
+  @override
+  String daysLeft(String count) {
+    return '$count days left';
+  }
+
+  @override
+  String get sameAsLastMonth => 'About the same as last month';
+
+  @override
+  String get noSpendingLastMonth => 'No spending last month';
+
+  @override
+  String get noIncomeLastMonth => 'No income last month';
+
+  @override
+  String comparedWithLastMonth(String change) {
+    return '$change compared with last month';
+  }
+
+  @override
+  String get bannerSaveTitle => 'Save a little every day';
+
+  @override
+  String get bannerSaveBody => 'Small habits keep your baht for later.';
+
+  @override
+  String get bannerTrackTitle => 'See where your money goes';
+
+  @override
+  String get bannerTrackBody => 'A clear month makes saving easier.';
+
+  @override
+  String safePerDay(String amount) {
+    return 'Safe to spend $amount a day';
+  }
+
+  @override
+  String get nothingLeft => 'Nothing left to spend this month';
+
+  @override
+  String overIncome(String amount) {
+    return 'Over this month\'s income by $amount';
+  }
+
+  @override
+  String get exchangeRates => 'Exchange rates';
+
+  @override
+  String exchangeAsOf(String date) {
+    return 'European Central Bank · $date';
+  }
+
+  @override
+  String get exchangeOffline => 'Connect once to load exchange rates';
+
+  @override
+  String get exchangeRetry => 'Try again';
+
+  @override
+  String get convertToBaht => 'Convert to baht';
+
+  @override
+  String get arrange => 'Arrange';
+
+  @override
+  String get done => 'Done';
+
+  @override
+  String get arrangeHint => 'Hold the handle and drag a card';
+
+  @override
+  String get resetLayout => 'Reset';
+
+  @override
+  String get cardTips => 'Tips';
+
+  @override
+  String get cardShortcuts => 'Shortcuts';
+
+  @override
+  String get cardSpending => 'Spending';
+
+  @override
+  String get cardWaiting => 'This card fills in after you add records';
+
+  @override
+  String get reportGlance => 'At a glance';
+
+  @override
+  String get keptShare => 'Kept';
+
+  @override
+  String get vsLastPeriod => 'Vs last period';
+
+  @override
+  String get recordCount => 'Records';
+
+  @override
+  String get perDay => 'A day';
+
+  @override
+  String get forYou => 'For you';
+
+  @override
+  String get tipEmpty =>
+      'Log income and spending to get a tip for this period.';
+
+  @override
+  String get tipSteady =>
+      'Income and spending are in a steady range. Keep logging so the next tip can be sharper.';
+
+  @override
+  String tipOverspent(String amount) {
+    return 'Spending is $amount above income. Pause the next non-essential buy.';
+  }
+
+  @override
+  String get tipMissingIncome =>
+      'Spending is logged, but income is not. Add income so the balance is true.';
+
+  @override
+  String get tipNoSpending =>
+      'Income is in and nothing went out. This is a good stretch to keep.';
+
+  @override
+  String tipCategory(String name, String percent) {
+    return '$name is $percent of spending. Trimming that category moves the total the most.';
+  }
+
+  @override
+  String tipSpendUp(String percent) {
+    return 'Spending is $percent higher than the previous period.';
+  }
+
+  @override
+  String tipSpendDown(String percent) {
+    return 'Spending is $percent lower than the previous period.';
+  }
+
+  @override
+  String tipThin(String percent) {
+    return 'Only $percent of income is left. A 20% buffer is a steadier target.';
+  }
+
+  @override
+  String tipHealthy(String percent) {
+    return 'You kept $percent of income. That buffer can cover a surprise bill.';
+  }
+
+  @override
+  String tipPace(String amount) {
+    return 'At this pace, the rest of the period costs about $amount more than the balance left.';
+  }
+
+  @override
+  String tipLargest(String amount, String name) {
+    return 'The largest record is $amount in $name. Check that it was planned.';
+  }
+
+  @override
+  String get runningTotal => 'Running total';
 }

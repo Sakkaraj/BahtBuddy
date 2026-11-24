@@ -11,6 +11,8 @@ class BudgetProgress extends StatelessWidget {
     required this.spent,
     required this.limit,
     required this.locale,
+    this.color,
+    this.icon,
     this.onTap,
   });
 
@@ -18,6 +20,8 @@ class BudgetProgress extends StatelessWidget {
   final double spent;
   final double limit;
   final Locale locale;
+  final Color? color;
+  final IconData? icon;
   final VoidCallback? onTap;
 
   @override
@@ -25,11 +29,12 @@ class BudgetProgress extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final ratio = limit <= 0 ? 0.0 : (spent / limit).clamp(0.0, 1.0);
     final remaining = (limit - spent).clamp(0.0, limit);
-    final color = ratio >= 1
-        ? Theme.of(context).colorScheme.error
+    final base = color ?? bahtAccent;
+    final barColor = ratio >= 1
+        ? bahtExpense
         : ratio >= 0.8
-        ? const Color(0xFFE09F3E)
-        : bahtAccent;
+        ? bahtSun
+        : base;
     final caption = spent > limit
         ? l10n.overBudget
         : l10n.remainingOf(formatBaht(locale, remaining));
@@ -40,6 +45,10 @@ class BudgetProgress extends StatelessWidget {
         children: [
           Row(
             children: [
+              if (icon != null) ...[
+                Icon(icon, size: 18, color: barColor),
+                const SizedBox(width: 8),
+              ],
               Expanded(
                 child: Text(name, style: Theme.of(context).textTheme.bodyLarge),
               ),
@@ -55,19 +64,24 @@ class BudgetProgress extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: ratio,
-              minHeight: 6,
-              color: color,
-              backgroundColor: color.withValues(alpha: 0.18),
+          TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0, end: ratio),
+            duration: const Duration(milliseconds: 700),
+            curve: Curves.easeOutCubic,
+            builder: (context, value, _) => ClipRRect(
+              borderRadius: BorderRadius.circular(99),
+              child: LinearProgressIndicator(
+                value: value,
+                minHeight: 8,
+                color: barColor,
+                backgroundColor: barColor.withValues(alpha: 0.16),
+              ),
             ),
           ),
           const SizedBox(height: 6),
           Text(
             caption,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: color),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: barColor),
           ),
         ],
       ),

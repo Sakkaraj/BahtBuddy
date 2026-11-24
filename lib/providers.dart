@@ -5,6 +5,8 @@ import 'data/db/app_database.dart';
 import 'data/repositories/backup_repository.dart';
 import 'data/repositories/transaction_repository.dart';
 import 'services/budget_alerts.dart';
+import 'services/exchange_rates.dart';
+import 'services/home_layout.dart';
 import 'services/slip_ocr.dart';
 
 final databaseProvider = Provider<AppDatabase>((ref) {
@@ -24,6 +26,20 @@ final backupRepositoryProvider = Provider<BackupRepository>((ref) {
 final budgetAlertsProvider = Provider<BudgetAlerts>((ref) => BudgetAlerts());
 
 final slipOcrProvider = Provider<SlipOcr>((ref) => SlipOcr());
+
+final exchangeRatesProvider =
+    AsyncNotifierProvider<ExchangeRatesController, ExchangeBoard?>(
+      ExchangeRatesController.new,
+    );
+
+class ExchangeRatesController extends AsyncNotifier<ExchangeBoard?> {
+  @override
+  Future<ExchangeBoard?> build() => ExchangeRates.load();
+
+  Future<void> refresh() async {
+    state = AsyncData(await ExchangeRates.load());
+  }
+}
 
 final categoriesProvider = StreamProvider<List<Category>>((ref) {
   return ref.watch(databaseProvider).watchCategories();
@@ -70,6 +86,35 @@ class SettingsController extends AsyncNotifier<Preference> {
     final db = ref.read(databaseProvider);
     await db.saveSettings(data);
     state = AsyncData(await db.settings());
+  }
+}
+
+final homeLayoutProvider =
+    AsyncNotifierProvider<HomeLayoutController, List<String>>(
+      HomeLayoutController.new,
+    );
+
+class HomeLayoutController extends AsyncNotifier<List<String>> {
+  @override
+  Future<List<String>> build() => HomeLayout.load();
+
+  Future<void> move(int oldIndex, int newIndex) async {
+    final current = List<String>.of(state.asData?.value ?? HomeLayout.defaults);
+    if (oldIndex < 0 ||
+        oldIndex >= current.length ||
+        newIndex < 0 ||
+        newIndex >= current.length) {
+      return;
+    }
+    final item = current.removeAt(oldIndex);
+    current.insert(newIndex, item);
+    state = AsyncData(current);
+    await HomeLayout.save(current);
+  }
+
+  Future<void> reset() async {
+    state = const AsyncData(HomeLayout.defaults);
+    await HomeLayout.save(HomeLayout.defaults);
   }
 }
 

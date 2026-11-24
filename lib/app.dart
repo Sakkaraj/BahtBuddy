@@ -20,14 +20,12 @@ class BahtBuddyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
-    final mode = settings.maybeWhen(
-      data: (prefs) => switch (prefs.themeMode) {
-        'light' => ThemeMode.light,
-        'dark' => ThemeMode.dark,
-        _ => ThemeMode.system,
-      },
-      orElse: () => ThemeMode.system,
+    final themeId = settings.maybeWhen(
+      data: (prefs) => prefs.themeMode,
+      orElse: () => 'system',
     );
+    final followSystem = themeId == 'system';
+    final chosen = BuddyLook.forId(themeId);
     final locale = settings.maybeWhen(
       data: (prefs) => Locale(prefs.localeCode),
       orElse: () => const Locale('en'),
@@ -35,9 +33,9 @@ class BahtBuddyApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     return MaterialApp.router(
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-      theme: bahtTheme(Brightness.light),
-      darkTheme: bahtTheme(Brightness.dark),
-      themeMode: mode,
+      theme: bahtTheme(followSystem ? BuddyLook.day : chosen),
+      darkTheme: bahtTheme(followSystem ? BuddyLook.night : chosen),
+      themeMode: followSystem ? ThemeMode.system : ThemeMode.light,
       locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
@@ -92,16 +90,47 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/entry',
-        pageBuilder: (context, state) => MaterialPage<void>(
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
           fullscreenDialog: true,
           child: EntryScreen(
             args: state.extra is EntryArgs ? state.extra as EntryArgs : null,
           ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            final curved = CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeOutCubic,
+            );
+            return FadeTransition(
+              opacity: curved,
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0, 0.12),
+                  end: Offset.zero,
+                ).animate(curved),
+                child: ScaleTransition(
+                  scale: Tween<double>(begin: 0.96, end: 1).animate(curved),
+                  child: child,
+                ),
+              ),
+            );
+          },
         ),
       ),
       GoRoute(
         path: '/budgets',
-        builder: (context, state) => const BudgetsScreen(),
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          child: const BudgetsScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            final slide = Tween<Offset>(
+              begin: const Offset(0.08, 0),
+              end: Offset.zero,
+            ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic));
+            return FadeTransition(
+              opacity: animation,
+              child: SlideTransition(position: slide, child: child),
+            );
+          },
+        ),
       ),
     ],
   );

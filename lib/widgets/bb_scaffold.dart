@@ -19,20 +19,22 @@ class BbScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: groupedBackground(context),
-      body: CustomScrollView(
-        slivers: [
-          CupertinoSliverNavigationBar(
-            largeTitle: Text(title),
-            leading: leading,
-            trailing: trailing,
-            border: null,
-            backgroundColor: groupedBackground(context),
-            automaticBackgroundVisibility: false,
-          ),
-          ...slivers,
-        ],
+    return BuddyBackdrop(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: CustomScrollView(
+          slivers: [
+            CupertinoSliverNavigationBar(
+              largeTitle: Text(title),
+              leading: leading,
+              trailing: trailing,
+              border: null,
+              backgroundColor: Colors.transparent,
+              automaticBackgroundVisibility: false,
+            ),
+            ...slivers,
+          ],
+        ),
       ),
     );
   }

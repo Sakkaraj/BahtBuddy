@@ -32,6 +32,23 @@ Ref: ABC123456789
     expect(draft.reference, 'ABC123456789');
   });
 
+  test('reads a bare amount when OCR drops the baht label', () {
+    final draft = SlipParser.parse('''
+65.00
+17/11/2026 12:30
+To: 7-Eleven
+Ref: REF650001
+''');
+    expect(draft.amount, 65);
+    expect(draft.date, DateTime(2026, 11, 17, 12, 30));
+    expect(draft.recipient, '7-Eleven');
+    expect(draft.reference, 'REF650001');
+    expect(
+      CategorySuggester.suggest(recipient: draft.recipient),
+      'food',
+    );
+  });
+
   test('parses a Buddhist-year slip and leaves gaps empty', () {
     final draft = SlipParser.parse('''
 โอนเงิน
