@@ -5,6 +5,80 @@ manual income and expense entry with on-device slip text recognition, a local
 Drift/SQLite ledger, category budgets, reports, notifications, PIN/biometric
 security, English and Thai localization, and JSON/CSV backup.
 
+## App pages
+
+These are the screens from the Android debug build on 25 November 2026.
+Ocean, English, and Automatic were selected. The ledger already on the phone
+was ฿600.00 income and ฿20.00 food expense, so this month is ฿580.00. No
+record was saved while the pictures were taken.
+
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <img src="docs/screens/home.png" width="220" alt="Home"><br>
+      <b>Home</b><br>
+      This month ฿580.00. Safe to spend ฿96.67 a day.
+    </td>
+    <td align="center" width="33%">
+      <img src="docs/screens/history.png" width="220" alt="History"><br>
+      <b>History</b><br>
+      Wed, Nov 25, 2026. Two salary rows and one food expense.
+    </td>
+    <td align="center" width="33%">
+      <img src="docs/screens/reports.png" width="220" alt="Reports"><br>
+      <b>Reports</b><br>
+      Kept 97%. A day ฿0.80 is this month's average expense.
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="docs/screens/reports_charts.png" width="220" alt="Reports charts"><br>
+      <b>Reports, charts</b><br>
+      Food is the whole ฿20.00 ring.
+    </td>
+    <td align="center">
+      <img src="docs/screens/add.png" width="220" alt="Add a record"><br>
+      <b>Add</b><br>
+      Camera, photo library, or enter manually.
+    </td>
+    <td align="center">
+      <img src="docs/screens/exchange.png" width="220" alt="Exchange converter"><br>
+      <b>Exchange</b><br>
+      ฿580.00 is 17.09 USD on the 24 Nov board.
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="docs/screens/expense.png" width="220" alt="Expense form"><br>
+      <b>Expense</b><br>
+      Food, ฿0.00. Save was not pressed.
+    </td>
+    <td align="center">
+      <img src="docs/screens/income.png" width="220" alt="Income form"><br>
+      <b>Income</b><br>
+      Salary, ฿0.00. Save was not pressed.
+    </td>
+    <td align="center">
+      <img src="docs/screens/budgets.png" width="220" alt="Budgets"><br>
+      <b>Budgets</b><br>
+      Every category says no budget set.
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="docs/screens/settings.png" width="220" alt="Settings"><br>
+      <b>Settings</b><br>
+      Ocean, English, and Automatic.
+    </td>
+    <td align="center">
+      <img src="docs/screens/timezone.png" width="220" alt="Time zone"><br>
+      <b>Time zone</b><br>
+      Automatic is Asia/Bangkok, GMT+7.
+    </td>
+    <td></td>
+  </tr>
+</table>
+
 ## ITCS259 Submission
 
 The final report and slide deck are in [`docs/ITCS259/`](docs/ITCS259/):
