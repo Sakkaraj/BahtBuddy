@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/clock.dart';
 import '../../core/format.dart';
 import '../../data/db/app_database.dart';
 import '../../l10n/app_localizations.dart';
@@ -17,10 +18,11 @@ class BudgetsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context);
+    ref.watch(timeZoneProvider);
     final categories = ref.watch(categoriesProvider).asData?.value ?? [];
     final budgets = ref.watch(budgetsProvider).asData?.value ?? [];
     final rows = ref.watch(transactionsProvider).asData?.value ?? [];
-    final month = summarize(rows, ReportRange.month(DateTime.now()));
+    final month = summarize(rows, ReportRange.month(zoneNow()));
     final expenseCategories = categories.where((c) => !c.isIncome).toList();
     return BuddyBackdrop(
       child: Scaffold(

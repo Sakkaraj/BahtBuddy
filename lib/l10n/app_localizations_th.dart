@@ -219,6 +219,15 @@ class AppLocalizationsTh extends AppLocalizations {
   String get language => 'ภาษา';
 
   @override
+  String get timeZone => 'เขตเวลา';
+
+  @override
+  String get timeZoneAutomatic => 'ตามเครื่อง';
+
+  @override
+  String get timeZoneSearch => 'ค้นหาเขตเวลา';
+
+  @override
   String get english => 'English';
 
   @override

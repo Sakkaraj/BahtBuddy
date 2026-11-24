@@ -47,6 +47,7 @@ class Preferences extends Table {
       boolean().withDefault(const Constant(false))();
   IntColumn get reminderHour => integer().withDefault(const Constant(20))();
   IntColumn get reminderMinute => integer().withDefault(const Constant(0))();
+  TextColumn get timeZoneId => text().withDefault(const Constant('auto'))();
 }
 
 @DriftDatabase(
@@ -64,7 +65,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.memory() : super(NativeDatabase.memory());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -74,6 +75,9 @@ class AppDatabase extends _$AppDatabase {
     },
     onUpgrade: (m, from, to) async {
       if (from < 2) await _ensureIncomeCategories();
+      if (from < 3) {
+        await m.addColumn(preferences, preferences.timeZoneId);
+      }
     },
   );
 
@@ -309,6 +313,7 @@ class AppDatabase extends _$AppDatabase {
           dailyReminder: Value(payload.dailyReminder),
           reminderHour: Value(payload.reminderHour),
           reminderMinute: Value(payload.reminderMinute),
+          timeZoneId: Value(payload.timeZoneId),
         ),
       );
       for (final rule in payload.rules) {
@@ -358,6 +363,7 @@ class BackupPayload {
     required this.dailyReminder,
     required this.reminderHour,
     required this.reminderMinute,
+    this.timeZoneId = 'auto',
   });
 
   final List<Category> categories;
@@ -371,4 +377,5 @@ class BackupPayload {
   final bool dailyReminder;
   final int reminderHour;
   final int reminderMinute;
+  final String timeZoneId;
 }

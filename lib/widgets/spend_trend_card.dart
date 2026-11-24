@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
+import '../core/clock.dart';
 import '../core/format.dart';
 import '../data/db/app_database.dart';
 import '../features/reports/summary.dart';
@@ -391,7 +392,7 @@ class _FlowBars extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final points = series.isEmpty ? [DayPoint(DateTime.now(), 0, 0)] : series;
+    final points = series.isEmpty ? [DayPoint(zoneNow(), 0, 0)] : series;
     var peak = 1.0;
     for (final point in points) {
       final value = showIncome ? point.income : point.expense;
@@ -490,7 +491,7 @@ class _TrendChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final points = series.isEmpty
-        ? [DayPoint(DateTime.now(), 0, 0)]
+        ? [DayPoint(zoneNow(), 0, 0)]
         : series;
     final color = showIncome ? bahtIncome : const Color(0xFF1E4B7A);
     var peak = 1.0;

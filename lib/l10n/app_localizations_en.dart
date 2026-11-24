@@ -221,6 +221,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get language => 'Language';
 
   @override
+  String get timeZone => 'Time zone';
+
+  @override
+  String get timeZoneAutomatic => 'Automatic';
+
+  @override
+  String get timeZoneSearch => 'Search time zones';
+
+  @override
   String get english => 'English';
 
   @override

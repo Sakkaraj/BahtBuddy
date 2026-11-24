@@ -1,3 +1,4 @@
+import '../../core/clock.dart';
 import '../../data/db/app_database.dart';
 
 class ReportRange {
@@ -24,7 +25,10 @@ class ReportRange {
     );
   }
 
-  bool contains(DateTime date) => !date.isBefore(start) && date.isBefore(end);
+  bool contains(DateTime date) {
+    final wall = zoneWall(date);
+    return !wall.isBefore(start) && wall.isBefore(end);
+  }
 }
 
 class PeriodSummary {
@@ -58,7 +62,8 @@ List<DayPoint> dailySeries(List<MoneyTransaction> rows, ReportRange range) {
   final origin = DateTime(range.start.year, range.start.month, range.start.day);
   for (final row in rows) {
     if (!range.contains(row.occurredAt)) continue;
-    final day = DateTime(row.occurredAt.year, row.occurredAt.month, row.occurredAt.day);
+    final wall = zoneWall(row.occurredAt);
+    final day = DateTime(wall.year, wall.month, wall.day);
     final index = day.difference(origin).inDays;
     if (index < 0 || index >= count) continue;
     if (row.type == 'income') {

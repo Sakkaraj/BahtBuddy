@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../core/clock.dart';
 import '../../core/format.dart';
 import '../../data/db/app_database.dart';
 import '../../data/repositories/transaction_repository.dart';
@@ -46,7 +47,7 @@ class _EntryScreenState extends ConsumerState<EntryScreen> {
   final _note = TextEditingController();
   final _recipient = TextEditingController();
   final _reference = TextEditingController();
-  DateTime _when = DateTime.now();
+  DateTime _when = zoneInstant(zoneNow());
   String _type = 'expense';
   int? _categoryId;
   String? _imagePath;
@@ -74,7 +75,9 @@ class _EntryScreenState extends ConsumerState<EntryScreen> {
       }
       _recipient.text = draft.recipient ?? '';
       _reference.text = draft.reference ?? '';
-      _when = draft.date ?? DateTime.now();
+      _when = draft.date == null
+          ? zoneInstant(zoneNow())
+          : zoneInstant(draft.date!);
       _pendingKey =
           draft.suggestedKey ??
           CategorySuggester.suggest(recipient: draft.recipient);
@@ -109,6 +112,7 @@ class _EntryScreenState extends ConsumerState<EntryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(timeZoneProvider);
     final l10n = AppLocalizations.of(context);
     final categories = ref.watch(categoriesProvider);
     final isSlip = widget.args?.draft != null;
@@ -553,25 +557,28 @@ class _EntryScreenState extends ConsumerState<EntryScreen> {
   }
 
   Future<void> _pickDateTime() async {
+    final shown = zoneWall(_when);
     final date = await showDatePicker(
       context: context,
-      initialDate: _when,
+      initialDate: DateTime(shown.year, shown.month, shown.day),
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
     if (date == null || !mounted) return;
     final time = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.fromDateTime(_when),
+      initialTime: TimeOfDay(hour: shown.hour, minute: shown.minute),
     );
     if (!mounted) return;
     setState(() {
-      _when = DateTime(
-        date.year,
-        date.month,
-        date.day,
-        time?.hour ?? _when.hour,
-        time?.minute ?? _when.minute,
+      _when = zoneInstant(
+        DateTime(
+          date.year,
+          date.month,
+          date.day,
+          time?.hour ?? shown.hour,
+          time?.minute ?? shown.minute,
+        ),
       );
     });
   }
@@ -826,9 +833,10 @@ class ReportMonth {
   final DateTime end;
 
   factory ReportMonth.of(DateTime date) {
+    final wall = zoneWall(date);
     return ReportMonth(
-      DateTime(date.year, date.month),
-      DateTime(date.year, date.month + 1),
+      zoneInstant(DateTime(wall.year, wall.month)),
+      zoneInstant(DateTime(wall.year, wall.month + 1)),
     );
   }
 }

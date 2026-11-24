@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/clock.dart';
 import 'data/db/app_database.dart';
 import 'data/repositories/backup_repository.dart';
 import 'data/repositories/transaction_repository.dart';
@@ -82,10 +83,34 @@ class SettingsController extends AsyncNotifier<Preference> {
   Future<void> setReminder({required bool enabled}) =>
       _write(PreferencesCompanion(dailyReminder: Value(enabled)));
 
+  Future<void> setTimeZone(String id) async {
+    await _write(PreferencesCompanion(timeZoneId: Value(id)));
+    await applyTimeZone(id);
+  }
+
   Future<void> _write(PreferencesCompanion data) async {
     final db = ref.read(databaseProvider);
     await db.saveSettings(data);
     state = AsyncData(await db.settings());
+  }
+}
+
+final timeZoneProvider = NotifierProvider<TimeZoneController, String>(
+  TimeZoneController.new,
+);
+
+class TimeZoneController extends Notifier<String> {
+  @override
+  String build() {
+    final choice =
+        ref.watch(settingsProvider).asData?.value.timeZoneId ?? autoTimeZone;
+    final shown = activeZoneId;
+    Future<void>(() async {
+      await applyTimeZone(choice);
+      if (!ref.mounted || state == activeZoneId) return;
+      state = activeZoneId;
+    });
+    return shown;
   }
 }
 

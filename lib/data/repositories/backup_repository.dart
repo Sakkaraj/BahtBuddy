@@ -5,6 +5,7 @@ import 'package:csv/csv.dart' as csvlib;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import '../../core/clock.dart';
 import '../db/app_database.dart';
 
 class BackupRepository {
@@ -27,7 +28,7 @@ class BackupRepository {
     ];
     for (final row in await _db.allTransactions()) {
       rows.add([
-        row.occurredAt.toIso8601String(),
+        zoneIso(row.occurredAt),
         row.type,
         categories[row.categoryId]?.nameEn ?? '',
         row.amount.toStringAsFixed(2),
@@ -59,7 +60,7 @@ class BackupRepository {
             'amount': t.amount,
             'type': t.type,
             'categoryId': t.categoryId,
-            'occurredAt': t.occurredAt.toIso8601String(),
+            'occurredAt': zoneIso(t.occurredAt),
             'note': t.note,
             'recipient': t.recipient,
             'slipReference': t.slipReference,
@@ -82,6 +83,7 @@ class BackupRepository {
         'dailyReminder': settings.dailyReminder,
         'reminderHour': settings.reminderHour,
         'reminderMinute': settings.reminderMinute,
+        'timeZoneId': settings.timeZoneId,
       },
     };
     return _writeTemp(
@@ -149,6 +151,7 @@ class BackupRepository {
         dailyReminder: prefs['dailyReminder'] as bool? ?? false,
         reminderHour: prefs['reminderHour'] as int? ?? 20,
         reminderMinute: prefs['reminderMinute'] as int? ?? 0,
+        timeZoneId: prefs['timeZoneId'] as String? ?? 'auto',
       ),
     );
   }

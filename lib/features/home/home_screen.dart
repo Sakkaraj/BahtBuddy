@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../core/clock.dart';
 import '../../core/format.dart';
 import '../../data/db/app_database.dart';
 import '../../features/reports/summary.dart';
@@ -37,6 +38,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context);
+    ref.watch(timeZoneProvider);
     final transactions = ref.watch(transactionsProvider);
     final categories = ref.watch(categoriesProvider);
     final budgets = ref.watch(budgetsProvider);
@@ -68,7 +70,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: Center(child: Text('$error')),
           ),
           data: (rows) {
-            final now = DateTime.now();
+            final now = zoneNow();
             final today = summarize(rows, ReportRange.day(now));
             final month = summarize(rows, ReportRange.month(now));
             final monthEnd = DateTime(now.year, now.month + 1);

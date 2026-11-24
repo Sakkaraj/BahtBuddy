@@ -8,11 +8,13 @@ import 'package:go_router/go_router.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../core/clock.dart';
 import '../../core/format.dart';
 import '../../core/pin_hash.dart';
 import '../../l10n/app_localizations.dart';
 import '../../providers.dart';
 import '../lock/pin_flow.dart';
+import 'time_zone_sheet.dart';
 import '../../widgets/bb_grouped_section.dart';
 import '../../widgets/bb_scaffold.dart';
 import '../../widgets/motion.dart';
@@ -38,6 +40,9 @@ class SettingsScreen extends ConsumerWidget {
             final languageName = prefs.localeCode == 'th'
                 ? l10n.thai
                 : l10n.english;
+            final zoneName = prefs.timeZoneId == autoTimeZone
+                ? l10n.timeZoneAutomatic
+                : zoneCity(prefs.timeZoneId);
             return SliverList(
               delegate: SliverChildListDelegate([
                 Appear(
@@ -69,6 +74,14 @@ class SettingsScreen extends ConsumerWidget {
                         color: bahtSky,
                         onTap: () =>
                             _pickLanguage(context, ref, prefs.localeCode),
+                      ),
+                      _NavRow(
+                        title: l10n.timeZone,
+                        value: zoneName,
+                        icon: Icons.public_rounded,
+                        color: bahtSky,
+                        onTap: () =>
+                            _pickTimeZone(context, ref, prefs.timeZoneId),
                       ),
                     ],
                   ),
@@ -287,6 +300,28 @@ class SettingsScreen extends ConsumerWidget {
     if (code != null && code != current) {
       await ref.read(settingsProvider.notifier).setLocale(code);
     }
+  }
+
+  Future<void> _pickTimeZone(
+    BuildContext context,
+    WidgetRef ref,
+    String current,
+  ) async {
+    final l10n = AppLocalizations.of(context);
+    final choice = await pickTimeZone(context, current: current);
+    if (choice == null || choice == current) return;
+    await ref.read(settingsProvider.notifier).setTimeZone(choice);
+    final prefs = ref.read(settingsProvider).asData?.value;
+    if (prefs != null && prefs.dailyReminder) {
+      await ref.read(budgetAlertsProvider).setDailyReminder(
+        enabled: true,
+        hour: prefs.reminderHour,
+        minute: prefs.reminderMinute,
+        title: l10n.reminderTitle,
+        body: l10n.reminderBody,
+      );
+    }
+    await ref.read(exchangeRatesProvider.notifier).refresh();
   }
 
   Future<void> _setPin(

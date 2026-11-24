@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../core/clock.dart';
 import '../../core/format.dart';
 import '../../l10n/app_localizations.dart';
 import '../../providers.dart';
@@ -29,9 +30,10 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context);
+    ref.watch(timeZoneProvider);
     final rows = ref.watch(transactionsProvider).asData?.value ?? [];
     final categories = ref.watch(categoriesProvider).asData?.value ?? [];
-    final now = DateTime.now();
+    final now = zoneNow();
     final range = switch (_period) {
       _Period.day => ReportRange.day(now),
       _Period.week => ReportRange.week(now),
@@ -312,7 +314,7 @@ class _IncomeOverTime extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final spots = points.isEmpty ? [DayPoint(DateTime.now(), 0, 0)] : points;
+    final spots = points.isEmpty ? [DayPoint(zoneNow(), 0, 0)] : points;
     final daily = [for (final point in spots) point.income];
     final cumulative = <double>[];
     var running = 0.0;
@@ -537,7 +539,7 @@ class _OverTimeLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final spots = points.isEmpty ? [DayPoint(DateTime.now(), 0, 0)] : points;
+    final spots = points.isEmpty ? [DayPoint(zoneNow(), 0, 0)] : points;
     final color = showIncome ? bahtIncome : bahtExpense;
     var peak = 1.0;
     for (final point in spots) {

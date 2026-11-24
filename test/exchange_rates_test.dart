@@ -10,7 +10,11 @@ void main() {
     expect(board.bahtPerUnit['EUR'], closeTo(37.242, 0.001));
     expect(board.bahtPerUnit['USD'], closeTo(37.242 / 1.0939, 0.001));
     expect(board.bahtPerUnit['JPY'], closeTo(37.242 / 174.01, 0.0001));
-    expect(board.date, DateTime.parse('2026-11-23'));
+    expect(board.date, DateTime(2026, 11, 23));
+    expect(
+      ExchangeRates.frankfurterUrl(DateTime(2026, 11, 24, 19)),
+      'https://api.frankfurter.app/2026-11-24?from=EUR&to=THB,USD,JPY,CNY,GBP,SGD',
+    );
     expect(
       foreignFromBaht(board, 'USD', 280),
       closeTo(280 / (37.242 / 1.0939), 0.001),

@@ -518,6 +518,24 @@ abstract class AppLocalizations {
   /// **'Language'**
   String get language;
 
+  /// No description provided for @timeZone.
+  ///
+  /// In en, this message translates to:
+  /// **'Time zone'**
+  String get timeZone;
+
+  /// No description provided for @timeZoneAutomatic.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get timeZoneAutomatic;
+
+  /// No description provided for @timeZoneSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Search time zones'**
+  String get timeZoneSearch;
+
   /// No description provided for @english.
   ///
   /// In en, this message translates to:

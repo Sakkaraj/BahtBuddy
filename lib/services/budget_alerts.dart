@@ -1,6 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
+
+import '../core/clock.dart';
 
 class BudgetAlerts {
   Future<void> notify({
@@ -25,7 +26,7 @@ class LocalBudgetAlerts implements BudgetAlerts {
   static const _dailyId = 1;
 
   static Future<LocalBudgetAlerts> create() async {
-    tzdata.initializeTimeZones();
+    initClock();
     final plugin = FlutterLocalNotificationsPlugin();
     await plugin.initialize(
       settings: const InitializationSettings(
@@ -73,9 +74,9 @@ class LocalBudgetAlerts implements BudgetAlerts {
     await _plugin.cancel(id: _dailyId);
     if (!enabled) return;
     await _request();
-    final now = tz.TZDateTime.now(tz.local);
+    final now = tz.TZDateTime.now(activeZone);
     var scheduled = tz.TZDateTime(
-      tz.local,
+      activeZone,
       now.year,
       now.month,
       now.day,

@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
 
+import '../core/clock.dart';
+
 class ExchangeBoard {
   const ExchangeBoard({required this.date, required this.bahtPerUnit});
 
@@ -51,14 +53,34 @@ ExchangeBoard parseFrankfurter(String body) {
     perUnit[code] = thb / foreign;
   }
   return ExchangeBoard(
-    date: DateTime.parse(json['date'] as String),
+    date: calendarDate(json['date'] as String),
     bahtPerUnit: perUnit,
   );
 }
 
+/// Frankfurter sends `yyyy-MM-dd`. Keep that calendar day, not a UTC instant.
+DateTime calendarDate(String raw) {
+  final date = raw.split('T').first;
+  final parts = date.split('-');
+  return DateTime(
+    int.parse(parts[0]),
+    int.parse(parts[1]),
+    int.parse(parts[2]),
+  );
+}
+
 class ExchangeRates {
-  static const _url =
-      'https://api.frankfurter.app/latest?from=EUR&to=THB,USD,JPY,CNY,GBP,SGD';
+  static const _currencies = 'THB,USD,JPY,CNY,GBP,SGD';
+  static const latestUrl =
+      'https://api.frankfurter.app/latest?from=EUR&to=$_currencies';
+
+  /// Asks for the rate on the active time zone's calendar day. The bank
+  /// publishes on European business days, so a weekend or a day before the
+  /// fix returns the previous published date.
+  static String frankfurterUrl(DateTime day) {
+    return 'https://api.frankfurter.app/${zoneDateStamp(day)}'
+        '?from=EUR&to=$_currencies';
+  }
 
   static Future<ExchangeBoard?> load() async {
     try {
@@ -71,9 +93,17 @@ class ExchangeRates {
   }
 
   static Future<ExchangeBoard> fetch() async {
+    try {
+      return await _get(frankfurterUrl(zoneNow()));
+    } catch (_) {
+      return _get(latestUrl);
+    }
+  }
+
+  static Future<ExchangeBoard> _get(String url) async {
     final client = HttpClient();
     try {
-      final request = await client.getUrl(Uri.parse(_url));
+      final request = await client.getUrl(Uri.parse(url));
       final response = await request.close().timeout(
         const Duration(seconds: 12),
       );

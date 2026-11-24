@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../data/db/app_database.dart';
+import 'clock.dart';
 
 const bahtFont = 'PlusJakartaSans';
 const bahtAccent = Color(0xFF0E9F8A);
@@ -587,7 +588,7 @@ String formatSignedBaht(Locale locale, double amount, {required bool income}) {
 
 String formatWhen(Locale locale, DateTime date) {
   final pattern = DateFormat.yMMMd(locale.languageCode).add_Hm();
-  return pattern.format(date);
+  return pattern.format(zoneWall(date));
 }
 
 String formatDay(Locale locale, DateTime date) {
@@ -595,10 +596,13 @@ String formatDay(Locale locale, DateTime date) {
 }
 
 String formatTime(Locale locale, DateTime date) {
-  return DateFormat.Hm(locale.languageCode).format(date);
+  return DateFormat.Hm(locale.languageCode).format(zoneWall(date));
 }
 
-DateTime dayKey(DateTime date) => DateTime(date.year, date.month, date.day);
+DateTime dayKey(DateTime date) {
+  final wall = zoneWall(date);
+  return DateTime(wall.year, wall.month, wall.day);
+}
 
 Color amountColor(BuildContext context, {required bool income}) {
   return income ? bahtIncome : Theme.of(context).colorScheme.error;

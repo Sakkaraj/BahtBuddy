@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/clock.dart';
 import '../../core/format.dart';
 import '../../data/db/app_database.dart';
 import '../../l10n/app_localizations.dart';
@@ -14,6 +15,11 @@ import '../../widgets/transaction_row.dart';
 import '../add/add_screen.dart';
 import '../entry/entry_screen.dart';
 import 'history_filter.dart';
+
+DateTime _zoneDay() {
+  final now = zoneNow();
+  return DateTime(now.year, now.month, now.day);
+}
 
 class HistoryScreen extends ConsumerStatefulWidget {
   const HistoryScreen({super.key});
@@ -36,6 +42,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context);
+    ref.watch(timeZoneProvider);
     final transactions = ref.watch(transactionsProvider);
     final categories = ref.watch(categoriesProvider).asData?.value ?? [];
     return BbScaffold(
@@ -303,7 +310,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     onTap: () async {
                       final picked = await showDatePicker(
                         context: context,
-                        initialDate: from ?? DateTime.now(),
+                        initialDate: from ?? _zoneDay(),
                         firstDate: DateTime(2000),
                         lastDate: DateTime(2100),
                       );
@@ -316,7 +323,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     onTap: () async {
                       final picked = await showDatePicker(
                         context: context,
-                        initialDate: to ?? DateTime.now(),
+                        initialDate: to ?? _zoneDay(),
                         firstDate: DateTime(2000),
                         lastDate: DateTime(2100),
                       );

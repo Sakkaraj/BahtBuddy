@@ -1535,6 +1535,18 @@ class $PreferencesTable extends Preferences
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _timeZoneIdMeta = const VerificationMeta(
+    'timeZoneId',
+  );
+  @override
+  late final GeneratedColumn<String> timeZoneId = GeneratedColumn<String>(
+    'time_zone_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('auto'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1545,6 +1557,7 @@ class $PreferencesTable extends Preferences
     dailyReminder,
     reminderHour,
     reminderMinute,
+    timeZoneId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1615,6 +1628,15 @@ class $PreferencesTable extends Preferences
         ),
       );
     }
+    if (data.containsKey('time_zone_id')) {
+      context.handle(
+        _timeZoneIdMeta,
+        timeZoneId.isAcceptableOrUnknown(
+          data['time_zone_id']!,
+          _timeZoneIdMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1656,6 +1678,10 @@ class $PreferencesTable extends Preferences
         DriftSqlType.int,
         data['${effectivePrefix}reminder_minute'],
       )!,
+      timeZoneId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}time_zone_id'],
+      )!,
     );
   }
 
@@ -1674,6 +1700,7 @@ class Preference extends DataClass implements Insertable<Preference> {
   final bool dailyReminder;
   final int reminderHour;
   final int reminderMinute;
+  final String timeZoneId;
   const Preference({
     required this.id,
     required this.themeMode,
@@ -1683,6 +1710,7 @@ class Preference extends DataClass implements Insertable<Preference> {
     required this.dailyReminder,
     required this.reminderHour,
     required this.reminderMinute,
+    required this.timeZoneId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1697,6 +1725,7 @@ class Preference extends DataClass implements Insertable<Preference> {
     map['daily_reminder'] = Variable<bool>(dailyReminder);
     map['reminder_hour'] = Variable<int>(reminderHour);
     map['reminder_minute'] = Variable<int>(reminderMinute);
+    map['time_zone_id'] = Variable<String>(timeZoneId);
     return map;
   }
 
@@ -1712,6 +1741,7 @@ class Preference extends DataClass implements Insertable<Preference> {
       dailyReminder: Value(dailyReminder),
       reminderHour: Value(reminderHour),
       reminderMinute: Value(reminderMinute),
+      timeZoneId: Value(timeZoneId),
     );
   }
 
@@ -1729,6 +1759,7 @@ class Preference extends DataClass implements Insertable<Preference> {
       dailyReminder: serializer.fromJson<bool>(json['dailyReminder']),
       reminderHour: serializer.fromJson<int>(json['reminderHour']),
       reminderMinute: serializer.fromJson<int>(json['reminderMinute']),
+      timeZoneId: serializer.fromJson<String>(json['timeZoneId']),
     );
   }
   @override
@@ -1743,6 +1774,7 @@ class Preference extends DataClass implements Insertable<Preference> {
       'dailyReminder': serializer.toJson<bool>(dailyReminder),
       'reminderHour': serializer.toJson<int>(reminderHour),
       'reminderMinute': serializer.toJson<int>(reminderMinute),
+      'timeZoneId': serializer.toJson<String>(timeZoneId),
     };
   }
 
@@ -1755,6 +1787,7 @@ class Preference extends DataClass implements Insertable<Preference> {
     bool? dailyReminder,
     int? reminderHour,
     int? reminderMinute,
+    String? timeZoneId,
   }) => Preference(
     id: id ?? this.id,
     themeMode: themeMode ?? this.themeMode,
@@ -1764,6 +1797,7 @@ class Preference extends DataClass implements Insertable<Preference> {
     dailyReminder: dailyReminder ?? this.dailyReminder,
     reminderHour: reminderHour ?? this.reminderHour,
     reminderMinute: reminderMinute ?? this.reminderMinute,
+    timeZoneId: timeZoneId ?? this.timeZoneId,
   );
   Preference copyWithCompanion(PreferencesCompanion data) {
     return Preference(
@@ -1785,6 +1819,9 @@ class Preference extends DataClass implements Insertable<Preference> {
       reminderMinute: data.reminderMinute.present
           ? data.reminderMinute.value
           : this.reminderMinute,
+      timeZoneId: data.timeZoneId.present
+          ? data.timeZoneId.value
+          : this.timeZoneId,
     );
   }
 
@@ -1798,7 +1835,8 @@ class Preference extends DataClass implements Insertable<Preference> {
           ..write('biometricsEnabled: $biometricsEnabled, ')
           ..write('dailyReminder: $dailyReminder, ')
           ..write('reminderHour: $reminderHour, ')
-          ..write('reminderMinute: $reminderMinute')
+          ..write('reminderMinute: $reminderMinute, ')
+          ..write('timeZoneId: $timeZoneId')
           ..write(')'))
         .toString();
   }
@@ -1813,6 +1851,7 @@ class Preference extends DataClass implements Insertable<Preference> {
     dailyReminder,
     reminderHour,
     reminderMinute,
+    timeZoneId,
   );
   @override
   bool operator ==(Object other) =>
@@ -1825,7 +1864,8 @@ class Preference extends DataClass implements Insertable<Preference> {
           other.biometricsEnabled == this.biometricsEnabled &&
           other.dailyReminder == this.dailyReminder &&
           other.reminderHour == this.reminderHour &&
-          other.reminderMinute == this.reminderMinute);
+          other.reminderMinute == this.reminderMinute &&
+          other.timeZoneId == this.timeZoneId);
 }
 
 class PreferencesCompanion extends UpdateCompanion<Preference> {
@@ -1837,6 +1877,7 @@ class PreferencesCompanion extends UpdateCompanion<Preference> {
   final Value<bool> dailyReminder;
   final Value<int> reminderHour;
   final Value<int> reminderMinute;
+  final Value<String> timeZoneId;
   const PreferencesCompanion({
     this.id = const Value.absent(),
     this.themeMode = const Value.absent(),
@@ -1846,6 +1887,7 @@ class PreferencesCompanion extends UpdateCompanion<Preference> {
     this.dailyReminder = const Value.absent(),
     this.reminderHour = const Value.absent(),
     this.reminderMinute = const Value.absent(),
+    this.timeZoneId = const Value.absent(),
   });
   PreferencesCompanion.insert({
     this.id = const Value.absent(),
@@ -1856,6 +1898,7 @@ class PreferencesCompanion extends UpdateCompanion<Preference> {
     this.dailyReminder = const Value.absent(),
     this.reminderHour = const Value.absent(),
     this.reminderMinute = const Value.absent(),
+    this.timeZoneId = const Value.absent(),
   });
   static Insertable<Preference> custom({
     Expression<int>? id,
@@ -1866,6 +1909,7 @@ class PreferencesCompanion extends UpdateCompanion<Preference> {
     Expression<bool>? dailyReminder,
     Expression<int>? reminderHour,
     Expression<int>? reminderMinute,
+    Expression<String>? timeZoneId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1876,6 +1920,7 @@ class PreferencesCompanion extends UpdateCompanion<Preference> {
       if (dailyReminder != null) 'daily_reminder': dailyReminder,
       if (reminderHour != null) 'reminder_hour': reminderHour,
       if (reminderMinute != null) 'reminder_minute': reminderMinute,
+      if (timeZoneId != null) 'time_zone_id': timeZoneId,
     });
   }
 
@@ -1888,6 +1933,7 @@ class PreferencesCompanion extends UpdateCompanion<Preference> {
     Value<bool>? dailyReminder,
     Value<int>? reminderHour,
     Value<int>? reminderMinute,
+    Value<String>? timeZoneId,
   }) {
     return PreferencesCompanion(
       id: id ?? this.id,
@@ -1898,6 +1944,7 @@ class PreferencesCompanion extends UpdateCompanion<Preference> {
       dailyReminder: dailyReminder ?? this.dailyReminder,
       reminderHour: reminderHour ?? this.reminderHour,
       reminderMinute: reminderMinute ?? this.reminderMinute,
+      timeZoneId: timeZoneId ?? this.timeZoneId,
     );
   }
 
@@ -1928,6 +1975,9 @@ class PreferencesCompanion extends UpdateCompanion<Preference> {
     if (reminderMinute.present) {
       map['reminder_minute'] = Variable<int>(reminderMinute.value);
     }
+    if (timeZoneId.present) {
+      map['time_zone_id'] = Variable<String>(timeZoneId.value);
+    }
     return map;
   }
 
@@ -1941,7 +1991,8 @@ class PreferencesCompanion extends UpdateCompanion<Preference> {
           ..write('biometricsEnabled: $biometricsEnabled, ')
           ..write('dailyReminder: $dailyReminder, ')
           ..write('reminderHour: $reminderHour, ')
-          ..write('reminderMinute: $reminderMinute')
+          ..write('reminderMinute: $reminderMinute, ')
+          ..write('timeZoneId: $timeZoneId')
           ..write(')'))
         .toString();
   }
@@ -3437,6 +3488,7 @@ typedef $$PreferencesTableCreateCompanionBuilder =
       Value<bool> dailyReminder,
       Value<int> reminderHour,
       Value<int> reminderMinute,
+      Value<String> timeZoneId,
     });
 typedef $$PreferencesTableUpdateCompanionBuilder =
     PreferencesCompanion Function({
@@ -3448,6 +3500,7 @@ typedef $$PreferencesTableUpdateCompanionBuilder =
       Value<bool> dailyReminder,
       Value<int> reminderHour,
       Value<int> reminderMinute,
+      Value<String> timeZoneId,
     });
 
 class $$PreferencesTableFilterComposer
@@ -3496,6 +3549,11 @@ class $$PreferencesTableFilterComposer
 
   ColumnFilters<int> get reminderMinute => $composableBuilder(
     column: $table.reminderMinute,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get timeZoneId => $composableBuilder(
+    column: $table.timeZoneId,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -3548,6 +3606,11 @@ class $$PreferencesTableOrderingComposer
     column: $table.reminderMinute,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get timeZoneId => $composableBuilder(
+    column: $table.timeZoneId,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$PreferencesTableAnnotationComposer
@@ -3592,6 +3655,11 @@ class $$PreferencesTableAnnotationComposer
     column: $table.reminderMinute,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get timeZoneId => $composableBuilder(
+    column: $table.timeZoneId,
+    builder: (column) => column,
+  );
 }
 
 class $$PreferencesTableTableManager
@@ -3633,6 +3701,7 @@ class $$PreferencesTableTableManager
                 Value<bool> dailyReminder = const Value.absent(),
                 Value<int> reminderHour = const Value.absent(),
                 Value<int> reminderMinute = const Value.absent(),
+                Value<String> timeZoneId = const Value.absent(),
               }) => PreferencesCompanion(
                 id: id,
                 themeMode: themeMode,
@@ -3642,6 +3711,7 @@ class $$PreferencesTableTableManager
                 dailyReminder: dailyReminder,
                 reminderHour: reminderHour,
                 reminderMinute: reminderMinute,
+                timeZoneId: timeZoneId,
               ),
           createCompanionCallback:
               ({
@@ -3653,6 +3723,7 @@ class $$PreferencesTableTableManager
                 Value<bool> dailyReminder = const Value.absent(),
                 Value<int> reminderHour = const Value.absent(),
                 Value<int> reminderMinute = const Value.absent(),
+                Value<String> timeZoneId = const Value.absent(),
               }) => PreferencesCompanion.insert(
                 id: id,
                 themeMode: themeMode,
@@ -3662,6 +3733,7 @@ class $$PreferencesTableTableManager
                 dailyReminder: dailyReminder,
                 reminderHour: reminderHour,
                 reminderMinute: reminderMinute,
+                timeZoneId: timeZoneId,
               ),
           withReferenceMapper: (p0) => p0
               .map(

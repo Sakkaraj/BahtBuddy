@@ -1,3 +1,4 @@
+import '../../core/clock.dart';
 import '../../data/db/app_database.dart';
 
 class HistoryFilter {
@@ -29,10 +30,14 @@ class HistoryFilter {
   bool matches(MoneyTransaction row, {String categoryText = ''}) {
     if (type != null && row.type != type) return false;
     if (categoryId != null && row.categoryId != categoryId) return false;
-    if (from != null && row.occurredAt.isBefore(from!)) return false;
+    final when = zoneWall(row.occurredAt);
+    if (from != null &&
+        when.isBefore(DateTime(from!.year, from!.month, from!.day))) {
+      return false;
+    }
     if (to != null) {
       final end = DateTime(to!.year, to!.month, to!.day + 1);
-      if (!row.occurredAt.isBefore(end)) return false;
+      if (!when.isBefore(end)) return false;
     }
     if (minAmount != null && row.amount < minAmount!) return false;
     if (maxAmount != null && row.amount > maxAmount!) return false;
