@@ -191,7 +191,7 @@ abstract class AppLocalizations {
   /// No description provided for @scanSlip.
   ///
   /// In en, this message translates to:
-  /// **'Scan a slip'**
+  /// **'Scan a slip or receipt'**
   String get scanSlip;
 
   /// No description provided for @gallery.
@@ -287,25 +287,25 @@ abstract class AppLocalizations {
   /// No description provided for @reviewSlip.
   ///
   /// In en, this message translates to:
-  /// **'Review slip'**
+  /// **'Review before save'**
   String get reviewSlip;
 
   /// No description provided for @parsingSlip.
   ///
   /// In en, this message translates to:
-  /// **'Reading slip…'**
+  /// **'Reading the photo…'**
   String get parsingSlip;
 
   /// No description provided for @ocrFailed.
   ///
   /// In en, this message translates to:
-  /// **'Could not read the slip. You can fill the fields yourself.'**
+  /// **'Could not read the photo. You can fill the fields yourself.'**
   String get ocrFailed;
 
   /// No description provided for @duplicateTitle.
   ///
   /// In en, this message translates to:
-  /// **'This slip is already saved'**
+  /// **'This slip or receipt is already saved'**
   String get duplicateTitle;
 
   /// No description provided for @duplicateBody.
@@ -779,7 +779,7 @@ abstract class AppLocalizations {
   /// No description provided for @cashHint.
   ///
   /// In en, this message translates to:
-  /// **'Cash spending and income, which have no slip'**
+  /// **'Bank slip, 7-Eleven, or a restaurant receipt. Or type cash by hand.'**
   String get cashHint;
 
   /// No description provided for @suggested.
@@ -857,7 +857,7 @@ abstract class AppLocalizations {
   /// No description provided for @emptyHint.
   ///
   /// In en, this message translates to:
-  /// **'Nothing is saved on this phone yet. Scan a slip, or add cash by hand.'**
+  /// **'Nothing is saved on this phone yet. Scan a slip or a receipt, or add cash by hand.'**
   String get emptyHint;
 
   /// No description provided for @sampleSlip.
@@ -869,7 +869,7 @@ abstract class AppLocalizations {
   /// No description provided for @ocrText.
   ///
   /// In en, this message translates to:
-  /// **'Text read from the slip'**
+  /// **'Text read from the photo'**
   String get ocrText;
 
   /// No description provided for @spentThisMonth.

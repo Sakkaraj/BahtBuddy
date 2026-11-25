@@ -38,9 +38,10 @@ on the phone. Those two reads leave the ledger unchanged.
 ## App pages
 
 These are the screens from the Android debug build on 25 November 2026.
-Ocean, English, and Automatic were selected. The ledger already on the phone
-was ฿600.00 income and ฿20.00 food expense, so this month is ฿580.00. No
-record was saved while the pictures were taken.
+System, English, and Automatic were selected. The phone was in light mode, so
+the pictures use the daylight look. The ledger already on the phone was
+฿600.00 income and ฿20.00 food expense, so this month is ฿580.00. No record
+was saved while the pictures were taken.
 
 <table>
   <tr>
@@ -98,7 +99,7 @@ record was saved while the pictures were taken.
     <td align="center">
       <img src="docs/screens/settings.png" width="220" alt="Settings"><br>
       <b>Settings</b><br>
-      Ocean, English, and Automatic.
+      System, English, and Automatic.
     </td>
     <td align="center">
       <img src="docs/screens/timezone.png" width="220" alt="Time zone"><br>

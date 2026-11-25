@@ -54,7 +54,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emptyTransactions => 'No records yet';
 
   @override
-  String get scanSlip => 'Scan a slip';
+  String get scanSlip => 'Scan a slip or receipt';
 
   @override
   String get gallery => 'Photo library';
@@ -102,17 +102,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get requiredAmount => 'Enter an amount greater than 0';
 
   @override
-  String get reviewSlip => 'Review slip';
+  String get reviewSlip => 'Review before save';
 
   @override
-  String get parsingSlip => 'Reading slip…';
+  String get parsingSlip => 'Reading the photo…';
 
   @override
   String get ocrFailed =>
-      'Could not read the slip. You can fill the fields yourself.';
+      'Could not read the photo. You can fill the fields yourself.';
 
   @override
-  String get duplicateTitle => 'This slip is already saved';
+  String get duplicateTitle => 'This slip or receipt is already saved';
 
   @override
   String get duplicateBody =>
@@ -356,7 +356,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saved => 'Saved';
 
   @override
-  String get cashHint => 'Cash spending and income, which have no slip';
+  String get cashHint =>
+      'Bank slip, 7-Eleven, or a restaurant receipt. Or type cash by hand.';
 
   @override
   String get suggested => 'Suggested from the recipient';
@@ -402,13 +403,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get emptyHint =>
-      'Nothing is saved on this phone yet. Scan a slip, or add cash by hand.';
+      'Nothing is saved on this phone yet. Scan a slip or a receipt, or add cash by hand.';
 
   @override
   String get sampleSlip => 'Try a sample slip';
 
   @override
-  String get ocrText => 'Text read from the slip';
+  String get ocrText => 'Text read from the photo';
 
   @override
   String get spentThisMonth => 'Spent this month';

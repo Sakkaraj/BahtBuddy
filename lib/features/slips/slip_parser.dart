@@ -36,6 +36,42 @@ class SlipParser {
     r'(?:จำนวนเงิน|ยอดเงิน|amount)\s*[:：]?\s*(?:thb|บาท|฿)?\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)',
     caseSensitive: false,
   );
+  static final _grandTotal = RegExp(
+    r'(?:รวมทั้งสิ้น|ยอดสุทธิ|ยอดรวมสุทธิ|รวมสุทธิ|ยอดชำระ|รวมเงิน|รวมราคา|grand\s*total|net\s*total|net\s*amount|amount\s*due|total\s*due|bill\s*total)\s*[:：]?\s*(?:thb|บาท|฿)?\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)',
+    caseSensitive: false,
+  );
+  static final _plainTotal = RegExp(
+    r'(?:^|\s)(?:(?<!sub)total|ยอดรวม|รวมเงิน|รวม)\s*[:：]?\s*(?:thb|บาท|฿)?\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)',
+    caseSensitive: false,
+  );
+  static final _notTheBill = RegExp(
+    r'เงินทอน|change|เงินสด|cash|tender|vat|ภาษี|tax|ส่วนลด|discount|sub\s*total|ยอดย่อย|qty|จำนวน\s*\d',
+    caseSensitive: false,
+  );
+  static final _receiptNo = RegExp(
+    r'(?:เลขที่ใบเสร็จ|ใบเสร็จเลขที่|เลขที่บิล|receipt\s*(?:no|number|#)?\.?|tax\s*inv(?:oice)?\.?|bill\s*no\.?)\s*[:：#]?\s*([A-Za-z0-9\-]{4,})',
+    caseSensitive: false,
+  );
+  static final _shopLineSkip = RegExp(
+    r'(?:จำนวนเงิน|ยอด|amount|total|รวม|vat|ภาษี|cash|เงินสด|change|เงินทอน|date|วันที่|time|เวลา|tel|โทร|tax|เลขที่|receipt|bill|ref|www\.|http|@|\.co\.|\.th\b|โอนเงิน|สำเร็จ|สลิป|promptpay|ธนาคาร|bank|ไปยัง|ผู้รับ|to\b)',
+    caseSensitive: false,
+  );
+  static final _looksLikeReceipt = RegExp(
+    r'(?:รวมทั้งสิ้น|ยอดสุทธิ|ยอดชำระ|รวมเงิน|grand\s*total|total\s*due|(?<!sub)total|เงินทอน|change|เงินสด|cash|vat|ภาษี|ใบเสร็จ|receipt)',
+    caseSensitive: false,
+  );
+  static final _knownShops = <(RegExp, String)>[
+    (RegExp(r'7\s*[-–]?\s*(?:eleven|11)|เซเว่น', caseSensitive: false), '7-Eleven'),
+    (RegExp(r'family\s*mart|แฟมิลี่\s*มาร์ท', caseSensitive: false), 'FamilyMart'),
+    (RegExp(r'lotus|โลตัส', caseSensitive: false), 'Lotus'),
+    (RegExp(r'big\s*c|บิ๊ก\s*ซี', caseSensitive: false), 'Big C'),
+    (RegExp(r'mcdonald|แมคโดนัลด์', caseSensitive: false), "McDonald's"),
+    (RegExp(r'\bkfc\b|เคเอฟซี', caseSensitive: false), 'KFC'),
+    (RegExp(r'starbucks|สตาร์บัคส์', caseSensitive: false), 'Starbucks'),
+    (RegExp(r'cafe\s*amazon|คาเฟ่\s*อเมซอน', caseSensitive: false), 'Cafe Amazon'),
+    (RegExp(r'tops?\s*market|ท็อปส์', caseSensitive: false), 'Tops'),
+    (RegExp(r'makro|แม็คโคร', caseSensitive: false), 'Makro'),
+  ];
   static final _currencyFirst = RegExp(
     r'(?:thb|฿|(?<![A-Za-z])[bB])\s+([0-9][0-9,]*(?:\.[0-9]{1,2})?)',
     caseSensitive: false,
@@ -60,7 +96,7 @@ class SlipParser {
     caseSensitive: false,
   );
   static final _recipient = RegExp(
-    r'(?:^|\n)\s*(?:ไปยัง|ผู้รับเงิน|ผู้รับ|recipient|to)\s*[:：]?\s*([^\n]+)',
+    r'(?:^|\n)\s*(?:ไปยัง|ผู้รับเงิน|ผู้รับ|recipient|\bto\b)\s*[:：]?\s*([^\n]+)',
     caseSensitive: false,
   );
 
@@ -120,8 +156,10 @@ class SlipParser {
     return SlipDraft(
       amount: _amount(text),
       date: _date(text),
-      recipient: _recipientName(text),
-      reference: _reference.firstMatch(text)?.group(1),
+      recipient: _recipientName(text) ?? _shopName(text),
+      reference:
+          _reference.firstMatch(text)?.group(1) ??
+          _receiptNo.firstMatch(text)?.group(1),
       rawText: text,
     );
   }
@@ -147,12 +185,63 @@ class SlipParser {
   static double? _amount(String text) {
     final labeled = _labeledAmount.firstMatch(text);
     if (labeled != null) return _number(labeled.group(1)!);
+    final grand = _grandTotal.firstMatch(text);
+    if (grand != null) return _number(grand.group(1)!);
+    final total = _lastBillTotal(text);
+    if (total != null) return total;
     final first = _currencyFirst.firstMatch(text);
     if (first != null) return _number(first.group(1)!);
     final after = _currencyAfter.firstMatch(text);
     if (after != null) return _number(after.group(1)!);
     final plain = _decimalAmount.firstMatch(text);
     if (plain != null) return _number(plain.group(1)!);
+    return null;
+  }
+
+  static double? _lastBillTotal(String text) {
+    double? found;
+    for (final line in text.split('\n')) {
+      if (_notTheBill.hasMatch(line)) continue;
+      final match = _plainTotal.firstMatch(line);
+      if (match != null) found = _number(match.group(1)!);
+    }
+    return found;
+  }
+
+  /// A shop or restaurant receipt names the store on its own line, not under ผู้รับ.
+  static String? _shopName(String text) {
+    final lines = text.split('\n').map((line) => line.trim()).where((line) {
+      return line.isNotEmpty && line.length <= 48;
+    }).toList();
+    for (final line in lines) {
+      for (final shop in _knownShops) {
+        if (shop.$1.hasMatch(line)) return shop.$2;
+      }
+    }
+    for (final line in lines.take(8)) {
+      final lower = line.toLowerCase();
+      if (_shopLineSkip.hasMatch(line)) continue;
+      if (line.contains('ร้าน') ||
+          lower.contains('restaurant') ||
+          lower.contains('cafe') ||
+          lower.contains('coffee') ||
+          lower.contains('bistro') ||
+          lower.contains('kitchen') ||
+          line.contains('ครัว') ||
+          line.contains('กาแฟ')) {
+        return line;
+      }
+    }
+    if (!_looksLikeReceipt.hasMatch(text)) return null;
+    for (final line in lines.take(5)) {
+      if (_shopLineSkip.hasMatch(line)) continue;
+      if (_decimalAmount.hasMatch(line) || _numericDate.hasMatch(line)) {
+        continue;
+      }
+      if (RegExp(r'^[\d\s:./\-]+$').hasMatch(line)) continue;
+      if (line.length < 3) continue;
+      return line;
+    }
     return null;
   }
 

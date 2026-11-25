@@ -14,8 +14,10 @@ The course asks for three items. Two are in this folder. The presentation video 
   proposal: a Flutter expense tracker with a local SQLite database.
   Screenshots of every screen are in Appendix A.
 - [BahtBuddy_Presentation_Slides.pdf](./BahtBuddy_Presentation_Slides.pdf) —
-  12-slide 16:9 deck in the app’s Ocean theme for the 26 November 2026
-  presentation. The order is introduction, the problem, related work,
+  12-slide 16:9 deck for the 26 November 2026 presentation. Its fintech
+  palette pairs midnight navy with teal, aqua, and softly tinted cards; app
+  screenshots retain the System daylight theme. The order is introduction,
+  the problem, related work,
   features, a demonstration, architecture and the technology stack,
   results, and the conclusion.
 - Presentation video, 2–5 minutes. It is not in this folder. Record from the
@@ -38,12 +40,12 @@ were read on the emulator, 18 matched every field, and the user still confirms
 every draft. A JSON backup is sealed with the PIN, and the exchange chips use a
 board shipped with the app when the phone has no saved rates. The screenshots were taken on 25 November 2026 from the ledger already on
 the emulator (฿600 income and ฿20 expense, month balance ฿580). They show
-the Ocean look, the glass balance card, and the safe-to-spend line of ฿96.67.
+the System look on a light phone, the glass balance card, and the safe-to-spend line of ฿96.67.
 
 ## Verification
 
-- Final report: 20 pages. Figures A1–A11 are in Appendix A, two screens per page.
-- Presentation deck: 12 slides, Ocean theme, every screen included
+- Final report: 23 pages. Figures A1–A11 are in Appendix A, two screens per page.
+- Presentation deck: 12 slides, every screen included on the System theme
 - Automated Flutter tests: 33 passed, 0 failed, on 25 November 2026
 - On-device slip corpus: 20 rendered screens, 18 complete, amount 20/20, date 20/20, recipient 19/20, reference 19/20
-- Visual check: report gallery pages and every slide were rendered and inspected
+- Visual check: the report cover, gallery pages, and every slide were rendered and inspected

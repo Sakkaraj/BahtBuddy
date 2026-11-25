@@ -53,7 +53,8 @@ Future<void> scanSlip(
   try {
     final file = await ImagePicker().pickImage(
       source: source,
-      imageQuality: 85,
+      imageQuality: 95,
+      preferredCameraDevice: CameraDevice.rear,
     );
     if (file == null || !context.mounted) return;
     await readSlipFile(context, ref, file.path);

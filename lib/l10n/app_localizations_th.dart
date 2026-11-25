@@ -54,7 +54,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get emptyTransactions => 'ยังไม่มีรายการ';
 
   @override
-  String get scanSlip => 'สแกนสลิป';
+  String get scanSlip => 'สแกนสลิปหรือใบเสร็จ';
 
   @override
   String get gallery => 'คลังภาพ';
@@ -102,16 +102,16 @@ class AppLocalizationsTh extends AppLocalizations {
   String get requiredAmount => 'ใส่จำนวนเงินที่มากกว่า 0';
 
   @override
-  String get reviewSlip => 'ตรวจสอบสลิป';
+  String get reviewSlip => 'ตรวจสอบก่อนบันทึก';
 
   @override
-  String get parsingSlip => 'กำลังอ่านสลิป…';
+  String get parsingSlip => 'กำลังอ่านรูป…';
 
   @override
-  String get ocrFailed => 'อ่านตัวอักษรจากสลิปไม่สำเร็จ คุณกรอกเองได้';
+  String get ocrFailed => 'อ่านตัวอักษรจากรูปไม่สำเร็จ คุณกรอกเองได้';
 
   @override
-  String get duplicateTitle => 'สลิปนี้ถูกบันทึกแล้ว';
+  String get duplicateTitle => 'สลิปหรือใบเสร็จนี้ถูกบันทึกแล้ว';
 
   @override
   String get duplicateBody => 'มีรายการที่ใช้เลขอ้างอิงนี้อยู่แล้ว';
@@ -353,7 +353,8 @@ class AppLocalizationsTh extends AppLocalizations {
   String get saved => 'บันทึกแล้ว';
 
   @override
-  String get cashHint => 'รายจ่ายเงินสดและรายรับที่ไม่มีสลิป';
+  String get cashHint =>
+      'สลิปโอน ใบเสร็จเซเว่น หรือร้านอาหาร หรือกรอกเงินสดเอง';
 
   @override
   String get suggested => 'แนะนำจากชื่อผู้รับ';
@@ -399,13 +400,13 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get emptyHint =>
-      'ยังไม่มีรายการในเครื่องนี้ สแกนสลิป หรือเพิ่มเงินสดเอง';
+      'ยังไม่มีรายการในเครื่องนี้ สแกนสลิปหรือใบเสร็จ หรือเพิ่มเงินสดเอง';
 
   @override
   String get sampleSlip => 'ลองอ่านสลิปตัวอย่าง';
 
   @override
-  String get ocrText => 'ข้อความที่อ่านได้จากสลิป';
+  String get ocrText => 'ข้อความที่อ่านได้จากรูป';
 
   @override
   String get spentThisMonth => 'ใช้ไปเดือนนี้';

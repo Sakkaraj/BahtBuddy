@@ -53,6 +53,72 @@ Ref: ABC123456789
     expect(draft.reference, 'ABC123456789');
   });
 
+  test('a 7-Eleven receipt becomes the amount due, not the cash or the change', () {
+    final draft = SlipParser.parse('''
+7-ELEVEN
+25/11/2026 10:55
+น้ำดื่ม 10.00
+ขนม 15.00
+TOTAL 25.00
+VAT 1.64
+CASH 100.00
+CHANGE 75.00
+''');
+    expect(draft.amount, 25);
+    expect(draft.date, DateTime(2026, 11, 25, 10, 55));
+    expect(draft.recipient, '7-Eleven');
+    expect(CategorySuggester.suggest(recipient: draft.recipient), 'food');
+  });
+
+  test('a restaurant receipt keeps the grand total and the shop line', () {
+    final draft = SlipParser.parse('''
+ร้านอาหารสมใจ
+25/11/2026 19:40
+ข้าวผัด 80.00
+น้ำ 20.00
+รวมทั้งสิ้น 107.00
+เงินสด 200.00
+เงินทอน 93.00
+เลขที่ใบเสร็จ R25691125
+''');
+    expect(draft.amount, 107);
+    expect(draft.date, DateTime(2026, 11, 25, 19, 40));
+    expect(draft.recipient, 'ร้านอาหารสมใจ');
+    expect(draft.reference, 'R25691125');
+    expect(CategorySuggester.suggest(recipient: draft.recipient), 'food');
+  });
+
+  test('a FamilyMart receipt becomes a food expense draft', () {
+    final draft = SlipParser.parse('''
+FamilyMart
+25/11/2026 12:10
+Coffee 45.00
+TOTAL 45.00
+CASH 50.00
+CHANGE 5.00
+Receipt No. FM25112501
+''');
+    expect(draft.amount, 45);
+    expect(draft.date, DateTime(2026, 11, 25, 12, 10));
+    expect(draft.recipient, 'FamilyMart');
+    expect(draft.reference, 'FM25112501');
+    expect(CategorySuggester.suggest(recipient: draft.recipient), 'food');
+  });
+
+  test('a cafe receipt keeps รวมเงิน and the shop name', () {
+    final draft = SlipParser.parse('''
+Cafe Amazon
+25/11/2026 08:20
+Americano 55.00
+รวมเงิน 55.00
+เงินสด 100.00
+เงินทอน 45.00
+''');
+    expect(draft.amount, 55);
+    expect(draft.recipient, 'Cafe Amazon');
+    expect(CategorySuggester.suggest(recipient: draft.recipient), 'food');
+  });
+
   test('reads a bare amount when OCR drops the baht label', () {
     final draft = SlipParser.parse('''
 65.00
