@@ -127,37 +127,61 @@ proposal: a Flutter expense tracker stored in SQLite on the phone.
 - Flutter 3.x
 - Dart 3.x
 - Android Studio/SDK for Android
-- Xcode and macOS for iOS compilation
-- An emulator or supported physical device
+- A Mac with Xcode to build or run the iPhone app
+- An emulator, simulator, or supported physical device
 
 ## Installation
 
-Install dependencies:
-
-```powershell
+```bash
 flutter pub get
-```
-
-Run the application:
-
-```powershell
-flutter run
-```
-
-Run tests:
-
-```powershell
 flutter test
 ```
 
+## Android and iOS use the same app
+
+One Flutter tree drives both phones. The screens, ledger, slip and receipt
+reading, budgets, reports, PIN, backup, exchange rates, and news banner are
+shared. The Material theme forces the same look on iPhone and Android.
+
+| Feature | Android | iOS |
+| --- | --- | --- |
+| Manual expense and income | Yes | Yes |
+| Camera / photo library slip or receipt | Yes | Yes |
+| Tesseract Thai+English, then ML Kit Latin | Yes | Yes |
+| Local SQLite ledger | Yes | Yes |
+| Budgets and local reminders | Yes | Yes |
+| PIN and biometrics | Fingerprint / face | Face ID / Touch ID |
+| JSON backup and CSV share | Yes | Yes |
+| Exchange rates and BBC headlines | Yes | Yes |
+
+There is no separate macOS desktop app. A Mac is used to compile and run the
+**iOS** build. Google ML Kit does not ship a macOS desktop target for this
+project.
+
 ## Android
 
-Connect an emulator or physical Android device, enable developer mode, and run
-`flutter run`.
+```bash
+flutter run -d <android-device-or-emulator>
+```
 
-## iOS
+## iOS on a Mac
 
-On macOS:
+```bash
+flutter pub get
+bash ios/download_mlkit_bundles.sh
+bash tools/mac_ios_run.sh
+```
+
+Or step by step:
+
+```bash
+flutter pub get
+bash ios/download_mlkit_bundles.sh
+flutter devices
+flutter run -d <iphone-simulator-or-device>
+```
+
+If a plugin needs CocoaPods instead of Swift Package Manager:
 
 ```bash
 cd ios
@@ -166,8 +190,9 @@ cd ..
 flutter run
 ```
 
-The iOS project includes camera, photo-library, Face ID, and ML Kit model
-configuration. iOS binaries must be compiled on macOS with Xcode.
+Camera, photo library, Face ID, notifications, https story links, and the ML
+Kit Latin bundle are configured under `ios/`. Open
+`ios/Runner.xcworkspace` in Xcode when you need signing for a physical iPhone.
 
 ## How the Application Works
 
