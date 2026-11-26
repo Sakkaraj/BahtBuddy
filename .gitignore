@@ -72,6 +72,11 @@ ios/Runner/MLKitBundles/*.zip
 # Local inputs for the course PDFs. The finished PDFs stay in the repo.
 docs/ITCS259/build_final_deliverables.py
 docs/ITCS259/screen_*.png
+docs/ITCS259/Presentation_Speaking_Script.md
+docs/ITCS259/__pycache__/
+
+# Local-only helpers (not part of the instructor submission tree).
+tools/render_slip_corpus.py
 
 # Published slip figures used for a local OCR check. They stay off the remote.
 assets/real_slips/

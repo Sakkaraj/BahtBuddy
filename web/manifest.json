@@ -1,11 +1,11 @@
 {
-    "name": "project",
-    "short_name": "project",
-    "start_url": ".",
-    "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+  "name": "BahtBuddy",
+  "short_name": "BahtBuddy",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0F2744",
+  "theme_color": "#0E9F8A",
+  "description": "BahtBuddy — local expense tracker for Thai students.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
