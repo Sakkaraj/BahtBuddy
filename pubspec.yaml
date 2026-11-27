@@ -56,7 +56,8 @@ dependencies:
   timezone: ^0.11.2
   file_picker: ^13.4.0
   flutter_timezone: ^5.1.1
-  tesseract_ocr: 0.6.0
+  tesseract_ocr:
+    path: packages/tesseract_ocr
   url_launcher: ^6.3.2
 
 dev_dependencies:

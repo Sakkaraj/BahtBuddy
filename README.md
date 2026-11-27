@@ -169,6 +169,7 @@ flutter run -d <android-device-or-emulator>
 ```bash
 flutter pub get
 bash ios/download_mlkit_bundles.sh
+bash ios/download_libtesseract.sh
 bash tools/mac_ios_run.sh
 ```
 
@@ -177,6 +178,7 @@ Or step by step:
 ```bash
 flutter pub get
 bash ios/download_mlkit_bundles.sh
+bash ios/download_libtesseract.sh
 flutter devices
 flutter run -d <iphone-simulator-or-device>
 ```

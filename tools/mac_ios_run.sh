@@ -9,8 +9,9 @@ cd "$ROOT"
 echo "1/4  flutter pub get"
 flutter pub get
 
-echo "2/4  ML Kit Latin bundle (no-op if already present)"
+echo "2/4  ML Kit Latin bundle and libtesseract (no-op if already present)"
 bash ios/download_mlkit_bundles.sh
+bash ios/download_libtesseract.sh
 
 echo "3/4  available devices"
 flutter devices

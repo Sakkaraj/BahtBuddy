@@ -1,0 +1,47 @@
+group 'io.paratoner.tesseract_ocr'
+version '1.0'
+
+rootProject.allprojects {
+    repositories {
+        maven {
+            url 'https://jitpack.io'
+            content {
+                includeGroup 'cz.adaptech.tesseract4android'
+            }
+        }
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    namespace = 'io.paratoner.tesseract_ocr'
+    compileSdk = 35
+
+    defaultConfig {
+        minSdk = 16
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    lint {
+        disable += 'InvalidPackage'
+    }
+
+    packaging {
+        jniLibs {
+            keepDebugSymbols += ['*/mips/*.so', '*/mips64/*.so']
+        }
+    }
+}
+
+dependencies {
+    implementation 'cz.adaptech.tesseract4android:tesseract4android:4.8.0'
+    testImplementation 'junit:junit:4.12'
+    implementation 'androidx.lifecycle:lifecycle-process:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-runtime:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-common:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-livedata-core:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.6.2'
+}

@@ -29,14 +29,24 @@ require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelpe
 
 flutter_ios_podfile_setup
 
+tesseract_plugin_ios = File.join(__dir__, '.symlinks', 'plugins', 'tesseract_ocr', 'ios')
+libtesseract_vendor = File.join(__dir__, 'vendor', 'libtesseract')
+
 target 'Runner' do
-  use_frameworks!
+  use_frameworks! :linkage => :static
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+
+  # tesseract_ocr depends on SwiftyTesseract401, which is not on CocoaPods trunk.
+  # Use the plugin's local podspec and the vendored libtesseract xcframework.
+  pod 'SwiftyTesseract401', :podspec => File.join(tesseract_plugin_ios, 'SwiftyTesseract401.podspec')
+  pod 'libtesseract', :path => libtesseract_vendor
+
   target 'RunnerTests' do
     inherit! :search_paths
   end
 end
+
 
 post_install do |installer|
   installer.pods_project.targets.each do |target|
