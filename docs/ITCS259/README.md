@@ -14,11 +14,11 @@ The course asks for three items. Two are in this folder. The presentation video 
   proposal: a Flutter expense tracker with a local SQLite database.
   Screenshots of every screen are in Appendix A.
 - [BahtBuddy_Presentation_Slides.pdf](./BahtBuddy_Presentation_Slides.pdf) —
-  12-slide 16:9 deck for the 26 November 2026 presentation. The deck uses
+  15-slide 16:9 deck for the 26 November 2026 presentation. The deck uses
   midnight navy with teal and aqua; app screenshots retain the System
   daylight theme. The order is introduction, the problem, related work,
-  features, a demonstration, architecture and the technology stack,
-  results, and the conclusion.
+  features, a demonstration, architecture, the database diagram, the
+  Dart class diagram, the save sequence, results, and the conclusion.
 - Presentation video, 2–5 minutes. It is not in this folder. Record from the
   deck, then put the unlisted YouTube, Drive, or GitHub link in the
   MyCourse submission.
@@ -43,8 +43,8 @@ the System look on a light phone, the glass balance card, and the safe-to-spend 
 
 ## Verification
 
-- Final report: 23 pages. Figures A1–A11 are in Appendix A, two screens per page.
-- Presentation deck: 12 slides, every screen included on the System theme
+- Final report: 29 pages. Figures 3.1–3.3 are the database, class, and sequence diagrams. Figures A1–A11 are in Appendix A.
+- Presentation deck: 15 slides, every screen included on the System theme, plus the database, class, and sequence diagrams
 - Automated Flutter tests: 37 passed, 0 failed, on 26 November 2026
 - On-device slip corpus: 20 rendered screens, 18 complete, amount 20/20, date 20/20, recipient 19/20, reference 19/20
 - Visual check: the report cover, gallery pages, and every slide were rendered and inspected
